@@ -5,7 +5,7 @@
 	name = "Vox"
 	id = "vox"
 	default_color = COLOR_GREEN
-	species_traits = list(EYECOLOR, NOTRANSSTING, FRAGILEBONES, NO_UNDERWEAR, DIGITIGRADE) //todo, add ALT_UNDERWEAR
+	species_traits = list(EYECOLOR, NOTRANSSTING, FRAGILEBONES, NO_UNDERWEAR) //todo, add ALT_UNDERWEAR
 	exotic_skintones = list("light green","azure","brown","emerald", "light grey")
 	inherent_biotypes = list(MOB_ORGANIC, MOB_HUMANOID, MOB_AVIAN)
 	inherent_traits = list(TRAIT_RESISTLOWPRESSURE, TRAIT_RESISTCOLD)
