@@ -14,8 +14,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	var/hair_color	// this allows races to have specific hair colors... if null, it uses the H's hair/facial hair colors. if "mutcolor", it uses the H's mutant_color
 	var/hair_alpha = 255	// the alpha used by the hair. 255 is completely solid, 0 is transparent.
-
-	var/use_skintones = 0	// does it use skintones or not? (spoiler alert this is only used by humans)
+	var/list/fitted_slots = list() //which slots to use species sprite variants for, if any? !!NOT IMPLEMENTED YET!!!
+	var/use_skintones = 0	// does it use human skintones or not? (spoiler alert this is only used by humans)
+	var/list/exotic_skintones = list() //list of exotic skintones used by this race, if any
 	var/exotic_blood = ""	// If your race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If your race uses a non standard bloodtype (A+, O-, AB-, etc)
 	var/meat = /obj/item/reagent_containers/food/snacks/meat/slab/human //What the species drops on gibbing
@@ -31,12 +32,16 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/list/mutant_organs = list()		//Internal organs that are unique to this race.
 	var/speedmod = 0	// this affects the race's speed. positive numbers make it move slower, negative numbers make it move faster
 	var/armor = 0		// overall defense for the race... or less defense, if it's negative.
-	var/brutemod = 1	// multiplier for brute damage
+	var/brutemod = 1	// multiplier for brute damage TODO: change this so it applies specifically to impact type (blunt) brute damage
+	var/slashmod = 1	// multiplier for slash type physical damage, not currently used
+	var/piercemod = 1	// multiplier for piercing type physical damage
 	var/burnmod = 1		// multiplier for burn damage
 	var/coldmod = 1		// multiplier for cold damage
 	var/heatmod = 1		// multiplier for heat damage
 	var/stunmod = 1		// multiplier for stun duration
-	var/attack_type = BRUTE //Type of damage attack does
+	var/attack_type = BRUTE //Type of damage innate attacks do
+	var/attack_sharp = IS_BLUNT //are the species's innate attacks slashing type?
+	var/attack_piercing = NOT_POINTED // are the species's innate attacks puncture type
 	var/punchdamagelow = 1       //lowest possible punch damage. if this is set to 0, punches will always miss
 	var/punchdamagehigh = 10      //highest possible punch damage
 	var/punchstunthreshold = 10//damage at which punches from this race will stun //yes it should be to the attacked race but it's not useful that way even if it's logical
@@ -48,6 +53,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/list/special_step_sounds //Sounds to override barefeet walkng
 	var/grab_sound //Special sound for grabbing
 	var/datum/outfit/outfit_important_for_life /// A path to an outfit that is important for species life e.g. plasmaman outfit
+	var/can_crit = TRUE
+
 
 	// species-only traits. Can be found in DNA.dm
 	var/list/species_traits = list()
@@ -250,7 +257,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		var/obj/item/organ/I = new path()
 		I.Insert(C)
 
-/datum/species/proc/on_species_gain(mob/living/carbon/C, datum/species/old_species, pref_load)
+/datum/species/proc/on_species_gain(mob/living/carbon/human/C, datum/species/old_species, pref_load)
 	// Drop the items the new species can't wear
 	if((AGENDER in species_traits))
 		C.gender = PLURAL
@@ -260,6 +267,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			C.dropItemToGround(thing)
 	if(C.hud_used)
 		C.hud_used.update_locked_slots()
+	var/list/allowed_skintones = get_allowed_skintones()
+	if(allowed_skintones.len && !(C.skin_tone in allowed_skintones))
+		C.skin_tone = random_skin_tone(allowed_skintones)
+		C.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
 
 	// this needs to be FIRST because qdel calls update_body which checks if we have DIGITIGRADE legs or not and if not then removes DIGITIGRADE from species_traits
 	if(("legs" in C.dna.species.mutant_bodyparts) && C.dna.features["legs"] == "Digitigrade Legs")
@@ -561,6 +572,16 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		else if ("tail_lizard" in mutant_bodyparts)
 			bodyparts_to_add -= "waggingtail_lizard"
 
+	if("tail_vox" in mutant_bodyparts)
+		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
+			bodyparts_to_add -= "tail_vox"
+
+	if("waggingtail_vox" in mutant_bodyparts)
+		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
+			bodyparts_to_add -= "waggingtail_vox"
+		else if ("tail_vox" in mutant_bodyparts)
+			bodyparts_to_add -= "waggingtail_vox"
+
 	if("tail_human" in mutant_bodyparts)
 		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
 			bodyparts_to_add -= "tail_human"
@@ -593,6 +614,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if("horns" in mutant_bodyparts)
 		if(!H.dna.features["horns"] || H.dna.features["horns"] == "None" || H.head && (H.head.flags_inv & HIDEHAIR) || (H.wear_mask && (H.wear_mask.flags_inv & HIDEHAIR)) || !HD || HD.status == BODYPART_ROBOTIC)
 			bodyparts_to_add -= "horns"
+
+	if("quills" in mutant_bodyparts)
+		if(!H.dna.features["quills"] || H.dna.features["quills"] == "None" || H.head && (H.head.flags_inv & HIDEHAIR) || (H.wear_mask && (H.wear_mask.flags_inv & HIDEHAIR)) || !HD || HD.status == BODYPART_ROBOTIC)
+			bodyparts_to_add -= "quills"
+
+	if("face_quills" in mutant_bodyparts)
+		if((!H.dna.features["face_quills"] || H.dna.features["face_quills"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || HD.status == BODYPART_ROBOTIC)
+			bodyparts_to_add -= "face_quills"
 
 	if("ears" in mutant_bodyparts)
 		if(!H.dna.features["ears"] || H.dna.features["ears"] == "None" || H.head && (H.head.flags_inv & HIDEHAIR) || (H.wear_mask && (H.wear_mask.flags_inv & HIDEHAIR)) || !HD || HD.status == BODYPART_ROBOTIC)
@@ -651,6 +680,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					S = GLOB.tails_list_human[H.dna.features["tail_human"]]
 				if("waggingtail_human")
 					S = GLOB.animated_tails_list_human[H.dna.features["tail_human"]]
+				if("tail_vox")
+					S = GLOB.tails_list_vox[H.dna.features["tail_vox"]]
+				if("waggingtail_vox")
+					S = GLOB.animated_tails_list_vox[H.dna.features["tail_vox"]]
+				if("quills")
+					S = GLOB.quills_list[H.dna.features["quills"]]
+				if("face_quills")
+					S = GLOB.face_quills_list[H.dna.features["face_quills"]]
 				if("spines")
 					S = GLOB.spines_list[H.dna.features["spines"]]
 				if("waggingspines")
@@ -683,9 +720,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			var/mutable_appearance/accessory_overlay = mutable_appearance(S.icon, layer = -layer)
 
 			//A little rename so we don't have to use tail_lizard or tail_human when naming the sprites.
-			if(bodypart == "tail_lizard" || bodypart == "tail_human")
+			if(bodypart == "tail_lizard" || bodypart == "tail_human" || bodypart == "tail_vox")
 				bodypart = "tail"
-			else if(bodypart == "waggingtail_lizard" || bodypart == "waggingtail_human")
+			else if(bodypart == "waggingtail_lizard" || bodypart == "waggingtail_human" || bodypart == "waggingtail_vox")
 				bodypart = "waggingtail"
 
 			if(S.gender_specific)
@@ -713,6 +750,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 							accessory_overlay.color = "#[H.facial_hair_color]"
 						if(EYECOLOR)
 							accessory_overlay.color = "#[H.eye_color]"
+						if(SKINTONE_EXOTIC)
+							accessory_overlay.color = "#[skintone2hex(H.skin_tone)]"
 				else
 					accessory_overlay.color = forced_colour
 			standing += accessory_overlay
@@ -1144,7 +1183,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					. += hungry / 50
 			else if(isethereal(H))
 				var/datum/species/ethereal/E = H.dna.species
-				var/charge = E.get_charge()
+				var/charge = E.get_charge(H)
 				if(charge <= ETHEREAL_CHARGE_NORMAL)
 					. += 1.5 * (1 - charge / 100)
 
@@ -1260,7 +1299,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			target.apply_damage(damage*1.5, user.dna.species.attack_type, affecting, armor_block)
 			log_combat(user, target, "kicked")
 		else//other attacks deal full raw damage + 1.5x in stamina damage
-			target.apply_damage(damage, user.dna.species.attack_type, affecting, armor_block)
+			target.apply_damage(damage, user.dna.species.attack_type, affecting, armor_block, , crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 			target.apply_damage(damage*1.5, STAMINA, affecting, armor_block)
 			log_combat(user, target, "punched")
 
@@ -1440,7 +1479,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/Iforce = I.force //to avoid runtimes on the forcesay checks at the bottom. Some items might delete themselves if you drop them. (stunning yourself, ninja swords)
 
 	var/weakness = H.check_weakness(I, user)
-	apply_damage(I.force * weakness, I.damtype, def_zone, armor_block, H)
+	apply_damage(I.force * weakness, I.damtype, def_zone, armor_block, H, , crit_array = I.get_crit_array())
 
 	H.send_item_attack_message(I, user, hit_area)
 
@@ -1516,7 +1555,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			H.forcesay(GLOB.hit_appends)	//forcesay checks stat already.
 	return TRUE
 
-/datum/species/proc/apply_damage(damage, damagetype = BRUTE, def_zone = null, blocked, mob/living/carbon/human/H, forced = FALSE, spread_damage = FALSE)
+/datum/species/proc/apply_damage(damage, damagetype = BRUTE, def_zone = null, blocked, mob/living/carbon/human/H, forced = FALSE, spread_damage = FALSE, crit_array = list())
 	SEND_SIGNAL(H, COMSIG_MOB_APPLY_DAMGE, damage, damagetype, def_zone)
 	var/hit_percent = (100-(blocked+armor))/100
 	hit_percent = (hit_percent * (100-H.physiology.damage_resistance))/100
@@ -1539,7 +1578,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			H.damageoverlaytemp = 20
 			var/damage_amount = forced ? damage : damage * hit_percent * brutemod * H.physiology.brute_mod
 			if(BP)
-				if(BP.receive_damage(damage_amount, 0))
+				if(BP.receive_damage(damage_amount, 0, crit_array = crit_array))
 					H.update_damage_overlays()
 			else//no bodypart, we deal damage with a more general method.
 				H.adjustBruteLoss(damage_amount)
@@ -1547,7 +1586,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			H.damageoverlaytemp = 20
 			var/damage_amount = forced ? damage : damage * hit_percent * burnmod * H.physiology.burn_mod
 			if(BP)
-				if(BP.receive_damage(0, damage_amount))
+				if(BP.receive_damage(0, damage_amount, crit_array = crit_array))
 					H.update_damage_overlays()
 			else
 				H.adjustFireLoss(damage_amount)
@@ -1769,7 +1808,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 
 ////////////
-//Stun//
+//Stun    //
 ////////////
 
 /datum/species/proc/spec_stun(mob/living/carbon/human/H,amount)
@@ -1798,3 +1837,19 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 /datum/species/proc/start_wagging_tail(mob/living/carbon/human/H)
 
 /datum/species/proc/stop_wagging_tail(mob/living/carbon/human/H)
+
+//////////////
+//Skin_tone //
+//////////////
+/datum/species/proc/get_allowed_skintones()
+	var/list/allowed_skin_tones = list()
+	if(use_skintones)
+		allowed_skin_tones += GLOB.skin_tones_human
+	allowed_skin_tones += exotic_skintones
+	return allowed_skin_tones
+
+//////////////
+//crit_array//
+//////////////
+/datum/species/proc/get_crit_array() //so the damage procs can evaluate attacks properly.
+	return list(attack_sharp, attack_piercing, can_crit)

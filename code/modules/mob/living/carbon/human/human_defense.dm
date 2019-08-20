@@ -148,7 +148,7 @@
 					L.embedded_objects |= I
 					I.add_mob_blood(src)//it embedded itself in you, of course it's bloody!
 					I.forceMove(src)
-					L.receive_damage(I.w_class*I.embedding.embedded_impact_pain_multiplier)
+					L.receive_damage(I.w_class*I.embedding.embedded_impact_pain_multiplier, crit_array = I.get_crit_array())
 					visible_message("<span class='danger'>[I] embeds itself in [src]'s [L.name]!</span>","<span class='userdanger'>[I] embeds itself in your [L.name]!</span>")
 					SEND_SIGNAL(src, COMSIG_ADD_MOOD_EVENT, "embedded", /datum/mood_event/embedded)
 					hitpush = FALSE
@@ -240,7 +240,7 @@
 			if(check_shields(M, damage, "the [M.name]"))
 				return 0
 			if(stat != DEAD)
-				apply_damage(damage, BRUTE, affecting, run_armor_check(affecting, "melee"))
+				apply_damage(damage, BRUTE, affecting, run_armor_check(affecting, "melee"), crit_array = list(IS_SHARP, NOT_POINTED, TRUE))
 		return 1
 
 /mob/living/carbon/human/attack_alien(mob/living/carbon/alien/humanoid/M)
@@ -270,7 +270,7 @@
 			log_combat(M, src, "attacked")
 			if(!dismembering_strike(M, M.zone_selected)) //Dismemberment successful
 				return 1
-			apply_damage(damage, BRUTE, affecting, armor_block)
+			apply_damage(damage, BRUTE, affecting, armor_block, crit_array = list(IS_SHARP, NOT_POINTED, TRUE))
 
 		if(M.a_intent == INTENT_DISARM) //Always drop item in hand, if no item, get stun instead.
 			var/obj/item/I = get_active_held_item()
@@ -298,7 +298,7 @@
 			if(!affecting)
 				affecting = get_bodypart(BODY_ZONE_CHEST)
 			var/armor_block = run_armor_check(affecting, "melee")
-			apply_damage(damage, BRUTE, affecting, armor_block)
+			apply_damage(damage, BRUTE, affecting, armor_block,, crit_array = L.get_crit_array())
 
 
 /mob/living/carbon/human/attack_animal(mob/living/simple_animal/M)
@@ -314,7 +314,7 @@
 		if(!affecting)
 			affecting = get_bodypart(BODY_ZONE_CHEST)
 		var/armor = run_armor_check(affecting, "melee", armour_penetration = M.armour_penetration)
-		apply_damage(damage, M.melee_damage_type, affecting, armor)
+		apply_damage(damage, M.melee_damage_type, affecting, armor, M.get_crit_array())
 
 
 /mob/living/carbon/human/attack_slime(mob/living/simple_animal/slime/M)
@@ -334,7 +334,7 @@
 		if(!affecting)
 			affecting = get_bodypart(BODY_ZONE_CHEST)
 		var/armor_block = run_armor_check(affecting, "melee")
-		apply_damage(damage, BRUTE, affecting, armor_block)
+		apply_damage(damage, BRUTE, affecting, armor_block, crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 
 /mob/living/carbon/human/mech_melee_attack(obj/mecha/M)
 
@@ -350,12 +350,12 @@
 				if("brute")
 					if(M.force > 35) // durand and other heavy mechas
 						Unconscious(20)
-					else if(M.force > 20 && !IsKnockdown()) // lightweight mechas like gygax
+				else if(M.force > 20 && !IsKnockdown()) // lightweight mechas like gygax
 						Knockdown(40)
-					update |= temp.receive_damage(dmg, 0)
+					update |= temp.receive_damage(dmg, 0, crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 					playsound(src, 'sound/weapons/punch4.ogg', 50, 1)
 				if("fire")
-					update |= temp.receive_damage(0, dmg)
+					update |= temp.receive_damage(0, dmg, crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 					playsound(src, 'sound/items/welder.ogg', 50, 1)
 				if("tox")
 					M.mech_toxin_damage(src)
@@ -443,7 +443,7 @@
 	show_message("<span class='userdanger'>The blob attacks you!</span>")
 	var/dam_zone = pick(BODY_ZONE_CHEST, BODY_ZONE_PRECISE_L_HAND, BODY_ZONE_PRECISE_R_HAND, BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
 	var/obj/item/bodypart/affecting = get_bodypart(ran_zone(dam_zone))
-	apply_damage(5, BRUTE, affecting, run_armor_check(affecting, "melee"))
+	apply_damage(5, BRUTE, affecting, run_armor_check(affecting, "melee"), crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 
 
 ///Calculates the siemens coeff based on clothing and species, can also restart hearts.
@@ -488,10 +488,10 @@
 				informed = TRUE
 			switch(severity)
 				if(1)
-					L.receive_damage(0,10)
+					L.receive_damage(0,10, crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 					Paralyze(200)
 				if(2)
-					L.receive_damage(0,5)
+					L.receive_damage(0,5, crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 					Paralyze(100)
 
 /mob/living/carbon/human/acid_act(acidpwr, acid_volume, bodyzone_hit) //todo: update this to utilize check_obscured_slots() //and make sure it's check_obscured_slots(TRUE) to stop aciding through visors etc
@@ -608,11 +608,11 @@
 
 	//DAMAGE//
 	for(var/obj/item/bodypart/affecting in damaged)
-		affecting.receive_damage(acidity, 2*acidity)
+		affecting.receive_damage(acidity, 2*acidity, , crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 
 		if(affecting.name == BODY_ZONE_HEAD)
 			if(prob(min(acidpwr*acid_volume/10, 90))) //Applies disfigurement
-				affecting.receive_damage(acidity, 2*acidity)
+				affecting.receive_damage(acidity, 2*acidity, , crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 				emote("scream")
 				facial_hair_style = "Shaved"
 				hair_style = "Bald"

@@ -67,7 +67,23 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/skin_tone = "caucasian1"		//Skin color
 	var/eye_color = "000"				//Eye color
 	var/datum/species/pref_species = new /datum/species/human()	//Mutant race
-	var/list/features = list("mcolor" = "FFF", "ethcolor" = "9c3030", "tail_lizard" = "Smooth", "tail_human" = "None", "snout" = "Round", "horns" = "None", "ears" = "None", "wings" = "None", "frills" = "None", "spines" = "None", "body_markings" = "None", "legs" = "Normal Legs", "moth_wings" = "Plain", "moth_markings" = "None")
+	var/list/features = list("mcolor" = "FFF", 
+							"ethcolor" = "9c3030", 
+							"tail_lizard" = "Smooth", 
+							"tail_human" = "None",
+							"tail_vox" = "Vox", 
+							"quills" = "None", 
+							"face_quills" = "None", 
+							"snout" = "Round", 
+							"horns" = "None", 
+							"ears" = "None", 
+							"wings" = "None", 
+							"frills" = "None", 
+							"spines" = "None", 
+							"body_markings" = "None", 
+							"legs" = "Normal Legs", 
+							"moth_wings" = "Plain", 
+							"moth_markings" = "None")
 	var/list/genders = list(MALE, FEMALE, PLURAL)
 	var/list/friendlyGenders = list("Male" = "male", "Female" = "female", "Other" = "plural")
 
@@ -236,12 +252,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<b>Backpack:</b><BR><a href ='?_src_=prefs;preference=bag;task=input'>[backbag]</a><BR>"
 			dat += "<b>Jumpsuit:</b><BR><a href ='?_src_=prefs;preference=suit;task=input'>[jumpsuit_style]</a><BR>"
 			dat += "<b>Uplink Spawn Location:</b><BR><a href ='?_src_=prefs;preference=uplink_loc;task=input'>[uplink_spawn_loc]</a><BR></td>"
-
-			var/use_skintones = pref_species.use_skintones
-			if(use_skintones)
-
+			var/list/allowed_skintones = pref_species.get_allowed_skintones()
+			if(allowed_skintones.len)
 				dat += APPEARANCE_CATEGORY_COLUMN
-
+				//var/skin_noun = pref_species.tooltip_nouns[SKINTONE_EXOTIC] //so it doesn't say "skin tone" for a species whose body covering isn't skin
+				//dat += "<h3>[skin_noun]</h3>"
 				dat += "<h3>Skin Tone</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=s_tone;task=input'>[skin_tone]</a><BR>"
@@ -249,7 +264,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			var/mutant_colors
 			if((MUTCOLORS in pref_species.species_traits) || (MUTCOLORS_PARTSONLY in pref_species.species_traits))
 
-				if(!use_skintones)
+				if(!allowed_skintones.len)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
 				dat += "<h3>Mutant Color</h3>"
@@ -260,7 +275,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			if(istype(pref_species, /datum/species/ethereal)) //not the best thing to do tbf but I dont know whats better.
 
-				if(!use_skintones)
+				if(!allowed_skintones.len)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
 				dat += "<h3>Ethereal Color</h3>"
@@ -270,7 +285,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			if((EYECOLOR in pref_species.species_traits) && !(NOEYESPRITES in pref_species.species_traits))
 
-				if(!use_skintones && !mutant_colors)
+				if(!mutant_colors && !allowed_skintones.len)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
 				dat += "<h3>Eye Color</h3>"
@@ -278,7 +293,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				dat += "<span style='border: 1px solid #161616; background-color: #[eye_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=eyes;task=input'>Change</a><BR>"
 
 				dat += "</td>"
-			else if(use_skintones || mutant_colors)
+			else if(allowed_skintones.len || mutant_colors)
 				dat += "</td>"
 
 			if(HAIR in pref_species.species_traits)
@@ -310,6 +325,45 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				dat += "<a href='?_src_=prefs;preference=tail_lizard;task=input'>[features["tail_lizard"]]</a><BR>"
 
+				mutant_category++
+				if(mutant_category >= MAX_MUTANT_ROWS)
+					dat += "</td>"
+					mutant_category = 0
+
+			if("tail_vox" in pref_species.default_features)
+				if(!mutant_category)
+					dat += APPEARANCE_CATEGORY_COLUMN
+
+				dat += "<h3>Tail</h3>"
+
+				dat += "<a href='?_src_=prefs;preference=tail_vox;task=input'>[features["tail_vox"]]</a><BR>"
+
+				mutant_category++
+				if(mutant_category >= MAX_MUTANT_ROWS)
+					dat += "</td>"
+					mutant_category = 0
+			
+			if("quills" in pref_species.default_features)
+				if(!mutant_category)
+					dat += APPEARANCE_CATEGORY_COLUMN
+
+				dat += "<h3>Quills</h3>"
+
+				dat += "<a href='?_src_=prefs;preference=quills;task=input'>[features["quills"]]</a><BR>"
+				dat += "<span style='border:1px solid #161616; background-color: #[hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=hair;task=input'>Change</a><BR>"
+				mutant_category++
+				if(mutant_category >= MAX_MUTANT_ROWS)
+					dat += "</td>"
+					mutant_category = 0
+
+			if("face_quills" in pref_species.default_features)
+				if(!mutant_category)
+					dat += APPEARANCE_CATEGORY_COLUMN
+
+				dat += "<h3>Face Quills</h3>"
+
+				dat += "<a href='?_src_=prefs;preference=face_quills;task=input'>[features["face_quills"]]</a><BR>"
+				dat += "<span style='border: 1px solid #161616; background-color: #[facial_hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=facial;task=input'>Change</a><BR>"
 				mutant_category++
 				if(mutant_category >= MAX_MUTANT_ROWS)
 					dat += "</td>"
@@ -1034,7 +1088,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(BODY_ZONE_PRECISE_EYES)
 					eye_color = random_eye_color()
 				if("s_tone")
-					skin_tone = random_skin_tone()
+					var/list/allowed_skintones = pref_species.get_allowed_skintones()
+					skin_tone = random_skin_tone(allowed_skintones)
 				if("bag")
 					backbag = pick(GLOB.backbaglist)
 				if("suit")
@@ -1203,6 +1258,12 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					if(result)
 						var/newtype = GLOB.species_list[result]
 						pref_species = new newtype()
+						//see if our skintone is still allowed
+						var/list/allowed_skintones = pref_species.get_allowed_skintones()
+						if(allowed_skintones.len && !skin_tone in allowed_skintones)
+							skin_tone = random_skin_tone(allowed_skintones)
+						
+
 						//Now that we changed our species, we must verify that the mutant colour is still allowed.
 						var/temp_hsv = RGBtoHSV(features["mcolor"])
 						if(features["mcolor"] == "#000" || (!(MUTCOLORS_PARTSONLY in pref_species.species_traits) && ReadHSV(temp_hsv)[3] < ReadHSV("#7F7F7F")[3]))
@@ -1230,12 +1291,30 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					new_tail = input(user, "Choose your character's tail:", "Character Preference") as null|anything in GLOB.tails_list_lizard
 					if(new_tail)
 						features["tail_lizard"] = new_tail
+				
+				if("tail_vox")
+					var/new_tail
+					new_tail = input(user, "Choose your character's tail:", "Character Preference") as null|anything in GLOB.tails_list_vox
+					if(new_tail)
+						features["tail_vox"] = new_tail
+
+				if("quills")
+					var/new_quills = input(user, "Choose your character's quills", "Character Preference") as null|anything in GLOB.quills_list
+					if(new_quills)
+						features["quills"] = new_quills
+
+				if("face_quills")
+					var/new_face_quills = input(user, "Choose your character's facial quills", "Character Preference") as null|anything in GLOB.face_quills_list
+					if(new_face_quills)
+						features["face_quills"] = new_face_quills
+
 
 				if("tail_human")
 					var/new_tail
 					new_tail = input(user, "Choose your character's tail:", "Character Preference") as null|anything in GLOB.tails_list_human
 					if(new_tail)
 						features["tail_human"] = new_tail
+
 
 				if("snout")
 					var/new_snout
@@ -1298,7 +1377,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						features["moth_markings"] = new_moth_markings
 
 				if("s_tone")
-					var/new_s_tone = input(user, "Choose your character's skin-tone:", "Character Preference")  as null|anything in GLOB.skin_tones
+					var/list/allowed_skintones = pref_species.get_allowed_skintones()
+					var/new_s_tone = input(user, "Choose your character's skin-tone:", "Character Preference")  as null|anything in allowed_skintones
 					if(new_s_tone)
 						skin_tone = new_s_tone
 
@@ -1590,7 +1670,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	if("tail_lizard" in pref_species.default_features)
 		character.dna.species.mutant_bodyparts |= "tail_lizard"
+	
+	if("tail_vox" in pref_species.default_features)
+		character.dna.species.mutant_bodyparts |= "tail_vox"
 
+	if("quills" in pref_species.default_features)
+		character.dna.species.mutant_bodyparts |= "quills"
+
+	if("face_quills" in pref_species.default_features)
+		character.dna.species.mutant_bodyparts |= "face_quills"
+	
 	if(icon_updates)
 		character.update_body()
 		character.update_hair()

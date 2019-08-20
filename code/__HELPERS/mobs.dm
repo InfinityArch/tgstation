@@ -52,6 +52,12 @@
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/tails/human, GLOB.tails_list_human)
 	if(!GLOB.tails_list_lizard.len)
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/tails/lizard, GLOB.tails_list_lizard)
+	if(!GLOB.tails_list_vox.len)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/tails/vox, GLOB.tails_list_vox)
+	if(!GLOB.quills_list.len)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/quills, GLOB.quills_list)
+	if(!GLOB.face_quills_list.len)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/face_quills, GLOB.face_quills_list)
 	if(!GLOB.snouts_list.len)
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/snouts, GLOB.snouts_list)
 	if(!GLOB.horns_list.len)
@@ -73,7 +79,22 @@
 	if(!GLOB.moth_markings_list.len)
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/moth_markings, GLOB.moth_markings_list)
 	//For now we will always return none for tail_human and ears.
-	return(list("mcolor" = pick("FFFFFF","7F7F7F", "7FFF7F", "7F7FFF", "FF7F7F", "7FFFFF", "FF7FFF", "FFFF7F"),"ethcolor" = GLOB.color_list_ethereal[pick(GLOB.color_list_ethereal)], "tail_lizard" = pick(GLOB.tails_list_lizard), "tail_human" = "None", "wings" = "None", "snout" = pick(GLOB.snouts_list), "horns" = pick(GLOB.horns_list), "ears" = "None", "frills" = pick(GLOB.frills_list), "spines" = pick(GLOB.spines_list), "body_markings" = pick(GLOB.body_markings_list), "legs" = "Normal Legs", "caps" = pick(GLOB.caps_list), "moth_wings" = pick(GLOB.moth_wings_list), "moth_markings" = pick(GLOB.moth_markings_list)))
+	return(list("mcolor" = pick("FFFFFF","7F7F7F", "7FFF7F", "7F7FFF", "FF7F7F", "7FFFFF", "FF7FFF", "FFFF7F"),
+			"ethcolor" = GLOB.color_list_ethereal[pick(GLOB.color_list_ethereal)], 
+			"tail_lizard" = pick(GLOB.tails_list_lizard), 
+			"tail_vox" = pick(GLOB.tails_list_vox), 
+			"tail_human" = "None", 
+			"quills"   = pick(GLOB.quills_list), 
+			"face_quills"   = pick(GLOB.face_quills_list), 
+			"wings" = "None", 
+			"snout" = pick(GLOB.snouts_list), 
+			"horns" = pick(GLOB.horns_list),
+			"ears" = "None", "frills" = pick(GLOB.frills_list), 
+			"spines" = pick(GLOB.spines_list), 
+			"body_markings" = pick(GLOB.body_markings_list), 
+			"legs" = "Normal Legs", "caps" = pick(GLOB.caps_list), 
+			"moth_wings" = pick(GLOB.moth_wings_list), 
+			"moth_markings" = pick(GLOB.moth_markings_list)))
 
 /proc/random_hair_style(gender)
 	switch(gender)
@@ -131,10 +152,13 @@
 		if(!findname(.))
 			break
 
-/proc/random_skin_tone()
-	return pick(GLOB.skin_tones)
+/proc/random_skin_tone(list/sourcelist = list())
+	if(sourcelist.len)
+		return pick(sourcelist)
+	return pick(GLOB.skin_tones_all)
 
-GLOBAL_LIST_INIT(skin_tones, list(
+
+GLOBAL_LIST_INIT(skin_tones_human, list(
 	"albino",
 	"caucasian1",
 	"caucasian2",
@@ -148,8 +172,82 @@ GLOBAL_LIST_INIT(skin_tones, list(
 	"african1",
 	"african2"
 	))
+GLOBAL_LIST_INIT(skin_tones_exotic, list( //all exotic skin colors need to be in here
+	"light green",						  //for DNA block purposes. Also make sure to define the hex code
+	"azure",							 //in colors and match the skin tone name to that define in helpers.dm
+	"brown",
+	"emerald",
+	"light grey",
+	"grey"
+	))
+
+
+GLOBAL_LIST_INIT(skin_tones_all, list(
+	"albino",
+	"caucasian1",
+	"caucasian2",
+	"caucasian3",
+	"latino",
+	"mediterranean",
+	"asian1",
+	"asian2",
+	"arab",
+	"indian",
+	"african1",
+	"african2",
+	"light green",				
+	"azure",							
+	"brown",
+	"emerald",
+	"light grey",
+	"grey"
+	))
 
 GLOBAL_LIST_EMPTY(species_list)
+
+/proc/skintone2hex(skin_tone)
+	. = 0
+	switch(skin_tone)
+		//human_tones
+		if("caucasian1")
+			. = SKIN_HEX_CAUCASIAN_1
+		if("caucasian2")
+			. = SKIN_HEX_CAUCASIAN_2
+		if("caucasian3")
+			. = SKIN_HEX_CAUCASIAN_3
+		if("latino")
+			. = SKIN_HEX_LATINO
+		if("mediterranean")
+			. = SKIN_HEX_MEDITERRANEAN
+		if("asian1")
+			. = SKIN_HEX_ASIAN_1
+		if("asian2")
+			. = SKIN_HEX_ASIAN_2
+		if("arab")
+			. = SKIN_HEX_ARAB
+		if("indian")
+			. = SKIN_HEX_INDIAN
+		if("african1")
+			. = SKIN_HEX_AFRICAN_1
+		if("african2")
+			. = SKIN_HEX_AFRICAN_2
+		if("albino")
+			. = SKIN_HEX_ALBINO
+		if("orange")
+			. = SKIN_HEX_ORANGE //fuck my life
+		//exotic tones
+		if("light green")
+			. = SKIN_HEX_GREEN_1
+		if("emerald")
+			. = SKIN_HEX_GREEN_2
+		if("azure")
+			. = SKIN_HEX_BLUE_2
+		if("brown")
+			. = SKIN_HEX_BROWN_1
+		if("light grey")
+			. = SKIN_HEX_GREY_1
+		if("grey")
+			. = SKIN_HEX_GREY_2
 
 /proc/age2agedescription(age)
 	switch(age)
