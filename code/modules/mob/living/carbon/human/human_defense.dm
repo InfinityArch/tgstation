@@ -350,7 +350,8 @@
 				if("brute")
 					if(M.force > 35) // durand and other heavy mechas
 						Unconscious(20)
-				else if(M.force > 20 && !IsKnockdown()) // lightweight mechas like gygax
+						
+					else if(M.force > 20 && !IsKnockdown()) // lightweight mechas like gygax
 						Knockdown(40)
 					update |= temp.receive_damage(dmg, 0, crit_array = list(IS_BLUNT, NOT_POINTED, TRUE))
 					playsound(src, 'sound/weapons/punch4.ogg', 50, 1)

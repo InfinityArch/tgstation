@@ -120,9 +120,6 @@
 	hair_alpha = 150
 	heatmod = 1
 	burnmod = 1
-	
-  
-  _by = list(/mob/living/simple_animal/slime)
 	var/datum/action/innate/split_body/slime_split
 	var/list/mob/living/carbon/bodies
 	var/datum/action/innate/swap_body/swap_body
