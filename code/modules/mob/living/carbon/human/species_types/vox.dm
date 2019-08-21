@@ -4,6 +4,7 @@
 	//Also immune to low pressure, and not get cold, yaya!
 	name = "Vox"
 	id = "vox"
+	sprite_id = "vox"
 	default_color = COLOR_GREEN
 	species_traits = list(EYECOLOR, NOTRANSSTING, FRAGILEBONES, NO_UNDERWEAR) //todo, add ALT_UNDERWEAR
 	exotic_skintones = list("light green","azure","brown","emerald", "light grey")
