@@ -1966,3 +1966,20 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		else
 			to_chat(H, "<span class='notice'>You beat your wings and begin to hover gently above the ground...</span>")
 			H.set_resting(FALSE, TRUE)
+
+
+//////////////
+//Skin_tone //
+//////////////
+/datum/species/proc/get_allowed_skintones()
+	var/list/allowed_skin_tones = list()
+	if(use_skintones)
+		allowed_skin_tones += GLOB.skin_tones_human
+	allowed_skin_tones += exotic_skintones
+	return allowed_skin_tones
+
+//////////////
+//crit_array//
+//////////////
+/datum/species/proc/get_crit_array() //so the damage procs can evaluate attacks properly.
+	return list(attack_sharp, attack_piercing, can_crit)
