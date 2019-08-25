@@ -147,7 +147,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 
 /obj/item/radio/headset/headset_medsci
 	name = "medical research radio headset"
-	desc = "A headset that is a result of the mating between medical and science."
+	desc = "A headset for medical research personnel."
 	icon_state = "medsci_headset"
 	keyslot = new /obj/item/encryptionkey/headset_medsci
 
@@ -168,13 +168,29 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 
 /obj/item/radio/headset/heads/captain
 	name = "\proper the captain's headset"
-	desc = "The headset of the king."
+	desc = "The headset of the station's captain."
 	icon_state = "com_headset"
 	keyslot = new /obj/item/encryptionkey/heads/captain
 
 /obj/item/radio/headset/heads/captain/alt
 	name = "\proper the captain's bowman headset"
-	desc = "The headset of the boss. Protects ears from flashbangs."
+	desc = "The headset of the station's captain. Protects ears from flashbangs."
+	icon_state = "com_headset_alt"
+	item_state = "com_headset_alt"
+
+/obj/item/radio/headset/heads/captain/alt/ComponentInitialize()
+	. = ..()
+	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
+
+/obj/item/radio/headset/heads/nanotrasen_rep
+	name = "\proper the Nanotrasen Representitive's headset"
+	desc = "The headset of Nanotrasen's local director of operations."
+	icon_state = "com_headset"
+	keyslot = new /obj/item/encryptionkey/heads/nanotrasen_rep
+
+/obj/item/radio/headset/heads/nanotrasen_rep/alt
+	name = "\proper the Nanotrasen Representitive's headset"
+	desc = "The headset of Nanotrasen's local director of operations. Protects ears from flashbangs."
 	icon_state = "com_headset_alt"
 	item_state = "com_headset_alt"
 
@@ -184,19 +200,19 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 
 /obj/item/radio/headset/heads/rd
 	name = "\proper the research director's headset"
-	desc = "Headset of the fellow who keeps society marching towards technological singularity."
+	desc = "The headset of Nanotrasen's local research director."
 	icon_state = "com_headset"
 	keyslot = new /obj/item/encryptionkey/heads/rd
 
 /obj/item/radio/headset/heads/hos
 	name = "\proper the head of security's headset"
-	desc = "The headset of the man in charge of keeping order and protecting the station."
+	desc = "The headset of the person in charge of keeping order and protecting the station."
 	icon_state = "com_headset"
 	keyslot = new /obj/item/encryptionkey/heads/hos
 
 /obj/item/radio/headset/heads/hos/alt
 	name = "\proper the head of security's bowman headset"
-	desc = "The headset of the man in charge of keeping order and protecting the station. Protects ears from flashbangs."
+	desc = "The headset of the person in charge of keeping order and protecting the station. Protects ears from flashbangs."
 	icon_state = "com_headset_alt"
 	item_state = "com_headset_alt"
 
@@ -206,7 +222,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 
 /obj/item/radio/headset/heads/ce
 	name = "\proper the chief engineer's headset"
-	desc = "The headset of the guy in charge of keeping the station powered and undamaged."
+	desc = "The headset of the person in charge of keeping the station powered and undamaged."
 	icon_state = "com_headset"
 	keyslot = new /obj/item/encryptionkey/heads/ce
 
@@ -218,13 +234,13 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 
 /obj/item/radio/headset/heads/hop
 	name = "\proper the head of personnel's headset"
-	desc = "The headset of the guy who will one day be captain."
+	desc = "The headset of the person who will one day be captain."
 	icon_state = "com_headset"
 	keyslot = new /obj/item/encryptionkey/heads/hop
 
 /obj/item/radio/headset/headset_cargo
 	name = "supply radio headset"
-	desc = "A headset used by the QM and his slaves."
+	desc = "A headset used by the QM and their subordinates."
 	icon_state = "cargo_headset"
 	keyslot = new /obj/item/encryptionkey/headset_cargo
 
@@ -232,7 +248,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	name = "mining radio headset"
 	desc = "Headset used by shaft miners."
 	icon_state = "mine_headset"
-	keyslot = new /obj/item/encryptionkey/headset_mining
+	//keyslot = new /obj/item/encryptionkey/headset_mining
 
 /obj/item/radio/headset/headset_srv
 	name = "service radio headset"

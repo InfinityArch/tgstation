@@ -121,6 +121,8 @@
 			//Security/Command
 			if("Captain")
 				heirloom_type = /obj/item/reagent_containers/food/drinks/flask/gold
+			if("Nanotrasen Representitive")
+				heirloom_type = /obj/item/reagent_containers/food/drinks/flask/gold  //TODO NEED TO UPDATE
 			if("Head of Security")
 				heirloom_type = /obj/item/book/manual/wiki/security_space_law
 			if("Warden")

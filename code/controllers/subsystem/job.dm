@@ -40,7 +40,7 @@ SUBSYSTEM_DEF(job)
 		overflow_role = new_overflow_role
 		JobDebug("Overflow role set to : [new_overflow_role]")
 
-/datum/controller/subsystem/job/proc/SetupOccupations(faction = "Station")
+/datum/controller/subsystem/job/proc/SetupOccupations(list/faction = list("Station Government", "Nanotrasen Local", "Station", "Federation Local"))
 	occupations = list()
 	var/list/all_jobs = subtypesof(/datum/job)
 	if(!all_jobs.len)
@@ -51,7 +51,7 @@ SUBSYSTEM_DEF(job)
 		var/datum/job/job = new J()
 		if(!job)
 			continue
-		if(job.faction != faction)
+		if(!job.faction in faction)
 			continue
 		if(!job.config_check())
 			continue

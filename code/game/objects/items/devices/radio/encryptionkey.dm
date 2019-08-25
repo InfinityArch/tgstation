@@ -104,6 +104,11 @@
 	icon_state = "hop_cypherkey"
 	channels = list(RADIO_CHANNEL_SUPPLY = 1, RADIO_CHANNEL_SERVICE = 1, RADIO_CHANNEL_COMMAND = 1)
 
+	/obj/item/encryptionkey/heads/nanotrasen_rep
+	name = "\proper the Nanotrasen Representitive's encryption key"
+	icon_state = "com_cypherkey"
+	channels = list(RADIO_CHANNEL_COMMAND = 1, RADIO_CHANNEL_SECURITY = 1, RADIO_CHANNEL_ENGINEERING = 0, RADIO_CHANNEL_SCIENCE = 0, RADIO_CHANNEL_MEDICAL = 0, RADIO_CHANNEL_SUPPLY = 0, RADIO_CHANNEL_SERVICE = 0)
+
 /obj/item/encryptionkey/headset_cargo
 	name = "supply radio encryption key"
 	icon_state = "cargo_cypherkey"

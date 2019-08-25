@@ -17,6 +17,25 @@
 	can_adjust = FALSE
 	fitted = FEMALE_UNIFORM_TOP
 
+/obj/item/clothing/under/rank/nanotrasen_rep
+	desc = "'Stylish' formalwear worn by Nanotrasen's local administrator."
+	name = "Nanotrasen Representitive's outfit"
+	icon_state = "nt_admin"
+	item_state = "bl_suit"
+	item_color = "nt_admin"
+	sensor_mode = SENSOR_COORDS
+	random_sensor = FALSE
+
+/obj/item/clothing/under/rank/nanotrasen_rep/skirt
+	name = "Nanotrasen Representitive's skirt"
+	desc = "'Stylish' formalwear worn by Nanotrasen's local administrator."
+	icon_state = "nt_admin_skirt"
+	item_state = "bl_suit"
+	item_color = "nt_admin_skirt"
+	body_parts_covered = CHEST|GROIN|ARMS
+	can_adjust = FALSE
+	fitted = FEMALE_UNIFORM_TOP
+
 /obj/item/clothing/under/rank/captain/suit
 	name = "captain's suit"
 	desc = "A green suit and yellow necktie. Exemplifies authority."

@@ -81,7 +81,7 @@
 	throw_speed = 4
 	colour = "crimson"
 	materials = list(/datum/material/gold = 750)
-	sharpness = IS_SHARP
+	pointed = IS_SHARP
 	resistance_flags = FIRE_PROOF
 	unique_reskin = list("Oak" = "pen-fountain-o",
 						"Gold" = "pen-fountain-g",
@@ -98,6 +98,10 @@
 	..()
 	if(current_skin)
 		desc = "It's an expensive [current_skin] fountain pen. The nib is quite sharp."
+
+/obj/item/pen/fountain/captain/nt_admin
+	name = "Nanotrasen Representitive's pen"
+
 
 /obj/item/pen/attack_self(mob/living/carbon/user)
 	var/deg = input(user, "What angle would you like to rotate the pen head to? (1-360)", "Rotate Pen Head") as null|num

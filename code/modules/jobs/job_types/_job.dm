@@ -17,7 +17,7 @@
 	var/department_flag = NONE //Deprecated
 	var/auto_deadmin_role_flags = NONE
 
-	//Players will be allowed to spawn in as jobs that are set to "Station"
+	//Players will be allowed to spawn in as jobs that are set to "Station Government", "Nanotrasen Local", "Station Civilian", or "Federation Local"
 	var/faction = "None"
 
 	//How many players can be this job

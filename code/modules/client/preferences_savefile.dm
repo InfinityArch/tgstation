@@ -61,6 +61,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		var/job_medsci_med = 0
 		var/job_medsci_low = 0
 
+		var/job_corp_high = 0
+		var/job_corp_med = 0
+		var/job_corp_low = 0
+
 		var/job_engsec_high = 0
 		var/job_engsec_med = 0
 		var/job_engsec_low = 0
@@ -71,6 +75,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		S["job_medsci_high"]	>> job_medsci_high
 		S["job_medsci_med"]		>> job_medsci_med
 		S["job_medsci_low"]		>> job_medsci_low
+		S["job_corp_high"]		>> job_corp_high
+		S["job_corp_med"]		>> job_corp_med
+		S["job_corp_low"]		>> job_corp_low
 		S["job_engsec_high"]	>> job_engsec_high
 		S["job_engsec_med"]		>> job_engsec_med
 		S["job_engsec_low"]		>> job_engsec_low
@@ -95,6 +102,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 						new_value = JP_MEDIUM
 					else if(job_medsci_low & fval)
 						new_value = JP_LOW
+				//if(CORP)
+					//if(job_corp_high & fval)
+						//new_value = JP_HIGH
+					//else if(job_corp_med & fval)
+						//new_value = JP_MEDIUM
+					//else if(job_corp_low & fval)
+						//new_value = JP_LOW			
 				if(ENGSEC)
 					if(job_engsec_high & fval)
 						new_value = JP_HIGH

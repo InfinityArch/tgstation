@@ -105,6 +105,16 @@
 	item_state = "ro_suit"
 
 
+/obj/item/clothing/suit/toggle/nanotrasen_rep
+	name = "nanotrasen administartor's suit jacket"
+	desc = "A 'stylish' suit jacket worn by the administrator of local Nanotrasen operations."
+	icon_state = "suitjacket_nanotrasen"
+	item_state = "suitjacket_nanotrasen"
+	blood_overlay_type = "coat"
+	body_parts_covered = CHEST|ARMS
+	togglename = "buttons"
+
+
 //Mime
 /obj/item/clothing/suit/suspenders
 	name = "suspenders"

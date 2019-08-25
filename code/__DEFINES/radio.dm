@@ -18,8 +18,12 @@
 #define RADIO_TOKEN_COMMAND ":c"
 
 #define RADIO_CHANNEL_SCIENCE "Science"
-#define RADIO_KEY_SCIENCE "n"
-#define RADIO_TOKEN_SCIENCE ":n"
+#define RADIO_KEY_SCIENCE "i"
+#define RADIO_TOKEN_SCIENCE ":i"
+
+#define RADIO_CHANNEL_NANOTRASEN "Corporate"
+#define RADIO_KEY_NANOTRASEN "n"
+#define RADIO_TOKEN_NANOTRASEN ":n"
 
 #define RADIO_CHANNEL_MEDICAL "Medical"
 #define RADIO_KEY_MEDICAL "m"
@@ -34,9 +38,12 @@
 #define RADIO_TOKEN_SERVICE ":v"
 
 #define RADIO_CHANNEL_AI_PRIVATE "AI Private"
-#define RADIO_KEY_AI_PRIVATE "o"
-#define RADIO_TOKEN_AI_PRIVATE ":o"
+#define RADIO_KEY_AI_PRIVATE "q"
+#define RADIO_TOKEN_AI_PRIVATE ":q"
 
+#define RADIO_CHANNEL_NT_PRIVATE "Nanotrasen Private" //used by the RD, the AI, and the NT Rep
+#define RADIO_KEY_NT_PRIVATE "o"
+#define RADIO_TOKEN_NT_PRIVATE ":o"
 
 #define RADIO_CHANNEL_SYNDICATE "Syndicate"
 #define RADIO_KEY_SYNDICATE "t"
@@ -64,6 +71,9 @@
 #define FREQ_MEDICAL 1355  // Medical comms frequency, soft blue
 #define FREQ_ENGINEERING 1357  // Engineering comms frequency, orange
 #define FREQ_SECURITY 1359  // Security comms frequency, red
+
+#define FREQ_NANOTRASEN 1361 //NT general, plum
+#define FREQ_NT_PRIVATE 1363 //NT private, indigo
 
 #define FREQ_STATUS_DISPLAYS 1435
 #define FREQ_ATMOS_ALARMS 1437  // air alarms <-> alert computers

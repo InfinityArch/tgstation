@@ -101,29 +101,30 @@
 #define CLONER_MATURE_CLONE "mature"
 
 //species traits for mutantraces
-#define SKINTONE_EXOTIC 1 //this exists so we can use exotic skintones alongside mutant bodyparts, obviously it can't be zero or things will get fucked up.
+#define SKINTONE_EXOTIC 1 //this exists so we can use exotic skintones alongside mutant bodyparts, obviously it can't be zero or things could get fucked up.
 #define MUTCOLORS		2
 #define HAIR			3
 #define FACEHAIR		4
 #define EYECOLOR		5
 #define LIPS			6
-#define NOBLOOD			7
-#define NOTRANSSTING	8
-#define MUTCOLORS_PARTSONLY	9	//Used if we want the mutant colour to be only used by mutant bodyparts. Don't combine this with MUTCOLORS, or it will be useless.
-#define NOZOMBIE		10
-#define DIGITIGRADE		11	//Uses weird leg sprites. Optional for Lizards, required for ashwalkers. Don't give it to other races unless you make sprites for this (see human_parts_greyscale.dmi)
-#define NO_UNDERWEAR	12
-#define NOSTOMACH		13
-#define NO_DNA_COPY     14
-#define DRINKSBLOOD		15
-#define NOFLASH			16
-#define DYNCOLORS		17 //Use this if you want to change the race's color without the player being able to pick their own color. AKA special color shifting
-#define AGENDER			18
-#define NOEYESPRITES	19 //Do not draw eyes or eyeless overlay
-#define NOBONES			20 // species does not have bones that can be broken
-#define FRAGILEBONES	21 // species' bones are more eaisly broken
-#define RAPIDBLOODLOSS  22 // species bloodloss cap per limb is doubled, and blunt damage can cause internal bleeding
-
+#define NOHEART			7 //use this instead of NOBLOOD if the species should have blood but no heart
+#define NOBLOOD			8
+#define NOTRANSSTING	9
+#define MUTCOLORS_PARTSONLY	10	//Used if we want the mutant colour to be only used by mutant bodyparts. Don't combine this with MUTCOLORS, or it will be useless.
+#define NOZOMBIE		11
+#define DIGITIGRADE		12	//Uses weird leg sprites. Optional for Lizards, required for ashwalkers. Don't give it to other races unless you make sprites for this (see human_parts_greyscale.dmi)
+#define NO_UNDERWEAR	13
+#define FITTED_BODY		14 //Species has nonstandard body sprites, and thus requires its own underwear sprites (if desired). 
+#define NOSTOMACH		15
+#define NO_DNA_COPY     16
+#define DRINKSBLOOD		17
+#define NOFLASH			18
+#define DYNCOLORS		19 //Use this if you want to change the race's color without the player being able to pick their own color. AKA special color shifting
+#define AGENDER			20
+#define NOEYESPRITES	21 //Do not draw eyes or eyeless overlay
+#define NOBONES			22 // species does not have bones that can be broken
+#define FRAGILEBONES	23 // species' bones are more eaisly broken
+#define RAPIDBLOODLOSS  24 // species bloodloss cap per limb is doubled, and blunt damage can cause internal bleeding
 
 //organ slots
 #define ORGAN_SLOT_BRAIN "brain"

@@ -921,13 +921,13 @@ GLOBAL_LIST_EMPTY(possible_items_special)
 	department_minds = list()
 	department_real_names = list()
 
-	var/list/departments = list("Head of Security","Research Director","Chief Engineer","Chief Medical Officer")
+	var/list/departments = list("Head of Security","Research Director","Chief Engineer","Chief Medical Officer")//, "Nanotrasen Representitive"
 	var/department_head = pick(departments)
 	switch(department_head)
 		if("Head of Security")
 			department_string = "security"
-		if("Research Director")
-			department_string = "science"
+		if("Research Director")//||"Nanotrasen Representitive"
+			department_string = "science"//"corporate"
 		if("Chief Engineer")
 			department_string = "engineering"
 		if("Chief Medical Officer")
@@ -964,7 +964,7 @@ GLOBAL_LIST_EMPTY(possible_items_special)
 	var/needed_heads = rand(min_lings,GLOB.command_positions.len)
 	needed_heads = min(lings.len,needed_heads)
 
-	var/list/heads = SSjob.get_living_heads()
+	var/list/heads = SSjob.get_living_heads() // we're also going to need to handle IPC heads.
 	for(var/datum/mind/head in heads)
 		if(head in lings) //Looking at you HoP.
 			continue

@@ -4,7 +4,8 @@ GLOBAL_LIST_INIT(command_positions, list(
 	"Head of Security",
 	"Chief Engineer",
 	"Research Director",
-	"Chief Medical Officer"))
+	"Chief Medical Officer",
+	"Nanotrasen Representitive"))
 
 
 GLOBAL_LIST_INIT(engineering_positions, list(
@@ -110,6 +111,7 @@ GLOBAL_PROTECT(exp_specialmap)
 	var/static/regex/mine_expand = new("(?<!shaft )miner")
 	var/static/regex/chef_expand = new("chef")
 	var/static/regex/borg_expand = new("(?<!cy)borg")
+	var/static/regex/ntrep_expand = new("(?<!nanotrasen )rep(?!resentitive)")
 
 	job = lowertext(job)
 	job = cap_expand.Replace(job, "captain")
@@ -126,4 +128,5 @@ GLOBAL_PROTECT(exp_specialmap)
 	job = mine_expand.Replace(job, "shaft miner")
 	job = chef_expand.Replace(job, "cook")
 	job = borg_expand.Replace(job, "cyborg")
+	job = ntrep_expand.Replace(job, "nanotrasen representitive")
 	return job

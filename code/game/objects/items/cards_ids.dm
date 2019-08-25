@@ -336,6 +336,15 @@ update_label()
 	lefthand_file = 'icons/mob/inhands/equipment/idcards_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/idcards_righthand.dmi'
 
+/obj/item/card/id/nanotrasen
+	name = "nanotrasen identification card"
+	id_type_name = "nanotrasen identification card"
+	desc = "A sleek blue ID carried by Nanotrasen employees on the station."
+	icon_state = "blue"
+	item_state = "blue_id"
+	lefthand_file = 'icons/mob/inhands/equipment/idcards_lefthand.dmi'
+	righthand_file = 'icons/mob/inhands/equipment/idcards_righthand.dmi'
+
 /obj/item/card/id/syndicate
 	name = "agent card"
 	access = list(ACCESS_MAINT_TUNNELS, ACCESS_SYNDICATE)
@@ -622,7 +631,7 @@ update_label()
 	name = "bunker access ID"
 
 /obj/item/card/id/departmental_budget
-	name = "departmental card (FUCK)"
+	name = "departmental card (ERROR, THIS SHOULD NOT APPEAR IN GAME)"
 	desc = "Provides access to the departmental budget."
 	icon_state = "budgetcard"
 	uses_overlays = FALSE
@@ -681,3 +690,10 @@ update_label()
 	department_ID = ACCOUNT_SEC
 	department_name = ACCOUNT_SEC_NAME
 	icon_state = "sec_budget"
+
+/obj/item/card/id/departmental_budget/nt
+	department_ID = ACCOUNT_NT
+	department_name = ACCOUNT_NT_NAME
+	icon_state = "nt_budget"
+
+

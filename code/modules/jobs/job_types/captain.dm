@@ -4,10 +4,10 @@
 	auto_deadmin_role_flags = DEADMIN_POSITION_HEAD|DEADMIN_POSITION_SECURITY
 	department_head = list("CentCom")
 	department_flag = ENGSEC
-	faction = "Station"
+	faction = "Station Government"
 	total_positions = 1
 	spawn_positions = 1
-	supervisors = "Nanotrasen officials and Space law"
+	supervisors = "Federation officials and colonial law"
 	selection_color = "#ccccff"
 	req_admin_notify = 1
 	minimal_player_age = 14
@@ -20,7 +20,7 @@
 	access = list() 			//See get_access()
 	minimal_access = list() 	//See get_access()
 	paycheck = PAYCHECK_COMMAND
-	paycheck_department = ACCOUNT_SEC
+	paycheck_department = ACCOUNT_SEC //switch to ACCOUNT_GOV
 
 	mind_traits = list(TRAIT_DISK_VERIFIER)
 

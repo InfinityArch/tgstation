@@ -156,6 +156,12 @@
 	strip_delay = 60
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 70, "acid" = 50)
 
+/obj/item/clothing/gloves/color/captain/nanotrasen_rep
+	desc = "Black gloves with a 'stylish' gold trim, a diamond anti-shock coating, and an integrated thermal barrier."
+	name = "Nanotrasen Representitive's gloves"
+	item_state = "nt_admin_gloves"
+	item_color = "nt_admin"
+
 /obj/item/clothing/gloves/color/latex
 	name = "latex gloves"
 	desc = "Cheap sterile gloves made from latex."

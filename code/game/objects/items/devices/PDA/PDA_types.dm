@@ -126,6 +126,14 @@
 	. = ..()
 	RegisterSignal(src, COMSIG_PDA_CHECK_DETONATE, .proc/pda_no_detonate)
 
+obj/item/pda/captain/nanotrasen_rep
+	name = "Nanotrasen Representitive's PDA"
+	//default_cartridge = /obj/item/cartridge/nt_admin
+	inserted_item = /obj/item/pen/fountain/captain/nt_admin
+	icon_state = "pda-nt"
+
+
+
 /obj/item/pda/cargo
 	name = "cargo technician PDA"
 	default_cartridge = /obj/item/cartridge/quartermaster

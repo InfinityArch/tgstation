@@ -32,6 +32,16 @@
 	icon_state = "stamp-cap"
 	item_color = "captain"
 
+/obj/item/stamp/nt_admin
+	name = "Nanotrasen Representitive's rubber stamp"
+	icon_state = "stamp-cap"
+	item_color = "captain"
+
+/obj/item/stamp/magistrate
+	name = "magistrate's rubber stamp"
+	icon_state = "stamp-cap"
+	item_color = "hosred"
+
 /obj/item/stamp/hop
 	name = "head of personnel's rubber stamp"
 	icon_state = "stamp-hop"

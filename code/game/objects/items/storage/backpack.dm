@@ -141,9 +141,16 @@
 
 /obj/item/storage/backpack/captain
 	name = "captain's backpack"
-	desc = "It's a special backpack made exclusively for Nanotrasen officers."
+	desc = "It's a special backpack made exclusively for Federation officers."
 	icon_state = "captainpack"
 	item_state = "captainpack"
+
+/obj/item/storage/backpack/nanotrasen_rep
+	name = "nanotrasen admninistrator's backpack"
+	desc = "a 'stylish' backpack used by Nanotrasen's local head of operations."
+	icon_state = "ntadminpack"
+	item_state = "ntadminpack"
+
 
 /obj/item/storage/backpack/industrial
 	name = "industrial backpack"
@@ -286,6 +293,12 @@
 	icon_state = "satchel-cap"
 	item_state = "captainpack"
 
+/obj/item/storage/backpack/satchel/nanotrasen_rep
+	name = "Nanotrasen Representitive's satchel"
+	desc = "A 'stylish' satchel for Nanotrasen's local administrator."
+	icon_state = "satchel-ntadmin"
+	item_state = "ntadminpack"
+
 /obj/item/storage/backpack/satchel/flat
 	name = "smuggler's satchel"
 	desc = "A very slim satchel that can easily fit into tight spaces."
@@ -345,6 +358,12 @@
 	desc = "A large duffel bag for holding extra captainly goods."
 	icon_state = "duffel-captain"
 	item_state = "duffel-captain"
+
+/obj/item/storage/backpack/duffelbag/nanotrasen_rep
+	name = "Nanotrasen Representitive's duffel bag"
+	desc = "A large duffel bag with a 'stylish' gold trim."
+	icon_state = "duffel-ntadmin"
+	item_state = "duffel-ntadmin"
 
 /obj/item/storage/backpack/duffelbag/med
 	name = "medical duffel bag"
