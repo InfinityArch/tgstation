@@ -121,6 +121,12 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	. = ..()
 	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
 
+/obj/item/radio/headset/headset_sec/alt/blueshield
+	name = "blueshield's bownman headset"
+	desc = "the blueshield's tactical radio headset, protects ears from flashbang."
+	icon_state = "com_headset_alt"
+	keyslot = new /obj/item/encryptionkey/headset_blueshield
+
 /obj/item/radio/headset/headset_eng
 	name = "engineering radio headset"
 	desc = "When the engineers wish to chat like girls."

@@ -5,7 +5,7 @@
 	default_color = "00FF90"
 	say_mod = "chirps"
 	species_traits = list(MUTCOLORS,EYECOLOR,RAPIDBLOODLOSS, NOBONES)
-	inherent_traits = list(TRAIT_TOXINLOVER, TRAIT_IMPACT_BLEEDING)
+	inherent_traits = list(TRAIT_TOXINLOVER)
 	mutantlungs = /obj/item/organ/lungs/slime
 	mutant_brain = /obj/item/organ/brain/slime 
 	meat = /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/slime

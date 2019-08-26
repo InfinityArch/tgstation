@@ -56,6 +56,11 @@
 	default_cartridge = /obj/item/cartridge/security
 	icon_state = "pda-security"
 
+/obj/item/pda/blueshield
+	name = "blueshield PDA"
+	default_cartridge = /obj/item/cartridge/security
+	icon_state = "pda-nt"
+
 /obj/item/pda/detective
 	name = "detective PDA"
 	default_cartridge = /obj/item/cartridge/detective

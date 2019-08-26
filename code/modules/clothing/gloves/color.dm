@@ -159,6 +159,7 @@
 /obj/item/clothing/gloves/color/captain/nanotrasen_rep
 	desc = "Black gloves with a 'stylish' gold trim, a diamond anti-shock coating, and an integrated thermal barrier."
 	name = "Nanotrasen Representitive's gloves"
+	icon_state = "nt_admin"
 	item_state = "nt_admin_gloves"
 	item_color = "nt_admin"
 

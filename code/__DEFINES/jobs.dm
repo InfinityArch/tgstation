@@ -3,21 +3,22 @@
 
 #define CAPTAIN			(1<<0)
 #define HOS				(1<<1)
-//#define NT_REP		(1<<2)
-#define WARDEN			(1<<2)
-#define DETECTIVE		(1<<3)
-#define OFFICER			(1<<4)
-#define CHIEF			(1<<5)
-#define ENGINEER		(1<<6)
-#define ATMOSTECH		(1<<7)
-#define ROBOTICIST		(1<<8)
-#define AI_JF			(1<<9)
-#define CYBORG			(1<<10)
+#define NT_REP			(1<<2)
+#define BLUESHIELD		(1<<3)
+#define WARDEN			(1<<4)
+#define DETECTIVE		(1<<5)
+#define OFFICER			(1<<6)
+#define CHIEF			(1<<7)
+#define ENGINEER		(1<<8)
+#define ATMOSTECH		(1<<9)
+#define ROBOTICIST		(1<<10)
+#define AI_JF			(1<<11)
+#define CYBORG			(1<<12)
 
 #define CORP 		    (1<<3)
-#define NT_REP        (1<<0)
-#define MAGISTRATE      (1<<1)
-#define BLUESHIELD      (1<<2)
+//#define NT_REP        (1<<0)
+//#define MAGISTRATE      (1<<1)
+//#define BLUESHIELD      (1<<2)
 //#define RD_JF			(1<<2)
 //#define SCIENTIST       (1<<3)
 //#define GENETICIST      (1<<4)
@@ -115,5 +116,6 @@
 #define JOB_DISPLAY_ORDER_WARDEN 30
 #define JOB_DISPLAY_ORDER_DETECTIVE 31
 #define JOB_DISPLAY_ORDER_SECURITY_OFFICER 32
-#define JOB_DISPLAY_ORDER_AI 33
-#define JOB_DISPLAY_ORDER_CYBORG 34
+#define JOB_DISPLAY_ORDER_BLUESHIELD 33
+#define JOB_DISPLAY_ORDER_AI 34
+#define JOB_DISPLAY_ORDER_CYBORG 35

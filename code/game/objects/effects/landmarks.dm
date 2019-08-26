@@ -167,6 +167,10 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark)
 	name = "Nanotrasen Representitive"
 	icon_state = "Nanotrasen Representitive"
 
+/obj/effect/landmark/start/blueshield
+	name = "Blueshield"
+	icon_state = "Blueshield"
+
 /obj/effect/landmark/start/research_director
 	name = "Research Director"
 	icon_state = "Research Director"

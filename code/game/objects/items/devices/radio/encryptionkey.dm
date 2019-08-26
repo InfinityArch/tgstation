@@ -89,6 +89,11 @@
 	icon_state = "hos_cypherkey"
 	channels = list(RADIO_CHANNEL_SECURITY = 1, RADIO_CHANNEL_COMMAND = 1)
 
+/obj/item/encryptionkey/headset_blueshield
+	name = "\proper the blueshield's encryption key"
+	icon_state = "com_cypherkey"
+	channels = list(RADIO_CHANNEL_SECURITY = 1, RADIO_CHANNEL_COMMAND = 1)
+
 /obj/item/encryptionkey/heads/ce
 	name = "\proper the chief engineer's encryption key"
 	icon_state = "ce_cypherkey"

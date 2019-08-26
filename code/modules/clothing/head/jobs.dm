@@ -259,6 +259,11 @@
 	desc = "A special beret with the security insignia emblazoned on it. For officers with class."
 	icon_state = "officerberet"
 
+/obj/item/clothing/head/beret/sec/blueshield
+	name = "blueshield's beret"
+	desc = "A robust beret with the blueshield's insignia emblazoned on it. Uses reinforced fabric to offer sufficient protection."
+	icon_state = "blueshieldberet"
+
 //Curator
 /obj/item/clothing/head/fedora/curator
 	name = "treasure hunter's fedora"

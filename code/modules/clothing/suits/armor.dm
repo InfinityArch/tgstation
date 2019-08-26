@@ -43,6 +43,14 @@
 	item_state = "blueshift"
 	custom_premium_price = 600
 
+/obj/item/clothing/suit/armor/vest/blueshield
+	name = "blueshield's armor vest"
+	desc = "A reinforced armored vest worn by the station's elite blueshield"
+	icon_state = "armorblueshield"
+	item_state = "armorblueshield"
+	armor = list("melee" = 30, "bullet" = 30, "laser" = 30, "energy" = 10, "bomb" = 25, "bio" = 0, "rad" = 0, "fire" = 50, "acid" = 90)
+
+
 /obj/item/clothing/suit/armor/hos
 	name = "armored greatcoat"
 	desc = "A greatcoat enhanced with a special alloy for some extra protection and style for those with a commanding presence."

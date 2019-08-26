@@ -209,6 +209,21 @@
 	alt_covers_chest = TRUE
 
 /*
+ *Blueshield
+ */
+/obj/item/clothing/under/rank/security/blueshield
+	name = "blueshield's jumpsuit"
+	desc = "An advanced security jumpsuit issued to the station's elite blueshield, complete with \"Tactical\" combat webbing."
+	icon_state = "blueshield"
+	item_state = "bl_suit"
+	item_color = "blueshield"
+	armor = list("melee" = 10, "bullet" = 0, "laser" = 0,"energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 50, "acid" = 40)
+	strip_delay = 50
+	alt_covers_chest = TRUE
+	sensor_mode = 3
+	random_sensor = FALSE
+
+/*
  *Spacepol
  */
 

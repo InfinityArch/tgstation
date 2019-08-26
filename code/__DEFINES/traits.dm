@@ -105,14 +105,13 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_LIMBATTACHMENT 	"limb_attach"
 #define TRAIT_NOLIMBDISABLE		"no_limb_disable"
 #define TRAIT_EASYLIMBDISABLE	"easy_limb_disable"
-#define TRAIT_IMPACT_BLEEDING	"impact_bleeding"
 #define TRAIT_TOXINLOVER		"toxinlover"
 #define TRAIT_NOBREATH			"no_breath"
 #define TRAIT_ANTIMAGIC			"anti_magic"
 #define TRAIT_HOLY				"holy"
 #define TRAIT_DEPRESSION		"depression"
 #define TRAIT_JOLLY				"jolly"
-#define TRAIT_NOCRITDAMAGE		"no_crit"
+#define TRAIT_NOCRITDAMAGE		"no_crit" //mob ignores critical damage
 #define TRAIT_NOSLIPWATER		"noslip_water"
 #define TRAIT_NOSLIPALL			"noslip_all"
 #define TRAIT_NODEATH			"nodeath"
@@ -151,10 +150,10 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 
 //psionic traits
 #define TRAIT_PSYCHIC			"psychic"
-#define TRAIT_TELEPATH			"telepath"
-#define TRAIT_MINDLINKED		"mind_linked"
+#define TRAIT_PSYRESIST			"psy_resist"
 
-//non-mob traits
+
+//bodypart traits
 #define TRAIT_PARALYSIS			"paralysis"         //Used for limb-based paralysis, where replacing the limb will fix it
 #define TRAIT_PART_CRIT			"part critical"     //used to flag a part as being in critical
 #define TRAIT_STAMINA_DISABLED  "stamina disabled"  //flags parts that have reached the stamina damage limit
@@ -164,12 +163,13 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_BROKEN_BONES		"broken bones"		//broken bones in this part
 #define TRAIT_SPLINTED_BONES	"splinted bones"	//part has splinted bones
 #define TRAIT_INTERNAL_BLEEDING "internal bleeding" //part has internal bleeding
-
+#define TRAIT_EXTERNAL_BLEEDING "external bleeding" //part has exteranl bleeding
 
 // item traits
 #define TRAIT_NODROP            "nodrop"
 #define TRAIT_T_RAY_VISIBLE     "t-ray-visible" // Visible on t-ray scanners if the atom/var/level == 1
 #define TRAIT_NO_TELEPORT		"no-teleport" //you just can't
+#define TRAIT_STERILE			"sterile"	  //for surgery
 
 //quirk traits
 #define TRAIT_ALCOHOL_TOLERANCE	"alcohol_tolerance"
@@ -217,6 +217,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define VEHICLE_TRAIT "vehicle" // inherited from riding vehicles
 #define INNATE_TRAIT "innate"
 
+
+
+
 // unique trait sources, still defines
 #define CLONING_POD_TRAIT "cloning-pod"
 #define STATUE_MUTE "statue"
@@ -251,7 +254,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define SHAMEBRERO_TRAIT "shamebrero"
 #define CHRONOSUIT_TRAIT "chronosuit"
 #define LOCKED_HELMET_TRAIT "locked-helmet"
-#define NINJA_SUIT_TRAIT "ninja-suit"
+#define NINJA_SUIT_TRAIT "ninja-suit" 
 #define ANTI_DROP_IMPLANT_TRAIT "anti-drop-implant"
 #define VR_ZONE_TRAIT "vr_zone_trait"
 #define SLEEPING_CARP_TRAIT "sleeping_carp"

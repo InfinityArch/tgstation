@@ -5,6 +5,7 @@
 Captain=1,1
 Head of Personnel=1,1
 Nanotrasen Representitive=1,1
+Blueshield=1,1
 Head of Security=1,1
 Chief Engineer=1,1
 Research Director=1,1
