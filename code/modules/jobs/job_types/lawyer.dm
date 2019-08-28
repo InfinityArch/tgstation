@@ -1,12 +1,12 @@
 /datum/job/lawyer
-	title = "Lawyer"
+	title = "Internal Affairs Agent"
 	flag = LAWYER
-	department_head = list("Head of Personnel")
+	department_head = list("Head Security") //switch to magistrate
 	department_flag = CIVILIAN
 	faction = "Station"
 	total_positions = 2
 	spawn_positions = 2
-	supervisors = "the head of personnel"
+	supervisors = "the magistrate and the head of security"
 	selection_color = "#dddddd"
 	var/lawyers = 0 //Counts lawyer amount
 
@@ -15,24 +15,25 @@
 	access = list(ACCESS_LAWYER, ACCESS_COURT, ACCESS_SEC_DOORS)
 	minimal_access = list(ACCESS_LAWYER, ACCESS_COURT, ACCESS_SEC_DOORS)
 	paycheck = PAYCHECK_EASY
-	paycheck_department = ACCOUNT_CIV
+	paycheck_department = ACCOUNT_SEC
 	mind_traits = list(TRAIT_LAW_ENFORCEMENT_METABOLISM)
 
 	display_order = JOB_DISPLAY_ORDER_LAWYER
 
 /datum/outfit/job/lawyer
-	name = "Lawyer"
+	name = "Internal Affairs Agent"
 	jobtype = /datum/job/lawyer
 
 	belt = /obj/item/pda/lawyer
-	ears = /obj/item/radio/headset/headset_srvsec
+	glasses = /obj/item/clothing/glasses/hud/security/sunglasses
+	ears = /obj/item/radio/headset/headset_sec
 	uniform = /obj/item/clothing/under/rank/civilian/lawyer/bluesuit
 	suit = /obj/item/clothing/suit/toggle/lawyer
 	shoes = /obj/item/clothing/shoes/laceup
 	l_hand = /obj/item/storage/briefcase/lawyer
 	l_pocket = /obj/item/laser_pointer
 	r_pocket = /obj/item/clothing/accessory/lawyers_badge
-
+	implants = list(/obj/item/implant/mindshield)
 	chameleon_extras = /obj/item/stamp/law
 
 

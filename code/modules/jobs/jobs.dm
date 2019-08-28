@@ -41,7 +41,6 @@ GLOBAL_LIST_INIT(civilian_positions, list(
 	"Cook",
 	"Janitor",
 	"Curator",
-	"Lawyer",
 	"Chaplain",
 	"Clown",
 	"Mime",
@@ -52,6 +51,7 @@ GLOBAL_LIST_INIT(security_positions, list(
 	"Head of Security",
 	"Warden",
 	"Blueshield",
+	"Internal Affairs Agent",
 	"Detective",
 	"Security Officer"))
 

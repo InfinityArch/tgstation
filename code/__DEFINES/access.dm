@@ -46,19 +46,20 @@
 #define ACCESS_MINING_STATION 54
 #define ACCESS_XENOBIOLOGY 55
 #define ACCESS_BLUESHIELD 56 //Blueshield's office
-#define ACCESS_CE 57
-#define ACCESS_HOP 58
-#define ACCESS_HOS 59
-#define ACCESS_RC_ANNOUNCE 60 //Request console announcements
-#define ACCESS_KEYCARD_AUTH 61 //Used for events which require at least two people to confirm them
-#define ACCESS_TCOMSAT 62 // has access to the entire telecomms satellite / machinery
-#define ACCESS_GATEWAY 63
-#define ACCESS_SEC_DOORS 64 // Outer brig doors, department security posts
-#define ACCESS_MINERAL_STOREROOM 65 //For releasing minerals from the ORM
-#define ACCESS_MINISAT 66
-#define ACCESS_WEAPONS 67 //Weapon authorization for secbots
-#define ACCESS_NETWORK 68 //NTnet diagnostics/monitoring software
-#define ACCESS_CLONING 69 //Cloning room and clone pod ejection
+#define ACCESS_NANOTRASEN_REP 57 //NT Rep's office
+#define ACCESS_CE 58
+#define ACCESS_HOP 59
+#define ACCESS_HOS 60
+#define ACCESS_RC_ANNOUNCE 61 //Request console announcements
+#define ACCESS_KEYCARD_AUTH 62 //Used for events which require at least two people to confirm them
+#define ACCESS_TCOMSAT 63 // has access to the entire telecomms satellite / machinery
+#define ACCESS_GATEWAY 64
+#define ACCESS_SEC_DOORS 65 // Outer brig doors, department security posts
+#define ACCESS_MINERAL_STOREROOM 66 //For releasing minerals from the ORM
+#define ACCESS_MINISAT 67
+#define ACCESS_WEAPONS 68 //Weapon authorization for secbots
+#define ACCESS_NETWORK 69 //NTnet diagnostics/monitoring software
+#define ACCESS_CLONING 70 //Cloning room and clone pod ejection
 
 	//BEGIN CENTCOM ACCESS
 	/*Should leave plenty of room if we need to add more access levels.

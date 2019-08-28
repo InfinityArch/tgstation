@@ -1088,8 +1088,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(BODY_ZONE_PRECISE_EYES)
 					eye_color = random_eye_color()
 				if("s_tone")
-					var/list/allowed_skintones = pref_species.get_allowed_skintones()
-					skin_tone = random_skin_tone(allowed_skintones)
+					skin_tone = random_skin_tone(pref_species.get_allowed_skintones())
 				if("bag")
 					backbag = pick(GLOB.backbaglist)
 				if("suit")
@@ -1377,7 +1376,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						features["moth_markings"] = new_moth_markings
 
 				if("s_tone")
-					var/list/allowed_skintones = pref_species.get_allowed_skintones()
+					var/allowed_skintones = pref_species.get_allowed_skintones()
 					var/new_s_tone = input(user, "Choose your character's skin-tone:", "Character Preference")  as null|anything in allowed_skintones
 					if(new_s_tone)
 						skin_tone = new_s_tone

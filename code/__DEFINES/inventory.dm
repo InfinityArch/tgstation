@@ -141,7 +141,6 @@
 #define NORMAL_STYLE		0
 #define ALT_STYLE			1
 #define DIGITIGRADE_STYLE 	2 // used by humanoids with digitigrade legs
-#define FITTED_STYLE 		3 // used by variant sprites fitted for a species
 
 //flags for outfits that have mutantrace variants (try not to use this): Currently only needed if you're trying to add tight fitting bootyshorts
 #define NO_MUTANTRACE_VARIATION		0
