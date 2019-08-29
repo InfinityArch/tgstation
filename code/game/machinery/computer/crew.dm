@@ -34,9 +34,11 @@ GLOBAL_DATUM_INIT(crewmonitor, /datum/crewmonitor, new)
 	jobs["Head of Personnel"] = 50
 	jobs["Head of Security"] = 10
 	jobs["Warden"] = 11
+	jobs["Magistrate"] = 12
 	jobs["Blueshield"] = 13
-	jobs["Security Officer"] = 13
-	jobs["Detective"] = 14
+	jobs["Security Officer"] = 14
+	jobs["Detective"] = 15
+	jobs["Internal Affairs Agent"] = 16
 	jobs["Chief Medical Officer"] = 20
 	jobs["Chemist"] = 21
 	jobs["Geneticist"] = 22
@@ -60,7 +62,6 @@ GLOBAL_DATUM_INIT(crewmonitor, /datum/crewmonitor, new)
 	jobs["Clown"] = 66
 	jobs["Mime"] = 67
 	jobs["Janitor"] = 68
-	jobs["Internal Affairs Agent"] = 69
 	jobs["Admiral"] = 200
 	jobs["CentCom Commander"] = 210
 	jobs["Custodian"] = 211

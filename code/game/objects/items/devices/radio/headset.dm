@@ -189,20 +189,10 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
 
 /obj/item/radio/headset/heads/nanotrasen_rep
-	name = "\proper the Nanotrasen Representitive's headset"
+	name = "\proper the Nanotrasen representitive's headset"
 	desc = "The headset of Nanotrasen's local director of operations."
 	icon_state = "com_headset"
 	keyslot = new /obj/item/encryptionkey/heads/nanotrasen_rep
-
-/obj/item/radio/headset/heads/nanotrasen_rep/alt
-	name = "\proper the Nanotrasen Representitive's headset"
-	desc = "The headset of Nanotrasen's local director of operations. Protects ears from flashbangs."
-	icon_state = "com_headset_alt"
-	item_state = "com_headset_alt"
-
-/obj/item/radio/headset/heads/captain/alt/ComponentInitialize()
-	. = ..()
-	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
 
 /obj/item/radio/headset/heads/rd
 	name = "\proper the research director's headset"
@@ -246,9 +236,17 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 
 /obj/item/radio/headset/headset_cargo
 	name = "supply radio headset"
-	desc = "A headset used by the QM and their subordinates."
+	desc = "A headset used by the station's cargo technicians."
 	icon_state = "cargo_headset"
 	keyslot = new /obj/item/encryptionkey/headset_cargo
+
+
+/obj/item/radio/headset/headset_quartermaster
+	name = "quartermaster's radio headset"
+	desc = "A headset used by the station's quartermaster."
+	icon_state = "cargo_headset"
+	keyslot = new /obj/item/encryptionkey/headset_quartermaster
+
 
 /obj/item/radio/headset/headset_cargo/mining
 	name = "mining radio headset"

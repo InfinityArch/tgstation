@@ -1,13 +1,13 @@
 /datum/job/lawyer
 	title = "Internal Affairs Agent"
 	flag = LAWYER
-	department_head = list("Head Security") //switch to magistrate
-	department_flag = CIVILIAN
+	department_head = list("Head Security", "Magistrate") //switch to magistrate
+	department_flag = ENGSEC
 	faction = "Station"
 	total_positions = 2
 	spawn_positions = 2
 	supervisors = "the magistrate and the head of security"
-	selection_color = "#dddddd"
+	selection_color = "#ffdddd"
 	var/lawyers = 0 //Counts lawyer amount
 
 	outfit = /datum/outfit/job/lawyer

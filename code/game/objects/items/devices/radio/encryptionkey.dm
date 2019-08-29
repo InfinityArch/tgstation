@@ -69,6 +69,16 @@
 	icon_state = "srvsec_cypherkey"
 	channels = list(RADIO_CHANNEL_SERVICE = 1, RADIO_CHANNEL_SECURITY = 1)
 
+/obj/item/encryptionkey/headset_medsec
+	name = "brig medic's encryption key"
+	icon_state = "med_cypherkey"
+	channels = list(RADIO_CHANNEL_MEDICAL = 1, RADIO_CHANNEL_SECURITY = 1)
+
+/obj/item/encryptionkey/headset_medcar
+	name = "outpost medic's encryption key"
+	icon_state = "srvsec_cypherkey"
+	channels = list(RADIO_CHANNEL_MEDICAL = 1, RADIO_CHANNEL_SUPPLY = 1)
+
 /obj/item/encryptionkey/headset_com
 	name = "command radio encryption key"
 	icon_state = "com_cypherkey"
@@ -82,12 +92,17 @@
 /obj/item/encryptionkey/heads/rd
 	name = "\proper the research director's encryption key"
 	icon_state = "rd_cypherkey"
-	channels = list(RADIO_CHANNEL_SCIENCE = 1, RADIO_CHANNEL_COMMAND = 1)
+	channels = list(RADIO_CHANNEL_SCIENCE = 1, RADIO_CHANNEL_COMMAND = 1, RADIO_CHANNEL_SUPPLY = 1)
 
 /obj/item/encryptionkey/heads/hos
 	name = "\proper the head of security's encryption key"
 	icon_state = "hos_cypherkey"
 	channels = list(RADIO_CHANNEL_SECURITY = 1, RADIO_CHANNEL_COMMAND = 1)
+
+/obj/item/encryptionkey/heads/magistrate
+	name = "\proper the magistrate's encryption key"
+	icon_state = "hos_cypherkey"
+	channels = list(RADIO_CHANNEL_SECURITY = 1, RADIO_CHANNEL_COMMAND = 0)
 
 /obj/item/encryptionkey/headset_blueshield
 	name = "\proper the blueshield's encryption key"
@@ -97,7 +112,7 @@
 /obj/item/encryptionkey/heads/ce
 	name = "\proper the chief engineer's encryption key"
 	icon_state = "ce_cypherkey"
-	channels = list(RADIO_CHANNEL_ENGINEERING = 1, RADIO_CHANNEL_COMMAND = 1)
+	channels = list(RADIO_CHANNEL_ENGINEERING = 1, RADIO_CHANNEL_COMMAND = 1, RADIO_CHANNEL_SUPPLY = 1)
 
 /obj/item/encryptionkey/heads/cmo
 	name = "\proper the chief medical officer's encryption key"
@@ -110,7 +125,7 @@
 	channels = list(RADIO_CHANNEL_SUPPLY = 1, RADIO_CHANNEL_SERVICE = 1, RADIO_CHANNEL_COMMAND = 1)
 
 	/obj/item/encryptionkey/heads/nanotrasen_rep
-	name = "\proper the Nanotrasen Representitive's encryption key"
+	name = "\proper the nanotrasen representitive's encryption key"
 	icon_state = "com_cypherkey"
 	channels = list(RADIO_CHANNEL_COMMAND = 1, RADIO_CHANNEL_SECURITY = 1, RADIO_CHANNEL_ENGINEERING = 0, RADIO_CHANNEL_SCIENCE = 0, RADIO_CHANNEL_MEDICAL = 0, RADIO_CHANNEL_SUPPLY = 0, RADIO_CHANNEL_SERVICE = 0)
 
@@ -119,10 +134,15 @@
 	icon_state = "cargo_cypherkey"
 	channels = list(RADIO_CHANNEL_SUPPLY = 1)
 
+/obj/item/encryptionkey/headset_quartermaster
+	name = "quartermaster's encryption key"
+	icon_state = "cargo_cypherkey"
+	channels = list(RADIO_CHANNEL_SUPPLY = 1, RADIO_CHANNEL_ENGINEERING = 1, RADIO_CHANNEL_SCIENCE)
+
 /obj/item/encryptionkey/headset_mining
 	name = "mining radio encryption key"
 	icon_state = "cargo_cypherkey"
-	channels = list(RADIO_CHANNEL_SUPPLY = 1, RADIO_CHANNEL_SCIENCE = 1)
+	channels = list(RADIO_CHANNEL_SUPPLY = 1)
 
 /obj/item/encryptionkey/headset_service
 	name = "service radio encryption key"

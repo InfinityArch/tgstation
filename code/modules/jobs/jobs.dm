@@ -51,6 +51,7 @@ GLOBAL_LIST_INIT(security_positions, list(
 	"Head of Security",
 	"Warden",
 	"Blueshield",
+	"Magistrate",
 	"Internal Affairs Agent",
 	"Detective",
 	"Security Officer"))

@@ -173,6 +173,12 @@ obj/item/pda/captain/nanotrasen_rep
 	icon_state = "pda-lawyer"
 	ttone = "objection"
 
+/obj/item/pda/magistrate
+	name = "magistrate PDA"
+	default_cartridge = /obj/item/cartridge/lawyer
+	inserted_item = /obj/item/pen/fountain
+	icon_state = "pda-security"
+	
 /obj/item/pda/botanist
 	name = "botanist PDA"
 	//default_cartridge = /obj/item/cartridge/botanist
