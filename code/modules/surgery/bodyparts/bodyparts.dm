@@ -312,7 +312,7 @@
 		species_id = S.limbs_id
 		species_flags_list = H.dna.species.species_traits
 
-		if(S.use_skintones)
+		if(SKINTONE in S.species_traits)
 			skin_tone = H.skin_tone
 			should_draw_greyscale = TRUE
 		else
@@ -426,7 +426,7 @@
 
 
 	if(should_draw_greyscale)
-		var/draw_color = mutation_color || species_color || (skin_tone && skintone2hex(skin_tone))
+		var/draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))
 		if(draw_color)
 			limb.color = "#[draw_color]"
 			if(aux_zone)

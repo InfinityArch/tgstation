@@ -127,7 +127,7 @@
 		return
 
 	var/mob/living/carbon/human/H = user
-
+	var/species_index = H.dna.species.limbs_id ? H.dna.species.limbs_id : H.dna.species.id
 	var/choice = input(user, "Something to change?", "Magical Grooming") as null|anything in list("name", "race", "gender", "hair", "eyes")
 
 	if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
@@ -158,9 +158,9 @@
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 				return
 			H.set_species(newrace, icon_update=0)
-
-			if(H.dna.species.use_skintones)
-				var/new_s_tone = input(user, "Choose your skin tone:", "Race change")  as null|anything in GLOB.skin_tones
+			species_index = H.dna.species.limbs_id ? H.dna.species.limbs_id : H.dna.species.id
+			if(SKINTONE in H.dna.species.species_traits)
+				var/new_s_tone = input(user, "Choose your skin tone:", "Race change")  as null|anything in GLOB.skin_tones_list_species[species_index]
 				if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 					return
 

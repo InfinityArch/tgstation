@@ -131,10 +131,13 @@
 		if(!findname(.))
 			break
 
-/proc/random_skin_tone()
-	return pick(GLOB.skin_tones)
+/proc/random_skin_tone(species_index)
+	if(GLOB.skin_tones_list_species[species_index])
+		return pick(GLOB.skin_tones_list_species[species_index])
+	else
+		return pick(GLOB.skin_tones_list)
 
-GLOBAL_LIST_INIT(skin_tones, list(
+GLOBAL_LIST_INIT(skin_tones, list( //This is used by simple human mobs
 	"albino",
 	"caucasian1",
 	"caucasian2",

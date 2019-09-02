@@ -417,6 +417,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				if(hair_color)
 					if(hair_color == "mutcolor")
 						facial_overlay.color = "#" + H.dna.features["mcolor"]
+					if(hair_color = "skin_tone")
+						facial_overlay.color = "#" + sprite_color2hex(H.skin_tone)
 					else
 						facial_overlay.color = "#" + hair_color
 				else

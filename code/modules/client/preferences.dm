@@ -64,7 +64,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/hair_color = "000"				//Hair color
 	var/facial_hair_style = "Shaved"	//Face hair type
 	var/facial_hair_color = "000"		//Facial hair color
-	var/skin_tone = "caucasian1"		//Skin color
+	var/skin_tone = "African 1"			//Skin color
 	var/eye_color = "000"				//Eye color
 	var/datum/species/pref_species = new /datum/species/human()	//Mutant race
 	var/list/features = list("mcolor" = "FFF", "ethcolor" = "9c3030", "tail_lizard" = "Smooth", "tail_human" = "None", "snout" = "Round", "horns" = "None", "ears" = "None", "wings" = "None", "frills" = "None", "spines" = "None", "body_markings" = "None", "legs" = "Normal Legs", "moth_wings" = "Plain", "moth_markings" = "None")
@@ -139,6 +139,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	if(!user || !user.client)
 		return
 	update_preview_icon()
+	var/species_index = pref_species.limbs_id ? pref_species.limbs_id : pref_species.id
 	var/list/dat = list("<center>")
 
 	dat += "<a href='?_src_=prefs;preference=tab;tab=0' [current_tab == 0 ? "class='linkOn'" : ""]>Character Settings</a>"
@@ -237,8 +238,10 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<b>Jumpsuit:</b><BR><a href ='?_src_=prefs;preference=suit;task=input'>[jumpsuit_style]</a><BR>"
 			dat += "<b>Uplink Spawn Location:</b><BR><a href ='?_src_=prefs;preference=uplink_loc;task=input'>[uplink_spawn_loc]</a><BR></td>"
 
-			var/use_skintones = pref_species.use_skintones
+			var/use_skintones = SKIN_TONE in pref_species.species_traits
 			if(use_skintones)
+
+				skin_tone = sanitize_inlist(skin_tone, GLOB.skin_tones_list_species[species_index])
 
 				dat += APPEARANCE_CATEGORY_COLUMN
 
@@ -925,6 +928,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			C.clear_character_previews()
 
 /datum/preferences/proc/process_link(mob/user, list/href_list)
+	var/species_index = pref_species.limbs_id ? pref_species.limbs_id : pref_species.id
 	if(href_list["bancheck"])
 		var/list/ban_details = is_banned_from_with_details(user.ckey, user.client.address, user.client.computer_id, href_list["bancheck"])
 		var/admin = FALSE
@@ -1034,7 +1038,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(BODY_ZONE_PRECISE_EYES)
 					eye_color = random_eye_color()
 				if("s_tone")
-					skin_tone = random_skin_tone()
+					skin_tone = random_skin_tone(species_index)
 				if("bag")
 					backbag = pick(GLOB.backbaglist)
 				if("suit")
@@ -1203,7 +1207,10 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					if(result)
 						var/newtype = GLOB.species_list[result]
 						pref_species = new newtype()
-						//Now that we changed our species, we must verify that the mutant colour is still allowed.
+						//Now that we changed our species, we must verify that various features are still allowed.
+						species_index = pref_species.limbs_id ? pref_species.limbs_id : pref_species.id
+						if(SKIN_TONE in pref_species.species_traits)
+							skin_tone = sanitize_inlist(skin_tone, GLOB.skin_tones_list_species[species_index])
 						var/temp_hsv = RGBtoHSV(features["mcolor"])
 						if(features["mcolor"] == "#000" || (!(MUTCOLORS_PARTSONLY in pref_species.species_traits) && ReadHSV(temp_hsv)[3] < ReadHSV("#7F7F7F")[3]))
 							features["mcolor"] = pref_species.default_color
@@ -1298,9 +1305,10 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						features["moth_markings"] = new_moth_markings
 
 				if("s_tone")
-					var/new_s_tone = input(user, "Choose your character's skin-tone:", "Character Preference")  as null|anything in GLOB.skin_tones
-					if(new_s_tone)
-						skin_tone = new_s_tone
+					var/new_s_tone = input(user, "Choose your character's skin-tone:", "Character Preference")  as null|anything in GLOB.skin_tones_list_species[species_index]
+					if(!new_s_tone) // this prevents tooltips from failing to update upon switching species
+						new_s_tone = sanitize_inlist(skin_tone, GLOB.skin_tones_list[species_index])
+					skin_tone = new_s_tone
 
 				if("ooccolor")
 					var/new_ooccolor = input(user, "Choose your OOC colour:", "Game Preference",ooccolor) as color|null

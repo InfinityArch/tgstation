@@ -101,25 +101,26 @@
 #define CLONER_FRESH_CLONE "fresh"
 #define CLONER_MATURE_CLONE "mature"
 
-//species traits for mutantraces
+//species traits
 #define MUTCOLORS		1
 #define HAIR			2
 #define FACEHAIR		3
-#define EYECOLOR		4
-#define LIPS			5
-#define NOBLOOD			6
-#define NOTRANSSTING	7
-#define MUTCOLORS_PARTSONLY	8	//Used if we want the mutant colour to be only used by mutant bodyparts. Don't combine this with MUTCOLORS, or it will be useless.
-#define NOZOMBIE		9
-#define DIGITIGRADE		10	//Uses weird leg sprites. Optional for Lizards, required for ashwalkers. Don't give it to other races unless you make sprites for this (see human_parts_greyscale.dmi)
-#define NO_UNDERWEAR	11
-#define NOSTOMACH		12
-#define NO_DNA_COPY     13
-#define DRINKSBLOOD		14
-#define NOFLASH			15
-#define DYNCOLORS		16 //Use this if you want to change the race's color without the player being able to pick their own color. AKA special color shifting
-#define AGENDER			17
-#define NOEYESPRITES	18 //Do not draw eyes or eyeless overlay
+#define SKINTONE		4 //because why is literally everything but skintone handled as a trait?
+#define EYECOLOR		5
+#define LIPS			6
+#define NOBLOOD			7
+#define NOTRANSSTING	8
+#define MUTCOLORS_PARTSONLY	9	//Used if we want the mutant colour to be only used by mutant bodyparts. Don't combine this with MUTCOLORS, or it will be useless.
+#define NOZOMBIE		10
+#define DIGITIGRADE		11	//Uses weird leg sprites. Optional for Lizards, required for ashwalkers. Don't give it to other races unless you make sprites for this (see human_parts_greyscale.dmi)
+#define NO_UNDERWEAR	12
+#define NOSTOMACH		13
+#define NO_DNA_COPY     14
+#define DRINKSBLOOD		15
+#define NOFLASH			16
+#define DYNCOLORS		17 //Use this if you want to change the race's color without the player being able to pick their own color. AKA special color shifting
+#define AGENDER			18
+#define NOEYESPRITES	19 //Do not draw eyes or eyeless overlay
 
 //organ slots
 #define ORGAN_SLOT_BRAIN "brain"

@@ -69,13 +69,13 @@
 /obj/effect/mob_spawn/human/clown/corpse
 	roundstart = FALSE
 	instant = TRUE
-	skin_tone = "caucasian1"
+	skin_tone = "Caucasian 1"
 	hair_style = "Bald"
 	facial_hair_style = "Shaved"
 
 /obj/effect/mob_spawn/human/corpse/pirate
 	name = "Pirate"
-	skin_tone = "caucasian1" //all pirates are white because it's easier that way
+	skin_tone = "Caucasian 1" //all pirates are white because it's easier that way
 	outfit = /datum/outfit/piratecorpse
 	hair_style = "Bald"
 	facial_hair_style = "Shaved"
@@ -154,7 +154,7 @@
 	outfit = /datum/outfit/wizardcorpse
 	hair_style = "Bald"
 	facial_hair_style = "Long Beard"
-	skin_tone = "caucasian1"
+	skin_tone = "Caucasian 1"
 
 /datum/outfit/wizardcorpse
 	name = "Space Wizard Corpse"
@@ -190,7 +190,7 @@
 	id_access_list = list(ACCESS_AWAY_GENERAL, ACCESS_AWAY_MAINT)
 	hair_style = "Cut Hair"
 	facial_hair_style = "Watson Mustache"
-	skin_tone = "caucasian1"
+	skin_tone = "Caucasian 1"
 	outfit = /datum/outfit/cat_butcher
 
 /datum/outfit/cat_butcher
