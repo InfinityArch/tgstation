@@ -15,16 +15,15 @@ GLOBAL_LIST_EMPTY(undershirt_list) 	//stores /datum/sprite_accessory/undershirt 
 GLOBAL_LIST_EMPTY(undershirt_m)	 //stores only undershirt name
 GLOBAL_LIST_EMPTY(undershirt_f)	 //stores only undershirt name
 
-	//Skintones
+	//Skin tones
 GLOBAL_LIST_EMPTY(skin_tones_list) //stores datum/sprite_color/skin_tone
 GLOBAL_LIST_EMPTY(skin_tones_list_species) // stores skin_tone indexed by species
 
 	//Socks
 GLOBAL_LIST_EMPTY(socks_list)		//stores /datum/sprite_accessory/socks indexed by name
-	//Lizard Bits (all datum lists indexed by name)
+//Lizard Bits (all datum lists indexed by name)
 GLOBAL_LIST_EMPTY(body_markings_list) //indexed by species, combine human and lizard tails
-GLOBAL_LIST_EMPTY(tails_list) //indexed by species, combine human and lizard tails
-GLOBAL_LIST_EMPTY(animated_tails_list) //indexed by species, combine humand and lizard tails
+GLOBAL_LIST_EMPTY(tails_list_lizard) //indexed by species, combine human and lizard tails
 GLOBAL_LIST_EMPTY(animated_tails_list_lizard)
 GLOBAL_LIST_EMPTY(snouts_list)
 GLOBAL_LIST_EMPTY(horns_list)
@@ -43,8 +42,6 @@ GLOBAL_LIST_EMPTY(r_wings_list)
 GLOBAL_LIST_EMPTY(moth_wings_list)
 GLOBAL_LIST_EMPTY(moth_markings_list)
 GLOBAL_LIST_EMPTY(caps_list)
-//look into folding ethereal color into a type of  datum/sprite_color
-GLOBAL_LIST_INIT(color_list_ethereal, list("F Class(Green)" = "97ee63", "F2 Class (Light Green)" = "00fa9a", "F3 Class (Dark Green)" = "37835b", "M Class (Red)" = "9c3030", "M1 Class (Purple)" = "ee82ee", "G Class (Yellow)" = "fbdf56", "O Class (Blue)" = "3399ff", "A Class (Cyan)" = "00ffff"))
 
 GLOBAL_LIST_INIT(ghost_forms_with_directions_list, list("ghost")) //stores the ghost forms that support directional sprites
 GLOBAL_LIST_INIT(ghost_forms_with_accessories_list, list("ghost")) //stores the ghost forms that support hair and other such things

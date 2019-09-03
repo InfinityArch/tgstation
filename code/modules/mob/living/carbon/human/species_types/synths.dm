@@ -66,7 +66,7 @@
 		nojumpsuit = S.nojumpsuit
 		no_equip = S.no_equip.Copy()
 		limbs_id = S.limbs_id
-		use_skintones = S.use_skintones
+		skin_type = S.skin_type
 		fixed_mut_color = S.fixed_mut_color
 		hair_color = S.hair_color
 		fake_species = new S.type
@@ -86,7 +86,6 @@
 		fake_species = null
 		meat = initial(meat)
 		limbs_id = "synth"
-		use_skintones = 0
 		sexes = 0
 		fixed_mut_color = ""
 		hair_color = ""

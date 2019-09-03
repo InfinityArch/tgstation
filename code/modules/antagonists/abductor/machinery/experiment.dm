@@ -63,7 +63,7 @@
 /obj/machinery/abductor/experiment/proc/dissection_icon(mob/living/carbon/human/H)
 	var/icon/photo = null
 	var/g = (H.gender == FEMALE) ? "f" : "m"
-	if(SKINTONE in H.dna.species.species_traits)
+	if((SKIN_TONE in H.dna.species.species_traits) || (DYNCOLORS in H.dna.species.species_traits))
 		photo = icon("icon" = 'icons/mob/human.dmi', "icon_state" = "[H.dna.species.id]_[g]")
 		photo.Blend("#[sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)]", ICON_MULTIPLY)
 	else

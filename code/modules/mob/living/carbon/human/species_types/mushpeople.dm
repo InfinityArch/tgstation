@@ -25,7 +25,6 @@
 	heatmod = 1.5
 
 	mutanteyes = /obj/item/organ/eyes/night_vision/mushroom
-	use_skintones = FALSE
 	var/datum/martial_art/mushpunch/mush
 
 /datum/species/mush/check_roundstart_eligible()

@@ -312,7 +312,7 @@
 		species_id = S.limbs_id
 		species_flags_list = H.dna.species.species_traits
 
-		if(SKINTONE in S.species_traits)
+		if(SKIN_TONE in S.species_traits)
 			skin_tone = H.skin_tone
 			should_draw_greyscale = TRUE
 		else

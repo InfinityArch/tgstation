@@ -67,7 +67,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/skin_tone = "African 1"			//Skin color
 	var/eye_color = "000"				//Eye color
 	var/datum/species/pref_species = new /datum/species/human()	//Mutant race
-	var/list/features = list("mcolor" = "FFF", "ethcolor" = "9c3030", "tail_lizard" = "Smooth", "tail_human" = "None", "snout" = "Round", "horns" = "None", "ears" = "None", "wings" = "None", "frills" = "None", "spines" = "None", "body_markings" = "None", "legs" = "Normal Legs", "moth_wings" = "Plain", "moth_markings" = "None")
+	var/list/features = list("mcolor" = "FFF", "tail_lizard" = "Smooth", "tail_human" = "None", "snout" = "Round", "horns" = "None", "ears" = "None", "wings" = "None", "frills" = "None", "spines" = "None", "body_markings" = "None", "legs" = "Normal Legs", "moth_wings" = "Plain", "moth_markings" = "None")
 	var/list/genders = list(MALE, FEMALE, PLURAL)
 	var/list/friendlyGenders = list("Male" = "male", "Female" = "female", "Other" = "plural")
 
@@ -238,14 +238,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<b>Jumpsuit:</b><BR><a href ='?_src_=prefs;preference=suit;task=input'>[jumpsuit_style]</a><BR>"
 			dat += "<b>Uplink Spawn Location:</b><BR><a href ='?_src_=prefs;preference=uplink_loc;task=input'>[uplink_spawn_loc]</a><BR></td>"
 
-			var/use_skintones = SKIN_TONE in pref_species.species_traits
+			var/use_skintones
+			if((SKIN_TONE in pref_species.species_traits) || (DYNCOLORS in pref_species.species_traits))
+				use_skintones = TRUE
 			if(use_skintones)
 
 				skin_tone = sanitize_inlist(skin_tone, GLOB.skin_tones_list_species[species_index])
 
 				dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Skin Tone</h3>"
+				dat += "<h3>[pref_species.skin_type]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=s_tone;task=input'>[skin_tone]</a><BR>"
 
@@ -260,16 +262,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				dat += "<span style='border: 1px solid #161616; background-color: #[features["mcolor"]];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=mutant_color;task=input'>Change</a><BR>"
 
 				mutant_colors = TRUE
-
-			if(istype(pref_species, /datum/species/ethereal)) //not the best thing to do tbf but I dont know whats better.
-
-				if(!use_skintones)
-					dat += APPEARANCE_CATEGORY_COLUMN
-
-				dat += "<h3>Ethereal Color</h3>"
-
-				dat += "<span style='border: 1px solid #161616; background-color: #[features["ethcolor"]];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=color_ethereal;task=input'>Change</a><BR>"
-
 
 			if((EYECOLOR in pref_species.species_traits) && !(NOEYESPRITES in pref_species.species_traits))
 
@@ -1209,7 +1201,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						pref_species = new newtype()
 						//Now that we changed our species, we must verify that various features are still allowed.
 						species_index = pref_species.limbs_id ? pref_species.limbs_id : pref_species.id
-						if(SKIN_TONE in pref_species.species_traits)
+						if((SKIN_TONE in pref_species.species_traits) || (DYNCOLORS in pref_species.species_traits))
 							skin_tone = sanitize_inlist(skin_tone, GLOB.skin_tones_list_species[species_index])
 						var/temp_hsv = RGBtoHSV(features["mcolor"])
 						if(features["mcolor"] == "#000" || (!(MUTCOLORS_PARTSONLY in pref_species.species_traits) && ReadHSV(temp_hsv)[3] < ReadHSV("#7F7F7F")[3]))
@@ -1225,12 +1217,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 							features["mcolor"] = sanitize_hexcolor(new_mutantcolor)
 						else
 							to_chat(user, "<span class='danger'>Invalid color. Your color is not bright enough.</span>")
-
-				if("color_ethereal")
-					var/new_etherealcolor = input(user, "Choose your ethereal color", "Character Preference") as null|anything in GLOB.color_list_ethereal
-					if(new_etherealcolor)
-						features["ethcolor"] = GLOB.color_list_ethereal[new_etherealcolor]
-
 
 				if("tail_lizard")
 					var/new_tail
@@ -1305,9 +1291,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						features["moth_markings"] = new_moth_markings
 
 				if("s_tone")
-					var/new_s_tone = input(user, "Choose your character's skin-tone:", "Character Preference")  as null|anything in GLOB.skin_tones_list_species[species_index]
+					var/new_s_tone = input(user, "Choose your character's [pref_species.skin_type]:", "Character Preference")  as null|anything in GLOB.skin_tones_list_species[species_index]
 					if(!new_s_tone) // this prevents tooltips from failing to update upon switching species
-						new_s_tone = sanitize_inlist(skin_tone, GLOB.skin_tones_list[species_index])
+						new_s_tone = sanitize_inlist(skin_tone, GLOB.skin_tones_list_species[species_index])
 					skin_tone = new_s_tone
 
 				if("ooccolor")

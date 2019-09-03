@@ -2,9 +2,8 @@
 	name = "Human"
 	id = "human"
 	default_color = "FFFFFF"
-	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS)
+	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS, SKIN_TONE)
 	default_features = list("mcolor" = "FFF", "wings" = "None")
-	use_skintones = 1
 	skinned_type = /obj/item/stack/sheet/animalhide/human
 	disliked_food = GROSS | RAW
 	liked_food = JUNKFOOD | FRIED

@@ -6,6 +6,7 @@
 	attack_verb = "burn"
 	attack_sound = 'sound/weapons/etherealhit.ogg'
 	miss_sound = 'sound/weapons/etherealmiss.ogg'
+	skin_type = "ethereal color"
 	meat = /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/ethereal
 	mutantstomach = /obj/item/organ/stomach/ethereal
 	exotic_blood = /datum/reagent/consumable/liquidelectricity //Liquid Electricity. fuck you think of something better gamer
@@ -33,8 +34,8 @@
 /datum/species/ethereal/on_species_gain(mob/living/carbon/C, datum/species/old_species, pref_load)
 	.=..()
 	if(ishuman(C))
-		var/mob/living/carbon/human/H = C
-		default_color = "#" + H.dna.features["ethcolor"]
+		var/mob/living/carbon/human/H = C	
+		default_color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list_species["ethereal"])
 		r1 = GetRedPart(default_color)
 		g1 = GetGreenPart(default_color)
 		b1 = GetBluePart(default_color)

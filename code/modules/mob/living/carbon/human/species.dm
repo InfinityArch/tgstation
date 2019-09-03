@@ -15,7 +15,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/hair_color	// this allows races to have specific hair colors... if null, it uses the H's hair/facial hair colors. if "mutcolor", it uses the H's mutant_color
 	var/hair_alpha = 255	// the alpha used by the hair. 255 is completely solid, 0 is transparent.
 
-	var/use_skintones = 0	// does it use skintones or not? (spoiler alert this is only used by humans)
+	var/skin_type = "skin tone"	// what do we call this species "skin?"
 	var/exotic_blood = ""	// If your race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If your race uses a non standard bloodtype (A+, O-, AB-, etc)
 	var/meat = /obj/item/reagent_containers/food/snacks/meat/slab/human //What the species drops on gibbing
@@ -264,6 +264,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			C.dropItemToGround(thing)
 	if(C.hud_used)
 		C.hud_used.update_locked_slots()
+	if((SKIN_TONE in species_traits) || (DYNCOLORS in species_traits))
+		var/mob/living/carbon/human/H = C
+		if(istype(H))
+			var/species_index = C.dna.species.limbs_id ? H.dna.species.limbs_id : H.dna.species.id
+			var/new_skin_tone = sanitize_inlist(H.skin_tone, GLOB.skin_tones_list_species[species_index])
+			if(!(new_skin_tone == H.skin_tone))
+				H.skin_tone = new_skin_tone
+				H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
 
 	// this needs to be FIRST because qdel calls update_body which checks if we have DIGITIGRADE legs or not and if not then removes DIGITIGRADE from species_traits
 	if(("legs" in C.dna.species.mutant_bodyparts) && C.dna.features["legs"] == "Digitigrade Legs")
@@ -417,8 +425,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				if(hair_color)
 					if(hair_color == "mutcolor")
 						facial_overlay.color = "#" + H.dna.features["mcolor"]
-					if(hair_color = "skin_tone")
-						facial_overlay.color = "#" + sprite_color2hex(H.skin_tone)
+					if(hair_color == "skin_tone")
+						facial_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 					else
 						facial_overlay.color = "#" + hair_color
 				else

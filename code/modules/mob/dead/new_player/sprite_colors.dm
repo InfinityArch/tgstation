@@ -15,7 +15,7 @@
 */
 
 
-proc/init_sprite_colors_subtypes(prototype, list/L, list/S, var/roundstart = FALSE) //roundstart argument builds a list of colors with some potentially being locked
+proc/init_sprite_color_subtypes(prototype, list/L, list/S)
 	if(!istype(L))
 		L = list()
 
@@ -23,16 +23,12 @@ proc/init_sprite_colors_subtypes(prototype, list/L, list/S, var/roundstart = FAL
 		S = list()
 
 	for(var/path in subtypesof(prototype))
-		if(roundstart)
-			var/datum/sprite_accessory/P = path
-			if(initial(P.locked))
-				continue
-		var/datum/sprite_accessory/D = new path()
+		var/datum/sprite_color/D = new path()
 		if(D.species && (!S[D.species]))
 			S[D.species] = list()
 		if(D.color_hex)
 			L[D.name] = D
-			if(D.species)
+			if(D.species && !D.locked)
 				S[D.species][D.name] = D
 		else
 			L += D.name 
@@ -46,10 +42,10 @@ proc/init_sprite_colors_subtypes(prototype, list/L, list/S, var/roundstart = FAL
 	var/species //what species id this should be indexed under
 
 /proc/sprite_color2hex(color_state, list/L)
-	if(!istype(L))
-		return
-	else
-		return L[color_state].color_hex
+	var/datum/sprite_color/S = L[color_state]
+	if(istype(S))
+		return S.color_hex
+
 
 
 
@@ -123,41 +119,37 @@ proc/init_sprite_colors_subtypes(prototype, list/L, list/S, var/roundstart = FAL
 /////////////////////
 // Ethereal Colors //
 /////////////////////
-
-/datum/sprite_color/ethereal
+/datum/sprite_color/skin_tone/ethereal
 	species = "ethereal"
+
+/datum/sprite_color/skin_tone/ethereal/green
 	name = "F Class (Green)"
 	color_hex = "97ee63"
 
-/datum/sprite_color/ethereal/light_green
+/datum/sprite_color/skin_tone/ethereal/light_green
 	name = "F2 Class (Light Green)"
 	color_hex = "00fa9a"
 
-/datum/sprite_color/ethereal/dark_green
+/datum/sprite_color/skin_tone/ethereal/dark_green
 	name = "F3 Class (Dark Green)"
 	color_hex = "37835b"
 
-/datum/sprite_color/ethereal/red
+/datum/sprite_color/skin_tone/ethereal/red
 	name = "M Class (Red)"
 	color_hex = "9c3030"
 
-/datum/sprite_color/ethereal/purple
+/datum/sprite_color/skin_tone/ethereal/purple
 	name = "M1 Class (Purple)"
 	color_hex = "ee82ee"
 
-/datum/sprite_color/ethereal/yellow
+/datum/sprite_color/skin_tone/ethereal/yellow
 	name = "G Class (Yellow)"
 	color_hex = "fbdf56"
 
-/datum/sprite_color/ethereal/blue
+/datum/sprite_color/skin_tone/ethereal/blue
 	name = "O Class (Blue)"
 	color_hex = "3399ff"
 
-/datum/sprite_color/ethereal/cyan
+/datum/sprite_color/skin_tone/ethereal/cyan
 	name = "A Class (Cyan)"
 	color_hex = "00ffff"
-
-/datum/sprite_color/ethereal/orange //WOMP WOMP
-	name = "Orange"
-	color_hex = "ffc905"
-	locked = TRUE

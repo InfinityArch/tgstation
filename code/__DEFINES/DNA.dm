@@ -105,7 +105,7 @@
 #define MUTCOLORS		1
 #define HAIR			2
 #define FACEHAIR		3
-#define SKINTONE		4 //because why is literally everything but skintone handled as a trait?
+#define SKIN_TONE		4 //because why is literally everything but skintone handled as a trait?
 #define EYECOLOR		5
 #define LIPS			6
 #define NOBLOOD			7
