@@ -2,18 +2,38 @@
 
 	Hello and welcome to sprite_colors: this is used for situations where you want to give players 
 	access to a limited range of customization colors. This is currently used for skin tones and
-	ethereal colors
+	ethereal colors (which are now depreciated and handled as skin tones), 
+	but could essentially be adapted to any situation where 
 
-	Notice: This all gets automatically compiled in a list in dna.dm, so you do not
-	have to define any UI values manually for new skin tones, just add them in and
-	the game will adapt
+	As with sprite_accessories this all gets automatically compiled in a list in dna.dm, so you do not
+	have to define any UI values manually for new skin tones. You will have to do some more work
+	if you want to use this for hair color or something.
 
-	!!WARNING!!: changing existing preferences information can be VERY hazardous to savefiles,
-	to the point where you may completely corrupt a server's savefiles. Please refrain
-	from doing this unless you absolutely know what you are doing, and have defined a
-	conversion in savefile.dm
+	!!WARNING!!: changing existing preferences information can be VERY hazardous to savefiles.
+
+How it works
+	the proc init_sprite_color_subtypes accepts a prototype path and two lists as an argument.
+	The first list (L) is the overall list of all subtypes of prototype, indexed by name. 
+	the second list (S) is a 2D array, indexed first by species.id and secondly by the name
+	Both lists contain the actual datums, which are necessary for sprite_color2hex to 
+	retrieve the corresponding hex values. The point of having two lists is so one (S) can
+	be used for changing skintones at round start and when evaluating whether skin_tone
+	should be changed upon species gain/loss/other events that modify skin_tone dna. The
+	other list (L) is used for procs that need to then go and render the skintone
+
+
+Key procs
+* [init_sprite_color_subtypes()](sprite_colors.html#proc/init_sprite_color_subtypes)
+* [sprite_color2hex](sprite_colors.html#proc/sprite_color2hex)
+Major variables that were changed
+* skin_type: found in datum/species, this tells us what string to use for the species' "skin" in character customization
+* use_skintones: this variable has been depreciated, and replaced by the species trait SKINTONE
+Key variables from this file
+* name: The name of a sprite color datum
+* locked: this won't appear in the species indexed list, but can be manually added by for example spray tanning shennanigans
+* color_hex: the hex value of the color this datum corresponds to
+* species: what species this datum belongs to, this can remain null if you don't want to use speices indexing
 */
-
 
 proc/init_sprite_color_subtypes(prototype, list/L, list/S)
 	if(!istype(L))
@@ -40,6 +60,9 @@ proc/init_sprite_color_subtypes(prototype, list/L, list/S)
 	var/locked // if the sprite color is locked at roundstart
 	var/color_hex // the hex value of this sprite color
 	var/species //what species id this should be indexed under
+
+
+
 
 /proc/sprite_color2hex(color_state, list/L)
 	var/datum/sprite_color/S = L[color_state]
