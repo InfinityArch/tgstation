@@ -105,7 +105,7 @@
 		L[DNA_HAIR_COLOR_BLOCK] = sanitize_hexcolor(H.hair_color)
 		if(!GLOB.facial_hairstyles_list.len)
 			init_sprite_accessory_subtypes(/datum/sprite_accessory/facial_hair, GLOB.facial_hairstyles_list, GLOB.facial_hairstyles_male_list, GLOB.facial_hairstyles_female_list, species_list = GLOB.facial_hairstyles_list_species)
-		L[DNA_FACIALHAIRSTYLE_BLOCK] = construct_block(GLOB.facial_hairstyles_list.Find(H.facial_hairstyle), GLOB.facial_hairstyles_list.len)
+		L[DNA_FACIAL_HAIRSTYLE_BLOCK] = construct_block(GLOB.facial_hairstyles_list.Find(H.facial_hairstyle), GLOB.facial_hairstyles_list.len)
 		L[DNA_FACIAL_HAIR_COLOR_BLOCK] = sanitize_hexcolor(H.facial_hair_color)
 		if(!GLOB.skin_tones_list.len)
 			init_sprite_color_subtypes(/datum/sprite_color/skin_tone, GLOB.skin_tones_list, GLOB.skin_tones_list_species)
