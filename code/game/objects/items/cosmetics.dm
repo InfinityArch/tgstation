@@ -138,7 +138,7 @@
 						return
 					if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 						return
-					var/new_style = input(user, "Select a facial hair style", "Grooming")  as null|anything in GLOB.facial_hair_styles_list & GLOB.facial_hair_styles_list_species[H.dna.species.limbs_id]
+					var/new_style = input(user, "Select a facial hair style", "Grooming")  as null|anything in GLOB.facial_hairstyles_list & GLOB.facial_hairstyles_list_species[H.dna.species.limbs_id]
 					if(!get_location_accessible(H, location))
 						to_chat(user, "<span class='warning'>The mask is in the way!</span>")
 						return

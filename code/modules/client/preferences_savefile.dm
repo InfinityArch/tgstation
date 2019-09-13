@@ -122,8 +122,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 			randomise[RANDOM_SPECIES] = TRUE
 		if(S["backbag"])
 			S["backbag"]	>> backpack
-		if(S["hair_style_name"])
-			S["hair_style_name"]	>> hairstyle
+		if(S["hairstyle_name"])
+			S["hairstyle_name"]	>> hairstyle
 		if(S["facial_style_name"])
 			S["facial_style_name"]	>> facial_hairstyle
 
@@ -359,20 +359,16 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(!features["mcolor"] || features["mcolor"] == "#000")
 		features["mcolor"] = pick("FFFFFF","7F7F7F", "7FFF7F", "7F7FFF", "FF7F7F", "7FFFFF", "FF7FFF", "FFFF7F")
 
-	be_random_name	= sanitize_integer(be_random_name, 0, 1, initial(be_random_name))
-	be_random_body	= sanitize_integer(be_random_body, 0, 1, initial(be_random_body))
-	be_random_species	= sanitize_integer(be_random_species, 0, 1, initial(be_random_species))
-
 	randomise = SANITIZE_LIST(randomise)
 
 	if(gender == MALE)
-		hair_style = sanitize_inlist(hair_style, GLOB.hair_styles_male_list & (GLOB.hair_styles_list_species[pref_species.hair_id] | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]))
-		facial_hair_style = sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_male_list & (GLOB.facial_hair_styles_list_species[pref_species.hair_id] | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]))
+		hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_male_list & (GLOB.hairstyles_list_species[pref_species.hair_id] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]))
+		facial_hairstyle = sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_male_list & (GLOB.facial_hairstyles_list_species[pref_species.hair_id] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]))
 		underwear = sanitize_inlist(underwear, GLOB.underwear_m)
 		undershirt = sanitize_inlist(undershirt, GLOB.undershirt_m)
 	else if(gender == FEMALE)
-		hair_style			= sanitize_inlist(hair_style, GLOB.hair_styles_female_list & GLOB.hair_styles_list_species[pref_species.features_id], "Bald")
-		facial_hair_style	= sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_female_list & GLOB.facial_hair_styles_list_species[pref_species.features_id], "Shaved")
+		hairstyle			= sanitize_inlist(hairstyle, GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.features_id], "Bald")
+		facial_hairstyle	= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.features_id], "Shaved")
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_f)
 		undershirt		= sanitize_inlist(undershirt, GLOB.undershirt_f)
 	else

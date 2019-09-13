@@ -178,11 +178,11 @@
 	if(hairstyle)
 		H.hairstyle = hairstyle
 	else
-		H.hair_style = random_hair_style(gender, H.dna.species.hair_id)
-	if(facial_hair_style)
-		H.facial_hair_style = facial_hair_style
+		H.hairstyle = random_hairstyle(gender, H.dna.species.hair_id)
+	if(facial_hairstyle)
+		H.facial_hairstyle = facial_hairstyle
 	else
-		H.facial_hair_style = random_facial_hair_style(gender, H.dna.species.hair_id)
+		H.facial_hairstyle = random_facial_hairstyle(gender, H.dna.species.hair_id)
 	if(skin_tone)
 		H.skin_tone = skin_tone
 	else

@@ -292,7 +292,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			if(HAIR in pref_species.species_traits)
 
-				hair_style = sanitize_hair_style(hair_style, pref_species.hair_id, gender)
+				hairstyle = sanitize_hairstyle(hairstyle, pref_species.hair_id, gender)
 				dat += APPEARANCE_CATEGORY_COLUMN
 
 				dat += "<h3>Hairstyle</h3>"
@@ -996,12 +996,12 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					age = rand(AGE_MIN, AGE_MAX)
 				if("hair")
 					hair_color = random_short_color()
-				if("hair_style")
-					hair_style = random_hair_style(gender, pref_species.hair_id)
+				if("hairstyle")
+					hairstyle = random_hairstyle(gender, pref_species.hair_id)
 				if("facial")
 					facial_hair_color = random_short_color()
-				if("facial_hair_style")
-					facial_hair_style = random_facial_hair_style(gender, pref_species.hair_id)
+				if("facial_hairstyle")
+					facial_hairstyle = random_facial_hairstyle(gender, pref_species.hair_id)
 				if("underwear")
 					underwear = random_underwear(gender)
 				if("underwear_color")
@@ -1084,29 +1084,29 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("hairstyle")
 					var/new_hairstyle
 					if(gender == MALE)
-						new_hair_style = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hair_styles_male_list & GLOB.hair_styles_list_species[pref_species.hair_id])
+						new_hairstyle = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[pref_species.hair_id])
 					else if(gender == FEMALE)
-						new_hair_style = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hair_styles_female_list & GLOB.hair_styles_list_species[pref_species.hair_id]) 
+						new_hairstyle = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.hair_id]) 
 					else
-						new_hair_style = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hair_styles_list_species[pref_species.hair_id]
-					if(new_hair_style)
-						hair_style = new_hair_style
+						new_hairstyle = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[pref_species.hair_id]
+					if(new_hairstyle)
+						hairstyle = new_hairstyle
 
 				if("next_hairstyle")
 					if (gender == MALE)
-						hair_style = next_list_item(hair_style, (GLOB.hair_styles_male_list & GLOB.hair_styles_list_species[pref_species.hair_id]) | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						hairstyle = next_list_item(hairstyle, (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[pref_species.hair_id]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else if(gender == FEMALE)
-						hair_style = next_list_item(hair_style, (GLOB.hair_styles_female_list & GLOB.hair_styles_list_species[pref_species.hair_id]) | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						hairstyle = next_list_item(hairstyle, (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.hair_id]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else
-						hair_style = next_list_item(hair_style, (GLOB.hair_styles_list & GLOB.hair_styles_list_species[pref_species.hair_id]) | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						hairstyle = next_list_item(hairstyle, (GLOB.hairstyles_list & GLOB.hairstyles_list_species[pref_species.hair_id]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
 				if("previous_hairstyle")
 					if (gender == MALE)
-						hair_style = previous_list_item(hair_style, (GLOB.hair_styles_male_list & GLOB.hair_styles_list_species[pref_species.hair_id]) | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						hairstyle = previous_list_item(hairstyle, (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[pref_species.hair_id]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else if(gender == FEMALE)
-						hair_style = previous_list_item(hair_style, (GLOB.hair_styles_female_list & GLOB.hair_styles_list_species[pref_species.hair_id]) | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						hairstyle = previous_list_item(hairstyle, (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.hair_id]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else
-						hair_style = previous_list_item(hair_style, (GLOB.hair_styles_list & GLOB.hair_styles_list_species[pref_species.hair_id]) | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						hairstyle = previous_list_item(hairstyle, (GLOB.hairstyles_list & GLOB.hairstyles_list_species[pref_species.hair_id]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
 				if("facial")
 					var/new_facial = input(user, "Choose your character's facial-hair colour:", "Character Preference","#"+facial_hair_color) as color|null
@@ -1116,29 +1116,29 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("facial_hairstyle")
 					var/new_facial_hairstyle
 					if(gender == MALE)
-						new_facial_hair_style = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hair_styles_male_list & GLOB.facial_hair_styles_list_species[pref_species.hair_id])
+						new_facial_hairstyle = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id])
 					else if(gender == FEMALE)
-						new_facial_hair_style = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hair_styles_female_list & GLOB.facial_hair_styles_list_species[pref_species.hair_id])
+						new_facial_hairstyle = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id])
 					else
-						new_facial_hair_style = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hair_styles_list_species[pref_species.hair_id])
-					if(new_facial_hair_style)
-						facial_hair_style = new_facial_hair_style
+						new_facial_hairstyle = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_list_species[pref_species.hair_id])
+					if(new_facial_hairstyle)
+						facial_hairstyle = new_facial_hairstyle
 
 				if("next_facehairstyle")
 					if (gender == MALE)
-						facial_hair_style = next_list_item(facial_hair_style, (GLOB.facial_hair_styles_male_list & GLOB.facial_hair_styles_list_species[pref_species.hair_id]) | GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						facial_hairstyle = next_list_item(facial_hairstyle, (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else if(gender == FEMALE)
-						facial_hair_style = next_list_item(facial_hair_style, (GLOB.facial_hair_styles_female_list & GLOB.facial_hair_styles_list_species[pref_species.hair_id]) | GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						facial_hairstyle = next_list_item(facial_hairstyle, (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else
-						facial_hair_style = next_list_item(facial_hair_style, (GLOB.facial_hair_styles_male_list & GLOB.facial_hair_styles_list_species[pref_species.hair_id]) | GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						facial_hairstyle = next_list_item(facial_hairstyle, (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
 				if("previous_facehairstyle")
 					if (gender == MALE)
-						facial_hair_style = previous_list_item(facial_hair_style, (GLOB.facial_hair_styles_male_list & GLOB.facial_hair_styles_list_species[pref_species.hair_id]) | GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						facial_hairstyle = previous_list_item(facial_hairstyle, (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else if (gender == FEMALE)
-						facial_hair_style = previous_list_item(facial_hair_style, (GLOB.facial_hair_styles_female_list & GLOB.facial_hair_styles_list_species[pref_species.hair_id]) | GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						facial_hairstyle = previous_list_item(facial_hairstyle, (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 					else
-						facial_hair_style = previous_list_item(facial_hair_style, (GLOB.facial_hair_styles_list_species[pref_species.hair_id]) | GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX])
+						facial_hairstyle = previous_list_item(facial_hairstyle, (GLOB.facial_hairstyles_list_species[pref_species.hair_id]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
 				if("underwear")
 					var/new_underwear
@@ -1349,8 +1349,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						underwear = random_underwear(gender)
 						undershirt = random_undershirt(gender)
 						socks = random_socks()
-						facial_hair_style = random_facial_hair_style(gender, pref_species.hair_id)
-						hair_style = random_hair_style(gender, pref_species.hair_id)
+						facial_hairstyle = random_facial_hairstyle(gender, pref_species.hair_id)
+						hairstyle = random_hairstyle(gender, pref_species.hair_id)
 
 				if("hotkeys")
 					hotkeys = !hotkeys

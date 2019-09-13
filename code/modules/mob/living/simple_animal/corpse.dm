@@ -70,8 +70,8 @@
 	roundstart = FALSE
 	instant = TRUE
 	skin_tone = "Caucasian 1"
-	hair_style = "Bald"
-	facial_hair_style = "Shaved"
+	hairstyle = "Bald"
+	facial_hairstyle = "Shaved"
 
 /obj/effect/mob_spawn/human/corpse/pirate
 	name = "Pirate"
@@ -152,8 +152,8 @@
 /obj/effect/mob_spawn/human/corpse/wizard
 	name = "Space Wizard Corpse"
 	outfit = /datum/outfit/wizardcorpse
-	hair_style = "Bald"
-	facial_hair_style = "Long Beard"
+	hairstyle = "Bald"
+	facial_hairstyle = "Long Beard"
 	skin_tone = "Caucasian 1"
 
 /datum/outfit/wizardcorpse
@@ -188,8 +188,8 @@
 	name = "The Cat Surgeon"
 	id_job = "Cat Surgeon"
 	id_access_list = list(ACCESS_AWAY_GENERAL, ACCESS_AWAY_MAINT)
-	hair_style = "Cut Hair"
-	facial_hair_style = "Watson Mustache"
+	hairstyle = "Cut Hair"
+	facial_hairstyle = "Watson Mustache"
 	skin_tone = "Caucasian 1"
 	outfit = /datum/outfit/cat_butcher
 

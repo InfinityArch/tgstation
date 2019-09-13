@@ -125,29 +125,29 @@ __Returns__:
 		features["caps"] = pick(GLOB.caps_list)
 	return features
 
-/proc/random_hair_style(gender, species_index = "default")
-	var/list/species_list = GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]
-	if(GLOB.hair_styles_list_species[species_index])
-		species_list |= GLOB.hair_styles_list_species[species_index]
+/proc/random_hairstyle(gender, species_index = "default")
+	var/list/species_list = GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]
+	if(GLOB.hairstyles_list_species[species_index])
+		species_list |= GLOB.hairstyles_list_species[species_index]
 	switch(gender)
 		if(MALE)
-			return pick(GLOB.hair_styles_male_list & species_list)
+			return pick(GLOB.hairstyles_male_list & species_list)
 		if(FEMALE)
-			return pick(GLOB.hair_styles_female_list & species_list)
+			return pick(GLOB.hairstyles_female_list & species_list)
 		else
-			return pick(GLOB.hair_styles_list & species_list)
+			return pick(GLOB.hairstyles_list & species_list)
 
-/proc/random_facial_hair_style(gender, species_index = "default")
-	var/list/species_list = GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX]
-	if(GLOB.facial_hair_styles_list_species[species_index])
-		species_list |= GLOB.facial_hair_styles_list_species[species_index]
+/proc/random_facial_hairstyle(gender, species_index = "default")
+	var/list/species_list = GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX]
+	if(GLOB.facial_hairstyles_list_species[species_index])
+		species_list |= GLOB.facial_hairstyles_list_species[species_index]
 	switch(gender)
 		if(MALE)
-			return pick(GLOB.facial_hair_styles_male_list & species_list)
+			return pick(GLOB.facial_hairstyles_male_list & species_list)
 		if(FEMALE)
-			return pick(GLOB.facial_hair_styles_female_list & species_list)
+			return pick(GLOB.facial_hairstyles_female_list & species_list)
 		else
-			return pick(GLOB.facial_hair_styles_list & species_list)
+			return pick(GLOB.facial_hairstyles_list & species_list)
 
 /proc/random_unique_name(gender, attempts_to_find_unique_name=10)
 	for(var/i in 1 to attempts_to_find_unique_name)

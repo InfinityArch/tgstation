@@ -17,8 +17,8 @@
 	H.underwear = random_underwear(H.gender)
 	H.underwear_color = random_short_color()
 	H.skin_tone = random_skin_tone(H.dna.species.limbs_id)
-	H.hair_style = random_hair_style(H.gender, H.dna.species.hair_id)
-	H.facial_hair_style = random_facial_hair_style(H.gender, H.dna.species.hair_id)
+	H.hairstyle = random_hairstyle(H.gender, H.dna.species.hair_id)
+	H.facial_hairstyle = random_facial_hairstyle(H.gender, H.dna.species.hair_id)
 	H.hair_color = random_short_color()
 	H.facial_hair_color = H.hair_color
 	H.eye_color = random_eye_color()
