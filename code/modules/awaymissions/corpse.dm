@@ -153,8 +153,8 @@
 	var/backpack_contents = -1
 	var/suit_store = -1
 
-	var/hair_style
-	var/facial_hair_style
+	var/hairstyle
+	var/facial_hairstyle
 	var/skin_tone
 
 /obj/effect/mob_spawn/human/Initialize()
@@ -175,8 +175,8 @@
 	H.underwear = "Nude"
 	H.undershirt = "Nude"
 	H.socks = "Nude"
-	if(hair_style)
-		H.hair_style = hair_style
+	if(hairstyle)
+		H.hairstyle = hairstyle
 	else
 		H.hair_style = random_hair_style(gender, H.dna.species.hair_id)
 	if(facial_hair_style)

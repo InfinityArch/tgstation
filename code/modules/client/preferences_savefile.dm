@@ -5,7 +5,7 @@
 //	You do not need to raise this if you are adding new values that have sane defaults.
 //	Only raise this value when changing the meaning/format/name/layout of an existing value
 //	where you would want the updater procs below to run
-#define SAVEFILE_VERSION_MAX	24
+#define SAVEFILE_VERSION_MAX	25
 
 /*
 SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Carn
@@ -112,6 +112,20 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(current_version < 24)
 		if (!(underwear in GLOB.underwear_list))
 			underwear = "Nude"
+	if(current_version < 25)
+		randomise = list(RANDOM_UNDERWEAR = TRUE, RANDOM_UNDERWEAR_COLOR = TRUE, RANDOM_UNDERSHIRT = TRUE, RANDOM_SOCKS = TRUE, RANDOM_BACKPACK = TRUE, RANDOM_JUMPSUIT_STYLE = TRUE, RANDOM_HAIRSTYLE = TRUE, RANDOM_HAIR_COLOR = TRUE, RANDOM_FACIAL_HAIRSTYLE = TRUE, RANDOM_FACIAL_HAIR_COLOR = TRUE, RANDOM_SKIN_TONE = TRUE, RANDOM_EYE_COLOR = TRUE)
+		if(S["name_is_always_random"] == 1)
+			randomise[RANDOM_NAME] = TRUE
+		if(S["body_is_always_random"] == 1)
+			randomise[RANDOM_BODY] = TRUE
+		if(S["species_is_always_random"] == 1)
+			randomise[RANDOM_SPECIES] = TRUE
+		if(S["backbag"])
+			S["backbag"]	>> backpack
+		if(S["hair_style_name"])
+			S["hair_style_name"]	>> hairstyle
+		if(S["facial_style_name"])
+			S["facial_style_name"]	>> facial_hairstyle
 
 /datum/preferences/proc/load_path(ckey,filename="preferences.sav")
 	if(!ckey)
@@ -282,24 +296,22 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	//Character
 	S["real_name"]			>> real_name
-	S["name_is_always_random"] >> be_random_name
-	S["body_is_always_random"] >> be_random_body
-	S["species_is_always_random"] >> be_random_species
 	S["gender"]				>> gender
 	S["age"]				>> age
 	S["hair_color"]			>> hair_color
 	S["facial_hair_color"]	>> facial_hair_color
 	S["eye_color"]			>> eye_color
 	S["skin_tone"]			>> skin_tone
-	S["hair_style_name"]	>> hair_style
-	S["facial_style_name"]	>> facial_hair_style
+	S["hairstyle_name"]	>> hairstyle
+	S["facial_style_name"]	>> facial_hairstyle
 	S["underwear"]			>> underwear
 	S["underwear_color"]	>> underwear_color
 	S["undershirt"]			>> undershirt
 	S["socks"]				>> socks
-	S["backbag"]			>> backbag
+	S["backpack"]			>> backpack
 	S["jumpsuit_style"]		>> jumpsuit_style
 	S["uplink_loc"]			>> uplink_spawn_loc
+	S["randomise"]	>>  randomise
 	S["feature_mcolor"]					>> features["mcolor"]
 	S["feature_tail"]					>> features["tail"]
 	S["feature_snout"]					>> features["snout"]
@@ -351,6 +363,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	be_random_body	= sanitize_integer(be_random_body, 0, 1, initial(be_random_body))
 	be_random_species	= sanitize_integer(be_random_species, 0, 1, initial(be_random_species))
 
+	randomise = SANITIZE_LIST(randomise)
+
 	if(gender == MALE)
 		hair_style = sanitize_inlist(hair_style, GLOB.hair_styles_male_list & (GLOB.hair_styles_list_species[pref_species.hair_id] | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]))
 		facial_hair_style = sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_male_list & (GLOB.facial_hair_styles_list_species[pref_species.hair_id] | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]))
@@ -362,11 +376,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_f)
 		undershirt		= sanitize_inlist(undershirt, GLOB.undershirt_f)
 	else
-		hair_style			= sanitize_inlist(hair_style, GLOB.hair_styles_list)
-		facial_hair_style			= sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_list)
+		hairstyle			= sanitize_inlist(hairstyle, GLOB.hairstyles_list)
+		facial_hairstyle			= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_list)
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_list)
 		undershirt 		= sanitize_inlist(undershirt, GLOB.undershirt_list)
-
 
 	socks			= sanitize_inlist(socks, GLOB.socks_list)
 	age				= sanitize_integer(age, pref_species.age_min, pref_species.age_max, initial(age))
@@ -403,24 +416,22 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	//Character
 	WRITE_FILE(S["real_name"]			, real_name)
-	WRITE_FILE(S["name_is_always_random"] , be_random_name)
-	WRITE_FILE(S["body_is_always_random"] , be_random_body)
-	WRITE_FILE(S["species_is_always_random"] , be_random_species)
-	WRITE_FILE(S["gender"]				, gender)
-	WRITE_FILE(S["age"]				, age)
+	WRITE_FILE(S["gender"]			, gender)
+	WRITE_FILE(S["age"]			, age)
 	WRITE_FILE(S["hair_color"]			, hair_color)
-	WRITE_FILE(S["facial_hair_color"]	, facial_hair_color)
+	WRITE_FILE(S["facial_hair_color"]			, facial_hair_color)
 	WRITE_FILE(S["eye_color"]			, eye_color)
 	WRITE_FILE(S["skin_tone"]			, skin_tone)
-	WRITE_FILE(S["hair_style_name"]	, hair_style)
-	WRITE_FILE(S["facial_style_name"]	, facial_hair_style)
+	WRITE_FILE(S["hairstyle_name"]			, hairstyle)
+	WRITE_FILE(S["facial_style_name"]			, facial_hairstyle)
 	WRITE_FILE(S["underwear"]			, underwear)
-	WRITE_FILE(S["underwear_color"]		, underwear_color)
+	WRITE_FILE(S["underwear_color"]			, underwear_color)
 	WRITE_FILE(S["undershirt"]			, undershirt)
-	WRITE_FILE(S["socks"]				, socks)
-	WRITE_FILE(S["backbag"]				, backbag)
-	WRITE_FILE(S["jumpsuit_style"]		, jumpsuit_style)
+	WRITE_FILE(S["socks"]			, socks)
+	WRITE_FILE(S["backpack"]			, backpack)
+	WRITE_FILE(S["jumpsuit_style"]			, jumpsuit_style)
 	WRITE_FILE(S["uplink_loc"]			, uplink_spawn_loc)
+	WRITE_FILE(S["randomise"]		, randomise)
 	WRITE_FILE(S["species"]			, pref_species.id)
 	WRITE_FILE(S["feature_mcolor"]					, features["mcolor"])
 	WRITE_FILE(S["feature_tail"]					, features["tail"])

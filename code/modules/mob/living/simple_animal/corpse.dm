@@ -11,8 +11,8 @@
 /obj/effect/mob_spawn/human/corpse/syndicatesoldier
 	name = "Syndicate Operative"
 	id_job = "Operative"
-	hair_style = "Bald"
-	facial_hair_style = "Shaved"
+	hairstyle = "Bald"
+	facial_hairstyle = "Shaved"
 	outfit = /datum/outfit/syndicatesoldiercorpse
 
 /datum/outfit/syndicatesoldiercorpse
@@ -30,8 +30,8 @@
 /obj/effect/mob_spawn/human/corpse/syndicatecommando
 	name = "Syndicate Commando"
 	id_job = "Operative"
-	hair_style = "Bald"
-	facial_hair_style = "Shaved"
+	hairstyle = "Bald"
+	facial_hairstyle = "Shaved"
 	outfit = /datum/outfit/syndicatecommandocorpse
 
 /datum/outfit/syndicatecommandocorpse
@@ -50,8 +50,8 @@
 /obj/effect/mob_spawn/human/corpse/syndicatestormtrooper
 	name = "Syndicate Stormtrooper"
 	id_job = "Operative"
-	hair_style = "Bald"
-	facial_hair_style = "Shaved"
+	hairstyle = "Bald"
+	facial_hairstyle = "Shaved"
 	outfit = /datum/outfit/syndicatestormtroopercorpse
 
 /datum/outfit/syndicatestormtroopercorpse
@@ -77,8 +77,8 @@
 	name = "Pirate"
 	skin_tone = "Caucasian 1" //all pirates are white because it's easier that way
 	outfit = /datum/outfit/piratecorpse
-	hair_style = "Bald"
-	facial_hair_style = "Shaved"
+	hairstyle = "Bald"
+	facial_hairstyle = "Shaved"
 
 /datum/outfit/piratecorpse
 	name = "Pirate Corpse"
@@ -101,8 +101,8 @@
 /obj/effect/mob_spawn/human/corpse/russian
 	name = "Russian"
 	outfit = /datum/outfit/russiancorpse
-	hair_style = "Bald"
-	facial_hair_style = "Shaved"
+	hairstyle = "Bald"
+	facial_hairstyle = "Shaved"
 
 /datum/outfit/russiancorpse
 	name = "Russian Corpse"
@@ -169,8 +169,8 @@
 	id_job = "Private Security Force"
 	id_access = "Security Officer"
 	outfit = /datum/outfit/nanotrasensoldiercorpse2
-	hair_style = "Bald"
-	facial_hair_style = "Shaved"
+	hairstyle = "Bald"
+	facial_hairstyle = "Shaved"
 
 /datum/outfit/nanotrasensoldiercorpse2
 	name = "NT Private Security Officer Corpse"
@@ -207,7 +207,7 @@
 /obj/effect/mob_spawn/human/corpse/bee_terrorist
 	name = "BLF Operative"
 	outfit = /datum/outfit/bee_terrorist
-	
+
 /datum/outfit/bee_terrorist
 	name = "BLF Operative"
 	uniform = /obj/item/clothing/under/color/yellow
