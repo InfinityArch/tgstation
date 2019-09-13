@@ -11,30 +11,21 @@
 	user << browse(create_panel_helper(create_mob_html), "window=create_mob;size=425x475")
 
 /proc/randomize_human(mob/living/carbon/human/H)
-	var/species_index = H.dna.species.limbs_id ? H.dna.species.limbs_id : H.dna.species.id
 	H.gender = pick(MALE, FEMALE)
 	H.real_name = random_unique_name(H.gender)
 	H.name = H.real_name
 	H.underwear = random_underwear(H.gender)
 	H.underwear_color = random_short_color()
-	H.skin_tone = random_skin_tone(species_index)
-	H.hair_style = random_hair_style(H.gender)
-	H.facial_hair_style = random_facial_hair_style(H.gender)
+	H.skin_tone = random_skin_tone(H.dna.species.limbs_id)
+	H.hair_style = random_hair_style(H.gender, H.dna.species.hair_id)
+	H.facial_hair_style = random_facial_hair_style(H.gender, H.dna.species.hair_id)
 	H.hair_color = random_short_color()
 	H.facial_hair_color = H.hair_color
 	H.eye_color = random_eye_color()
 	H.dna.blood_type = random_blood_type()
 
 	// Mutant randomizing, doesn't affect the mob appearance unless it's the specific mutant.
-	H.dna.features["mcolor"] = random_short_color()
-	H.dna.features["tail_lizard"] = pick(GLOB.tails_list_lizard)
-	H.dna.features["snout"] = pick(GLOB.snouts_list) 
-	H.dna.features["horns"] = pick(GLOB.horns_list) 
-	H.dna.features["frills"] = pick(GLOB.frills_list)
-	H.dna.features["spines"] = pick(GLOB.spines_list)
-	H.dna.features["body_markings"] = pick(GLOB.body_markings_list)
-	H.dna.features["moth_wings"] = pick(GLOB.moth_wings_list)
-
+	H.dna.features = random_features(DEFAULT_FEATURES_LIST, H.dna.species)
 	H.update_body()
 	H.update_hair()
 	H.update_body_parts()

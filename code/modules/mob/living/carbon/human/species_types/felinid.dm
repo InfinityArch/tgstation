@@ -3,9 +3,10 @@
 	name = "Felinid"
 	id = "felinid"
 	limbs_id = "human"
+	features_id = "felinid"
 
-	mutant_bodyparts = list("ears", "tail_human")
-	default_features = list("mcolor" = "FFF", "tail_human" = "Cat", "ears" = "Cat", "wings" = "None")
+	mutant_bodyparts = list("ears", "tail")
+	default_features = list("mcolor" = "FFF", "tail" = "Cat", "ears" = "Cat", "wings" = "None")
 
 	mutantears = /obj/item/organ/ears/cat
 	mutanttail = /obj/item/organ/tail/cat
@@ -25,29 +26,29 @@
 	. = ..()
 
 /datum/species/human/felinid/can_wag_tail(mob/living/carbon/human/H)
-	return ("tail_human" in mutant_bodyparts) || ("waggingtail_human" in mutant_bodyparts)
+	return ("tail" in mutant_bodyparts) || ("waggingtail" in mutant_bodyparts)
 
 /datum/species/human/felinid/is_wagging_tail(mob/living/carbon/human/H)
-	return ("waggingtail_human" in mutant_bodyparts)
+	return ("waggingtail" in mutant_bodyparts)
 
 /datum/species/human/felinid/start_wagging_tail(mob/living/carbon/human/H)
-	if("tail_human" in mutant_bodyparts)
-		mutant_bodyparts -= "tail_human"
-		mutant_bodyparts |= "waggingtail_human"
+	if("tail" in mutant_bodyparts)
+		mutant_bodyparts -= "tail"
+		mutant_bodyparts |= "waggingtail"
 	H.update_body()
 
 /datum/species/human/felinid/stop_wagging_tail(mob/living/carbon/human/H)
-	if("waggingtail_human" in mutant_bodyparts)
-		mutant_bodyparts -= "waggingtail_human"
-		mutant_bodyparts |= "tail_human"
+	if("waggingtail" in mutant_bodyparts)
+		mutant_bodyparts -= "waggingtail"
+		mutant_bodyparts |= "tail"
 	H.update_body()
 
 /datum/species/human/felinid/on_species_gain(mob/living/carbon/C, datum/species/old_species, pref_load)
 	if(ishuman(C))
 		var/mob/living/carbon/human/H = C
 		if(!pref_load)			//Hah! They got forcefully purrbation'd. Force default felinid parts on them if they have no mutant parts in those areas!
-			if(H.dna.features["tail_human"] == "None")
-				H.dna.features["tail_human"] = "Cat"
+			if(H.dna.features["tail"] == "None")
+				H.dna.features["tail"] = "Cat"
 			if(H.dna.features["ears"] == "None")
 				H.dna.features["ears"] = "Cat"
 		if(H.dna.features["ears"] == "Cat")
@@ -55,7 +56,7 @@
 			ears.Insert(H, drop_if_replaced = FALSE)
 		else
 			mutantears = /obj/item/organ/ears
-		if(H.dna.features["tail_human"] == "Cat")
+		if(H.dna.features["tail"] == "Cat")
 			var/obj/item/organ/tail/cat/tail = new
 			tail.Insert(H, drop_if_replaced = FALSE)
 		else

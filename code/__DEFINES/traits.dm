@@ -149,7 +149,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_PASSTABLE			"passtable"
 
 //non-mob traits
-#define TRAIT_PARALYSIS			"paralysis" //Used for limb-based paralysis, where replacing the limb will fix it
+#define TRAIT_PARALYSIS			 "paralysis" //Used for limb-based paralysis, where replacing the limb will fix it
 
 // item traits
 #define TRAIT_NODROP            "nodrop"
@@ -201,6 +201,7 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define GLASSES_TRAIT "glasses"
 #define VEHICLE_TRAIT "vehicle" // inherited from riding vehicles
 #define INNATE_TRAIT "innate"
+#define BODYPART_TRAIT "bodypart"
 
 // unique trait sources, still defines
 #define CLONING_POD_TRAIT "cloning-pod"

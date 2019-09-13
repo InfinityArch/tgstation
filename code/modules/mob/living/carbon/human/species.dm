@@ -4,17 +4,21 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 /datum/species
 	var/id	// if the game needs to manually check your race to do something not included in a proc here, it will use this
-	var/limbs_id		//this is used if you want to use a different species limb sprites. Mainly used for angels as they look like humans.
+	var/limbs_id		// used by species that use a different species' normal bodyparts
+	var/features_id //what index to look under for the species' sprite accessories
+	var/hair_id
 	var/name	// this is the fluff name. these will be left generic (such as 'Lizardperson' for the lizard race) so servers can change them to whatever
 	var/default_color = "#FFF"	// if alien colors are disabled, this is the color that will be used by that race
 
 	var/sexes = 1		// whether or not the race has sexual characteristics. at the moment this is only 0 for skeletons and shadows
+	var/age_min = 17 // the minimum age for this species usable at character creation
+	var/age_max = 85 // the maximum age at character creation
 
 	var/list/offset_features = list(OFFSET_UNIFORM = list(0,0), OFFSET_ID = list(0,0), OFFSET_GLOVES = list(0,0), OFFSET_GLASSES = list(0,0), OFFSET_EARS = list(0,0), OFFSET_SHOES = list(0,0), OFFSET_S_STORE = list(0,0), OFFSET_FACEMASK = list(0,0), OFFSET_HEAD = list(0,0), OFFSET_FACE = list(0,0), OFFSET_BELT = list(0,0), OFFSET_BACK = list(0,0), OFFSET_SUIT = list(0,0), OFFSET_NECK = list(0,0))
 
 	var/hair_color	// this allows races to have specific hair colors... if null, it uses the H's hair/facial hair colors. if "mutcolor", it uses the H's mutant_color
 	var/hair_alpha = 255	// the alpha used by the hair. 255 is completely solid, 0 is transparent.
-
+	var/aux_color_override	// if defined, the species' aux parts will use this color
 	var/skin_type = "skin tone"	// what do we call this species "skin?"
 	var/exotic_blood = ""	// If your race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If your race uses a non standard bloodtype (A+, O-, AB-, etc)
@@ -24,6 +28,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/disliked_food = GROSS
 	var/toxic_food = TOXIC
 	var/list/no_equip = list()	// slots the race can't equip stuff to
+	var/list/alternate_worn_icons = list() // accepts the argument of a sprite state or a dmi file path associated with an alternate sprite state or .dmi file path and replaces them in the update_icons() proc
 	var/nojumpsuit = 0	// this is sorta... weird. it basically lets you equip stuff that usually needs jumpsuits without one, like belts and pockets and ids
 	var/say_mod = "says"	// affects the speech message
 	var/list/default_features = list() // Default mutant bodyparts for this species. Don't forget to set one for every mutant bodypart you allow this species to have.
@@ -51,7 +56,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	var/flying_species = FALSE //is a flying species, just a check for some things
 	var/datum/action/innate/flight/fly //the actual flying ability given to flying species
-	var/wings_icon = "Angel" //the icon used for the wings
 
 	// species-only traits. Can be found in DNA.dm
 	var/list/species_traits = list()
@@ -91,9 +95,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 
 /datum/species/New()
-
-	if(!limbs_id)	//if we havent set a limbs id to use, just use our own id
+	//customization related id values are defaulted to species id if left null
+	if(!limbs_id)
 		limbs_id = id
+	if(!features_id)
+		features_id = limbs_id
+	if(!hair_id)
+		hair_id = limbs_id
 	..()
 
 
@@ -212,6 +220,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(should_have_tail && !tail)
 		tail = new mutanttail()
 		tail.Insert(C)
+	if(C.dna)
+		C.dna.features = sanitize_features(C.dna.features, C.dna.species.features_id, list("tail"))
 
 	if(C.get_bodypart(BODY_ZONE_HEAD))
 		if(brain && (replace_current || !should_have_brain))
@@ -264,20 +274,19 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			C.dropItemToGround(thing)
 	if(C.hud_used)
 		C.hud_used.update_locked_slots()
-	if((SKIN_TONE in species_traits) || (DYNCOLORS in species_traits))
+	if((SKIN_TONE in species_traits) || (DYNCOLORS in species_traits)) //check for valid skin tone values
 		var/mob/living/carbon/human/H = C
 		if(istype(H))
-			var/species_index = C.dna.species.limbs_id ? H.dna.species.limbs_id : H.dna.species.id
-			var/new_skin_tone = sanitize_inlist(H.skin_tone, GLOB.skin_tones_list_species[species_index])
-			if(!(new_skin_tone == H.skin_tone))
-				H.skin_tone = new_skin_tone
-				H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
+			H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
 
 	// this needs to be FIRST because qdel calls update_body which checks if we have DIGITIGRADE legs or not and if not then removes DIGITIGRADE from species_traits
 	if(("legs" in C.dna.species.mutant_bodyparts) && C.dna.features["legs"] == "Digitigrade Legs")
 		species_traits += DIGITIGRADE
 	if(DIGITIGRADE in species_traits)
 		C.Digitigrade_Leg_Swap(FALSE)
+	if(C.dna)
+		var/features_to_update = C.dna.features ^ list("legs", "tail") //legs and tail are handled by the specific species datums
+		C.dna.features = sanitize_features(C.dna.features, C.dna.species.features_id, features_to_update)
 
 	C.mob_biotypes = inherent_biotypes
 
@@ -353,11 +362,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(C.movement_type & FLYING)
 			C.setMovetype(C.movement_type & ~FLYING)
 		ToggleFlight(C,0)
-	if(C.dna && C.dna.species && (C.dna.features["wings"] == wings_icon))
-		if("wings" in C.dna.species.mutant_bodyparts)
-			C.dna.species.mutant_bodyparts -= "wings"
-		C.dna.features["wings"] = "None"
-		C.update_body()
 
 	C.remove_movespeed_modifier(MOVESPEED_ID_SPECIES)
 
@@ -581,39 +585,28 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	var/obj/item/bodypart/head/HD = H.get_bodypart(BODY_ZONE_HEAD)
 
-	if("tail_lizard" in mutant_bodyparts)
+	if("tail" in mutant_bodyparts)
 		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
-			bodyparts_to_add -= "tail_lizard"
+			bodyparts_to_add -= "tail"
 
-	if("waggingtail_lizard" in mutant_bodyparts)
+	if("waggingtail" in mutant_bodyparts)
 		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
-			bodyparts_to_add -= "waggingtail_lizard"
-		else if ("tail_lizard" in mutant_bodyparts)
-			bodyparts_to_add -= "waggingtail_lizard"
-
-	if("tail_human" in mutant_bodyparts)
-		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
-			bodyparts_to_add -= "tail_human"
-
-
-	if("waggingtail_human" in mutant_bodyparts)
-		if(H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
-			bodyparts_to_add -= "waggingtail_human"
-		else if ("tail_human" in mutant_bodyparts)
-			bodyparts_to_add -= "waggingtail_human"
-
-	if("spines" in mutant_bodyparts)
-		if(!H.dna.features["spines"] || H.dna.features["spines"] == "None" || H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
-			bodyparts_to_add -= "spines"
-
-	if("waggingspines" in mutant_bodyparts)
-		if(!H.dna.features["spines"] || H.dna.features["spines"] == "None" || H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
-			bodyparts_to_add -= "waggingspines"
+			bodyparts_to_add -= "waggingtail"
 		else if ("tail" in mutant_bodyparts)
-			bodyparts_to_add -= "waggingspines"
+			bodyparts_to_add -= "waggingtail"
+
+	if("tail_accessory" in mutant_bodyparts)
+		if(!H.dna.features["tail_accessory"] || H.dna.features["tail_accessory"] == "None" || H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
+			bodyparts_to_add -= "tail_accessory"
+
+	if("waggingtail_accessory" in mutant_bodyparts)
+		if(!H.dna.features["tail_accessory"] || H.dna.features["tail_accessory"] == "None" || H.wear_suit && (H.wear_suit.flags_inv & HIDEJUMPSUIT))
+			bodyparts_to_add -= "waggingtail_accessorry"
+		else if ("tail" in mutant_bodyparts)
+			bodyparts_to_add -= "waggingtail_accessory"
 
 	if("snout" in mutant_bodyparts) //Take a closer look at that snout!
-		if((H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || HD.status == BODYPART_ROBOTIC)
+		if((!H.dna.features["snout"] || H.dna.features["snout"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || HD.status == BODYPART_ROBOTIC)
 			bodyparts_to_add -= "snout"
 
 	if("frills" in mutant_bodyparts)
@@ -673,18 +666,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		for(var/bodypart in bodyparts_to_add)
 			var/datum/sprite_accessory/S
 			switch(bodypart)
-				if("tail_lizard")
-					S = GLOB.tails_list_lizard[H.dna.features["tail_lizard"]]
-				if("waggingtail_lizard")
-					S = GLOB.animated_tails_list_lizard[H.dna.features["tail_lizard"]]
-				if("tail_human")
-					S = GLOB.tails_list_human[H.dna.features["tail_human"]]
-				if("waggingtail_human")
-					S = GLOB.animated_tails_list_human[H.dna.features["tail_human"]]
-				if("spines")
-					S = GLOB.spines_list[H.dna.features["spines"]]
-				if("waggingspines")
-					S = GLOB.animated_spines_list[H.dna.features["spines"]]
+				if("tail")
+					S = GLOB.tails_list[H.dna.features["tail"]]
+				if("waggingtail")
+					S = GLOB.animated_tails_list[H.dna.features["tail"]]
+				if("tail_accessory")
+					S = GLOB.tail_accessory_list[H.dna.features["tail_accessory"]]
+				if("waggingtail_accessory")
+					S = GLOB.animated_tail_accessory_list[H.dna.features["tail_accessory"]]
 				if("snout")
 					S = GLOB.snouts_list[H.dna.features["snout"]]
 				if("frills")
@@ -701,10 +690,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					S = GLOB.wings_open_list[H.dna.features["wings"]]
 				if("legs")
 					S = GLOB.legs_list[H.dna.features["legs"]]
-				if("moth_wings")
-					S = GLOB.moth_wings_list[H.dna.features["moth_wings"]]
-				if("moth_markings")
-					S = GLOB.moth_markings_list[H.dna.features["moth_markings"]]
 				if("caps")
 					S = GLOB.caps_list[H.dna.features["caps"]]
 			if(!S || S.icon_state == "none")
@@ -713,10 +698,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			var/mutable_appearance/accessory_overlay = mutable_appearance(S.icon, layer = -layer)
 
 			//A little rename so we don't have to use tail_lizard or tail_human when naming the sprites.
-			if(bodypart == "tail_lizard" || bodypart == "tail_human")
-				bodypart = "tail"
-			else if(bodypart == "waggingtail_lizard" || bodypart == "waggingtail_human")
-				bodypart = "waggingtail"
+			//if(bodypart == "tail_lizard" || bodypart == "tail_human")
+				//bodypart = "tail"
+			//else if(bodypart == "waggingtail_lizard" || bodypart == "waggingtail_human")
+				//bodypart = "waggingtail"
 
 			if(S.gender_specific)
 				accessory_overlay.icon_state = "[g]_[bodypart]_[S.icon_state]_[layertext]"
@@ -743,6 +728,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 							accessory_overlay.color = "#[H.facial_hair_color]"
 						if(EYECOLOR)
 							accessory_overlay.color = "#[H.eye_color]"
+						if(SKIN_TONE)
+							accessory_overlay.color = "#[H.skin_tone]"
 				else
 					accessory_overlay.color = forced_colour
 			standing += accessory_overlay
@@ -801,6 +788,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(slot in no_equip)
 		if(!I.species_exception || !is_type_in_list(src, I.species_exception))
 			return FALSE
+	if(I.restricted_species || !is_type_in_list(src, I.restricted_species))
+		to_chat(H, "<span class='warning'>This piece of equipment is incompatible with your species!</span>")
 
 	var/num_arms = H.get_num_arms(FALSE)
 	var/num_legs = H.get_num_legs(FALSE)
@@ -1849,9 +1838,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(isnull(fly))
 		fly = new
 		fly.Grant(H)
-	if(H.dna.features["wings"] != wings_icon)
-		mutant_bodyparts |= "wings"
-		H.dna.features["wings"] = wings_icon
+	if(H.dna.features["wings"] == "None")
+		mutant_bodyparts |= "wings"	
+		if(GLOB.wings_list_species[features_id])
+			H.dna.features["wings"] = pick(GLOB.wings_list_species[features_id])
+		else
+			H.dna.features["wings"] = pick(GLOB.wings_list_species["human"])
 		H.update_body()
 
 /datum/species/proc/HandleFlight(mob/living/carbon/human/H)

@@ -485,7 +485,7 @@ default_layer: The layer to draw this on if no other layer is specified
 
 default_icon_file: The icon file to draw states from if no other icon file is specified
 
-isinhands: If true then alternate_worn_icon is skipped so that default_icon_file is used,
+isinhands: If true then mob_overlay_icon is skipped so that default_icon_file is used,
 in this situation default_icon_file is expected to match either the lefthand_ or righthand_ file var
 
 femalueuniform: A value matching a uniform item's fitted var, if this is anything but NO_FEMALE_UNIFORM, we
@@ -503,15 +503,19 @@ generate/load female uniform sprites matching all previously decided variables
 			t_state = item_state
 		else
 			t_state = icon_state
-	var/t_icon = mob_overlay_icon
-	if(!t_icon)
-		t_icon = default_icon_file
+	//var/t_icon = mob_overlay_icon
+	//if(!t_icon)
+		//t_icon = default_icon_file
 
-	//Find a valid icon file from variables+arguments
+	//Find a valid icon file from variables+arguments, check for alternate worn icons
 	var/file2use
-	if(!isinhands && mob_overlay_icon)
-		file2use = mob_overlay_icon
-	if(!file2use)
+	if(!isinhands)
+		file2use = mob_overlay_icon ? mob_overlay_icon : default_icon_file
+		var/mob/living/carbon/human/H = loc
+		if(istype(H) && ALTERNATE_WORN_ICONS in H.dna.species.species_traits)
+			file2use = H.dna.species.alternate_worn_icons[file2use] ? H.dna.species.alternate_worn_icons[file2use] : file2use
+			t_state = H.dna.species.alternate_worn_icons[t_state] ? H.dna.species.alternate_worn_icons[t_state] : t_state
+	else
 		file2use = default_icon_file
 
 	//Find a valid layer from variables+arguments

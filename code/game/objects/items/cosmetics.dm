@@ -131,14 +131,14 @@
 			to_chat(user, "<span class='warning'>[H] doesn't have a head!</span>")
 			return
 		if(location == BODY_ZONE_PRECISE_MOUTH)
-			if(user.a_intent == INTENT_HELP)
+			if(user.a_intent == INTENT_HELP && FACEHAIR in H.dna.species.species_traits)
 				if(H.gender == MALE)
 					if (H == user)
 						to_chat(user, "<span class='warning'>You need a mirror to properly style your own facial hair!</span>")
 						return
 					if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 						return
-					var/new_style = input(user, "Select a facial hair style", "Grooming")  as null|anything in GLOB.facial_hair_styles_list
+					var/new_style = input(user, "Select a facial hair style", "Grooming")  as null|anything in GLOB.facial_hair_styles_list & GLOB.facial_hair_styles_list_species[H.dna.species.limbs_id]
 					if(!get_location_accessible(H, location))
 						to_chat(user, "<span class='warning'>The mask is in the way!</span>")
 						return
@@ -178,7 +178,7 @@
 						shave(H, location)
 
 		else if(location == BODY_ZONE_HEAD)
-			if(user.a_intent == INTENT_HELP)
+			if(user.a_intent == INTENT_HELP && HAIR in H.dna.species.species_traits)
 				if (H == user)
 					to_chat(user, "<span class='warning'>You need a mirror to properly style your own hair!</span>")
 					return

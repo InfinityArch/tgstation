@@ -100,11 +100,11 @@
 	if(ishuman(holder))
 		var/mob/living/carbon/human/H = holder
 		if(!GLOB.hair_styles_list.len)
-			init_sprite_accessory_subtypes(/datum/sprite_accessory/hair,GLOB.hair_styles_list, GLOB.hair_styles_male_list, GLOB.hair_styles_female_list)
+			init_sprite_accessory_subtypes(/datum/sprite_accessory/hair,GLOB.hair_styles_list, GLOB.hair_styles_male_list, GLOB.hair_styles_female_list, species_list = GLOB.hair_styles_list_species)
 		L[DNA_HAIR_STYLE_BLOCK] = construct_block(GLOB.hair_styles_list.Find(H.hair_style), GLOB.hair_styles_list.len)
 		L[DNA_HAIR_COLOR_BLOCK] = sanitize_hexcolor(H.hair_color)
 		if(!GLOB.facial_hair_styles_list.len)
-			init_sprite_accessory_subtypes(/datum/sprite_accessory/facial_hair, GLOB.facial_hair_styles_list, GLOB.facial_hair_styles_male_list, GLOB.facial_hair_styles_female_list)
+			init_sprite_accessory_subtypes(/datum/sprite_accessory/facial_hair, GLOB.facial_hair_styles_list, GLOB.facial_hair_styles_male_list, GLOB.facial_hair_styles_female_list, species_list = GLOB.facial_hair_styles_list_species)
 		L[DNA_FACIAL_HAIR_STYLE_BLOCK] = construct_block(GLOB.facial_hair_styles_list.Find(H.facial_hair_style), GLOB.facial_hair_styles_list.len)
 		L[DNA_FACIAL_HAIR_COLOR_BLOCK] = sanitize_hexcolor(H.facial_hair_color)
 		if(!GLOB.skin_tones_list.len)
@@ -176,15 +176,14 @@
 	if(!blocknumber || !ishuman(holder))
 		return
 	var/mob/living/carbon/human/H = holder
-	var/species_index = H.dna.species.limbs_id ? H.dna.species.limbs_id : H.dna.species.id
 	switch(blocknumber)
 		if(DNA_HAIR_COLOR_BLOCK)
 			setblock(uni_identity, blocknumber, sanitize_hexcolor(H.hair_color))
 		if(DNA_FACIAL_HAIR_COLOR_BLOCK)
 			setblock(uni_identity, blocknumber, sanitize_hexcolor(H.facial_hair_color))
 		if(DNA_SKIN_TONE_BLOCK)
-			H.skin_tone = sanitize_inlist(H.skin_tone, GLOB.skin_tones_list_species[species_index])
-			setblock(uni_identity, blocknumber, construct_block(GLOB.skin_tones_list.Find(H.skin_tone), GLOB.skin_tones.len))
+			H.skin_tone = sanitize_inlist(H.skin_tone, GLOB.skin_tones_list_species[H.dna.species.limbs_id])
+			setblock(uni_identity, blocknumber, construct_block(GLOB.skin_tones_list.Find(H.skin_tone), GLOB.skin_tones_list.len))
 		if(DNA_EYE_COLOR_BLOCK)
 			setblock(uni_identity, blocknumber, sanitize_hexcolor(H.eye_color))
 		if(DNA_GENDER_BLOCK)
@@ -262,7 +261,7 @@
 	uni_identity = generate_uni_identity()
 	if(!skip_index) //I hate this
 		generate_dna_blocks()
-	features = random_features()
+	features = random_features(features, species)
 
 
 /datum/dna/stored //subtype used by brain mob's stored_dna

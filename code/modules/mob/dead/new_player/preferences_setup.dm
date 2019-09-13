@@ -1,26 +1,25 @@
 
 	//The mob should have a gender you want before running this proc. Will run fine without H
 /datum/preferences/proc/random_character(gender_override)
-	var/species_index = pref_species.limbs_id ? pref_species.limbs_id : pref_species.id
 	if(gender_override)
 		gender = gender_override
 	else
 		gender = pick(MALE,FEMALE)
+	if(!pref_species)
+		var/rando_race = pick(GLOB.roundstart_races)
+		pref_species = new rando_race()
 	underwear = random_underwear(gender)
 	underwear_color = random_short_color()
 	undershirt = random_undershirt(gender)
 	socks = random_socks()
-	skin_tone = random_skin_tone(species_index)
-	hair_style = random_hair_style(gender)
-	facial_hair_style = random_facial_hair_style(gender)
+	skin_tone = random_skin_tone(pref_species.limbs_id)
+	hair_style = random_hair_style(gender, pref_species.hair_id)
+	facial_hair_style = random_facial_hair_style(gender, pref_species.hair_id)
 	hair_color = random_short_color()
 	facial_hair_color = hair_color
 	eye_color = random_eye_color()
-	if(!pref_species)
-		var/rando_race = pick(GLOB.roundstart_races)
-		pref_species = new rando_race()
-	features = random_features()
-	age = rand(AGE_MIN,AGE_MAX)
+	features = random_features(DEFAULT_FEATURES_LIST, pref_species)
+	age = rand(pref_species.age_min, pref_species.age_max)
 
 /datum/preferences/proc/random_species()
 	var/random_species_type = GLOB.species_list[pick(GLOB.roundstart_races)]

@@ -5,8 +5,8 @@
 	default_color = "00FF00"
 	species_traits = list(LIPS, NOEYESPRITES)
 	inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID|MOB_BUG
-	mutant_bodyparts = list("moth_wings", "moth_markings")
-	default_features = list("moth_wings" = "Plain", "moth_markings" = "None")
+	mutant_bodyparts = list("wings", "body_markings")
+	default_features = list("wings" = "Plain", "body_markings" = "None")
 	attack_verb = "slash"
 	attack_sound = 'sound/weapons/slash.ogg'
 	miss_sound = 'sound/weapons/slashmiss.ogg'
@@ -38,9 +38,10 @@
 	. = ..()
 	if(.) //if the mob is immune to fire, don't burn wings off.
 		return
-	if(H.dna.features["moth_wings"] != "Burnt Off" && H.bodytemperature >= 800 && H.fire_stacks > 0) //do not go into the extremely hot light. you will not survive
+	if(H.dna.features["wings"] != "Burnt Off" && H.bodytemperature >= 800 && H.fire_stacks > 0) //do not go into the extremely hot light. you will not survive
 		to_chat(H, "<span class='danger'>Your precious wings burn to a crisp!</span>")
-		H.dna.features["moth_wings"] = "Burnt Off"
+		H.dna.features["wings"] = "Burnt Off"
+		H.dna.features["body_markings"] = "Punished"
 		handle_mutant_bodyparts(H)
 
 /datum/species/moth/handle_chemicals(datum/reagent/chem, mob/living/carbon/human/H)

@@ -47,52 +47,107 @@
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/socks, GLOB.socks_list)
 	return pick(GLOB.socks_list)
 
-/proc/random_features()
-	if(!GLOB.tails_list_human.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/tails/human, GLOB.tails_list_human)
-	if(!GLOB.tails_list_lizard.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/tails/lizard, GLOB.tails_list_lizard)
+/*
+# Ranom features
+
+__description__
+- this proc generates random features for use in dna, either de novo or from an input list.
+- because its (allegedly) possible for this proc to be fired before datum/sprite_accessories has been loaded,
+- this proc checks for initialization of the relevant global lists and runs their initializaiton proc as needed 
+
+__Arguments__
+*features*: typically a list of sprite features found in datum/dna, if not given one will be generated de novo
+*species*: the species datum that should be used to deermine feature eligability, defaults to human (all features set to none) if not supplied
+*features_to_randomize*: a list of features that should be sanitized, defaults to *features* if not given. See /proc/random_features in the mobs.dm helper for an example of what that full list entails
+
+__Returns__: 
+- if supplied with an input list, returns *features* with indices found in *features_to_randomize* randomized according to the species' permitted features
+- returns a de novo list of features if not supplied with an input list, with inidices in *features_to_randomize* being randomized and all others benig left as defaults, typically "None"
+*/
+
+/proc/random_features(list/features, var/datum/species/S = new /datum/species/human, list/features_to_randomize)
+	if(!GLOB.tails_list.len)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/tails, GLOB.tails_list, species_list = GLOB.tails_list_species)
 	if(!GLOB.snouts_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/snouts, GLOB.snouts_list)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/snouts, GLOB.snouts_list, species_list = GLOB.snouts_list_species)
 	if(!GLOB.horns_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/horns, GLOB.horns_list)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/horns, GLOB.horns_list, species_list = GLOB.horns_list_species)
 	if(!GLOB.ears_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/ears, GLOB.horns_list)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/ears, GLOB.ears_list, species_list = GLOB.ears_list_species)
 	if(!GLOB.frills_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/frills, GLOB.frills_list)
-	if(!GLOB.spines_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/spines, GLOB.spines_list)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/frills, GLOB.frills_list, species_list = GLOB.frills_list_species)
+	if(!GLOB.tail_accessory_list.len)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/tail_accessory, GLOB.tail_accessory_list, species_list = GLOB.tail_accessory_list_species)
 	if(!GLOB.legs_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/legs, GLOB.legs_list)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/legs, GLOB.legs_list, species_list = GLOB.legs_list_species)
 	if(!GLOB.body_markings_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/body_markings, GLOB.body_markings_list)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/body_markings, GLOB.body_markings_list, species_list = GLOB.body_markings_list_species)
 	if(!GLOB.wings_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/wings, GLOB.wings_list)
-	if(!GLOB.moth_wings_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/moth_wings, GLOB.moth_wings_list)
-	if(!GLOB.moth_markings_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/moth_markings, GLOB.moth_markings_list)
-		
-	//For now we will always return none for tail_human and ears.
-	return(list("mcolor" = pick("FFFFFF","7F7F7F", "7FFF7F", "7F7FFF", "FF7F7F", "7FFFFF", "FF7FFF", "FFFF7F"), "tail_lizard" = pick(GLOB.tails_list_lizard), "tail_human" = "None", "wings" = "None", "snout" = pick(GLOB.snouts_list), "horns" = pick(GLOB.horns_list), "ears" = "None", "frills" = pick(GLOB.frills_list), "spines" = pick(GLOB.spines_list), "body_markings" = pick(GLOB.body_markings_list), "legs" = "Normal Legs", "caps" = pick(GLOB.caps_list), "moth_wings" = pick(GLOB.moth_wings_list), "moth_markings" = pick(GLOB.moth_markings_list)))
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/wings, GLOB.wings_list, species_list = GLOB.wings_list_species)
+	if(!GLOB.caps_list.len)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/caps, GLOB.caps_list)
 
-/proc/random_hair_style(gender)
+	var/temp_index // this is used to store whether the current feature to randomize has a valid entry in its global species list under the species' features_id index
+	if(!features || !features.len)
+		features = DEFAULT_FEATURES_LIST
+	if(!features_to_randomize || !features_to_randomize.len)
+		features_to_randomize = features
+	if("mcolor" in features_to_randomize)
+		features["mcolor"] = pick("FFFFFF","7F7F7F", "7FFF7F", "7F7FFF", "FF7F7F", "7FFFFF", "FF7FFF", "FFFF7F")
+	if("tail" in features_to_randomize)
+		temp_index = "tail" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["tail"] = pick(GLOB.tails_list_species[temp_index])
+	if("wings" in features_to_randomize)
+		temp_index = "wings" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["wings"] = pick(GLOB.wings_list_species[temp_index])
+	if("snout" in features_to_randomize)
+		temp_index = "tail" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["snout"] = pick(GLOB.snouts_list_species[temp_index])
+	if("horns" in features_to_randomize)
+		temp_index = "horns" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["horns"] = pick(GLOB.horns_list_species[temp_index] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX])
+	if("ears" in features_to_randomize)
+		temp_index = "ears" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["ears"] = pick(GLOB.ears_list_species[temp_index])
+	if("frills" in features_to_randomize)
+		temp_index = "frills" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["frills"] = pick(GLOB.frills_list_species[temp_index] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX])
+	if("tail_accessory" in features_to_randomize)
+		temp_index = "tail_accessory" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["tail_accessory"] = pick(GLOB.tail_accessory_list_species[S.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX])
+	if("body_markings" in features_to_randomize)
+		temp_index = "body_markings" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["body_markings"] = pick(GLOB.body_markings_list_species[S.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX])
+	if("legs" in S.mutant_bodyparts)
+		temp_index = "legs" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["legs"] = pick(GLOB.legs_list | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])
+	if("caps" in S.mutant_bodyparts)
+		features["caps"] = pick(GLOB.caps_list)
+	return features
+
+/proc/random_hair_style(gender, species_index = "default")
+	var/list/species_list = GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]
+	if(GLOB.hair_styles_list_species[species_index])
+		species_list |= GLOB.hair_styles_list_species[species_index]
 	switch(gender)
 		if(MALE)
-			return pick(GLOB.hair_styles_male_list)
+			return pick(GLOB.hair_styles_male_list & species_list)
 		if(FEMALE)
-			return pick(GLOB.hair_styles_female_list)
+			return pick(GLOB.hair_styles_female_list & species_list)
 		else
-			return pick(GLOB.hair_styles_list)
+			return pick(GLOB.hair_styles_list & species_list)
 
-/proc/random_facial_hair_style(gender)
+/proc/random_facial_hair_style(gender, species_index = "default")
+	var/list/species_list = GLOB.facial_hair_styles_list_species[DEFAULT_SPECIES_INDEX]
+	if(GLOB.facial_hair_styles_list_species[species_index])
+		species_list |= GLOB.facial_hair_styles_list_species[species_index]
 	switch(gender)
 		if(MALE)
-			return pick(GLOB.facial_hair_styles_male_list)
+			return pick(GLOB.facial_hair_styles_male_list & species_list)
 		if(FEMALE)
-			return pick(GLOB.facial_hair_styles_female_list)
+			return pick(GLOB.facial_hair_styles_female_list & species_list)
 		else
-			return pick(GLOB.facial_hair_styles_list)
+			return pick(GLOB.facial_hair_styles_list & species_list)
 
 /proc/random_unique_name(gender, attempts_to_find_unique_name=10)
 	for(var/i in 1 to attempts_to_find_unique_name)
@@ -132,26 +187,11 @@
 		if(!findname(.))
 			break
 
-/proc/random_skin_tone(species_index = FALSE)
+/proc/random_skin_tone(species_index = DEFAULT_SPECIES_INDEX)
 	if(species_index && GLOB.skin_tones_list_species[species_index])
 		return pick(GLOB.skin_tones_list_species[species_index])
 	else
-		return pick(GLOB.skin_tones_list)
-
-GLOBAL_LIST_INIT(skin_tones, list( //This is used by simple human mobs
-	"albino",
-	"caucasian1",
-	"caucasian2",
-	"caucasian3",
-	"latino",
-	"mediterranean",
-	"asian1",
-	"asian2",
-	"arab",
-	"indian",
-	"african1",
-	"african2"
-	))
+		return pick(GLOB.skin_tones_list_species[DEFAULT_SPECIES_INDEX])
 
 GLOBAL_LIST_EMPTY(species_list)
 

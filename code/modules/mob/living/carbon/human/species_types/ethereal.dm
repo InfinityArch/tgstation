@@ -35,7 +35,7 @@
 	.=..()
 	if(ishuman(C))
 		var/mob/living/carbon/human/H = C	
-		default_color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list_species["ethereal"])
+		default_color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 		r1 = GetRedPart(default_color)
 		g1 = GetGreenPart(default_color)
 		b1 = GetBluePart(default_color)

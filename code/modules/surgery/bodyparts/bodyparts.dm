@@ -14,7 +14,7 @@
 	var/needs_processing = FALSE
 
 	var/body_zone //BODY_ZONE_CHEST, BODY_ZONE_L_ARM, etc , used for def_zone
-	var/aux_zone // used for hands
+	var/aux_zone // used for hands and feet
 	var/aux_layer
 	var/body_part = null //bitflag used to check which clothes cover this bodypart
 	var/use_digitigrade = NOT_DIGITIGRADE //Used for alternate legs, useless elsewhere
@@ -46,6 +46,7 @@
 	var/should_draw_greyscale = FALSE
 	var/species_color = ""
 	var/mutation_color = ""
+	var/aux_color = ""
 	var/no_update = 0
 
 	var/animal_origin = null //for nonhuman bodypart (e.g. monkey)
@@ -277,7 +278,7 @@
 		owner.update_body() //if our head becomes robotic, we remove the lizard horns and human hair.
 		owner.update_hair()
 		owner.update_damage_overlays()
-
+				
 /obj/item/bodypart/proc/is_organic_limb()
 	return (status == BODYPART_ORGANIC)
 
@@ -286,8 +287,7 @@
 	var/mob/living/carbon/C
 	if(source)
 		C = source
-		if(!original_owner)
-			original_owner = source
+
 	else if(original_owner && owner != original_owner) //Foreign limb
 		no_update = TRUE
 	else
@@ -317,6 +317,8 @@
 			should_draw_greyscale = TRUE
 		else
 			skin_tone = ""
+		if(S.aux_color_override && aux_zone)
+			aux_color = S.aux_color_override
 
 		body_gender = H.gender
 		should_draw_gender = S.sexes
@@ -429,8 +431,8 @@
 		var/draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))
 		if(draw_color)
 			limb.color = "#[draw_color]"
-			if(aux_zone)
-				aux.color = "#[draw_color]"
+		if(aux_zone)
+			aux.color = aux_color ? "#[aux_color]" : "#[draw_color]"
 
 /obj/item/bodypart/deconstruct(disassembled = TRUE)
 	drop_organs()
@@ -627,6 +629,8 @@
 	max_damage = 50
 	body_zone = BODY_ZONE_L_LEG
 	body_part = LEG_LEFT
+	aux_zone = BODY_ZONE_PRECISE_L_FOOT
+	aux_layer = BODY_ADJ_LAYER
 	body_damage_coeff = 0.75
 	px_x = -2
 	px_y = 12
@@ -685,6 +689,8 @@
 	max_damage = 50
 	body_zone = BODY_ZONE_R_LEG
 	body_part = LEG_RIGHT
+	aux_zone = BODY_ZONE_PRECISE_R_FOOT
+	aux_layer = BODY_ADJ_LAYER
 	body_damage_coeff = 0.75
 	px_x = 2
 	px_y = 12

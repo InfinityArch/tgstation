@@ -20,7 +20,7 @@
 	var/skin_tone = "African 1" 
 
 	var/lip_style = null	//no lipstick by default- arguably misleading, as it could be used for general makeup
-	var/lip_color = "white"
+	var/datum/sprite_color/lip_color
 
 	var/age = 30		//Player's age
 

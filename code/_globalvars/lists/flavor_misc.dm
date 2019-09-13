@@ -1,11 +1,15 @@
 //Preferences stuff
 	//Hairstyles
 GLOBAL_LIST_EMPTY(hair_styles_list)			//stores /datum/sprite_accessory/hair indexed by name
-GLOBAL_LIST_EMPTY(hair_styles_male_list)		//stores hair names indexed by species
-GLOBAL_LIST_EMPTY(hair_styles_female_list)	//stores hair names indexed by species
+GLOBAL_LIST_EMPTY(hair_styles_male_list)
+GLOBAL_LIST_EMPTY(hair_styles_female_list)	
+GLOBAL_LIST_EMPTY(hair_styles_list_species) 
+
 GLOBAL_LIST_EMPTY(facial_hair_styles_list)	//stores /datum/sprite_accessory/facial_hair indexed by name
-GLOBAL_LIST_EMPTY(facial_hair_styles_male_list)	//stores hair names indexed by species
-GLOBAL_LIST_EMPTY(facial_hair_styles_female_list)	//stores hair names indexed by species
+GLOBAL_LIST_EMPTY(facial_hair_styles_male_list)
+GLOBAL_LIST_EMPTY(facial_hair_styles_female_list) 
+GLOBAL_LIST_EMPTY(facial_hair_styles_list_species)
+
 	//Underwear
 GLOBAL_LIST_EMPTY(underwear_list)		//stores /datum/sprite_accessory/underwear indexed by name
 GLOBAL_LIST_EMPTY(underwear_m)	//stores only underwear name
@@ -22,25 +26,37 @@ GLOBAL_LIST_EMPTY(skin_tones_list_species) // stores skin_tone indexed by specie
 	//Socks
 GLOBAL_LIST_EMPTY(socks_list)		//stores /datum/sprite_accessory/socks indexed by name
 //Lizard Bits (all datum lists indexed by name)
-GLOBAL_LIST_EMPTY(body_markings_list) //indexed by species, combine human and lizard tails
-GLOBAL_LIST_EMPTY(tails_list_lizard) //indexed by species, combine human and lizard tails
-GLOBAL_LIST_EMPTY(animated_tails_list_lizard)
+	
+	//Head features
+GLOBAL_LIST_EMPTY(ears_list)
+GLOBAL_LIST_EMPTY(ears_list_species)
 GLOBAL_LIST_EMPTY(snouts_list)
+GLOBAL_LIST_EMPTY(snouts_list_species)
+	
+	//Lizard features
 GLOBAL_LIST_EMPTY(horns_list)
+GLOBAL_LIST_EMPTY(horns_list_species)
 GLOBAL_LIST_EMPTY(frills_list)
-GLOBAL_LIST_EMPTY(spines_list)
+GLOBAL_LIST_EMPTY(frills_list_species)
 GLOBAL_LIST_EMPTY(legs_list)
-GLOBAL_LIST_EMPTY(animated_spines_list)
+GLOBAL_LIST_EMPTY(legs_list_species)
 
-	//Mutant Human bits
-GLOBAL_LIST_EMPTY(tails_list_human)
-GLOBAL_LIST_EMPTY(animated_tails_list_human)
-GLOBAL_LIST_EMPTY(ears_list) //indexed by species
-GLOBAL_LIST_EMPTY(wings_list) //indexed by species, fold in moth and r wings
-GLOBAL_LIST_EMPTY(wings_open_list) //indexed by species, fold in moth and r wings
-GLOBAL_LIST_EMPTY(r_wings_list) 
-GLOBAL_LIST_EMPTY(moth_wings_list)
-GLOBAL_LIST_EMPTY(moth_markings_list)
+	//Tails 
+GLOBAL_LIST_EMPTY(tails_list)
+GLOBAL_LIST_EMPTY(tails_list_species)
+GLOBAL_LIST_EMPTY(animated_tails_list)
+GLOBAL_LIST_EMPTY(tail_accessory_list)
+GLOBAL_LIST_EMPTY(animated_tail_accessory_list)
+GLOBAL_LIST_EMPTY(tail_accessory_list_species)
+
+	//Wings
+GLOBAL_LIST_EMPTY(wings_list)
+GLOBAL_LIST_EMPTY(wings_open_list)
+GLOBAL_LIST_EMPTY(wings_list_species)
+
+	//Other features
+GLOBAL_LIST_EMPTY(body_markings_list)
+GLOBAL_LIST_EMPTY(body_markings_list_species)
 GLOBAL_LIST_EMPTY(caps_list)
 
 GLOBAL_LIST_INIT(ghost_forms_with_directions_list, list("ghost")) //stores the ghost forms that support directional sprites

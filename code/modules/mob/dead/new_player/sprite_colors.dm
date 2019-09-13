@@ -35,49 +35,48 @@ Key variables from this file
 * species: what species this datum belongs to, this can remain null if you don't want to use speices indexing
 */
 
-proc/init_sprite_color_subtypes(prototype, list/L, list/S)
-	if(!istype(L))
-		L = list()
 
-	if(!istype(S))
-		S = list()
+proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
+	if(!istype(full_list))
+		full_list = list()
+
+	if(!istype(species_list))
+		species_list = list()
 
 	for(var/path in subtypesof(prototype))
 		var/datum/sprite_color/D = new path()
-		if(D.species && (!S[D.species]))
-			S[D.species] = list()
+		if(D.species && (!species_list[D.species]))
+			species_list[D.species] = list()
 		if(D.color_hex)
-			L[D.name] = D
+			full_list[D.name] = D
 			if(D.species && !D.locked)
-				S[D.species][D.name] = D
+				species_list[D.species][D.name] = D.name
 		else
-			L += D.name 
+			full_list += D.name
 
-	return L
+	return full_list
 
 /datum/sprite_color
 	var/name // the preview name of the sprite color
 	var/locked // if the sprite color is locked at roundstart
 	var/color_hex // the hex value of this sprite color
-	var/species //what species id this should be indexed under
-
-
-
+	var/species //what species id this should be indexed under?
 
 /proc/sprite_color2hex(color_state, list/L)
-	var/datum/sprite_color/S = L[color_state]
-	if(istype(S))
-		return S.color_hex
-
-
-
-
+	if(istype(L))
+		var/datum/sprite_color/S = L[color_state]
+		if(istype(S))
+			return S.color_hex
+	return color_state
 
 ////////////////
 // Skin Tone //
 ///////////////
 
 /datum/sprite_color/skin_tone
+	species = "default"
+	name = "greyscale"
+	color_hex = "808080"
 
 //////////////////////
 // Human skin_tones //
@@ -176,3 +175,10 @@ proc/init_sprite_color_subtypes(prototype, list/L, list/S)
 /datum/sprite_color/skin_tone/ethereal/cyan
 	name = "A Class (Cyan)"
 	color_hex = "00ffff"
+
+
+///////////////
+// Lipstick //
+/////////////
+
+/datum/sprite_color/lip_color

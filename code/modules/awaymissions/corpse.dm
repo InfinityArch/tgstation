@@ -122,7 +122,6 @@
 	mob_type = /mob/living/carbon/human
 	//Human specific stuff.
 	var/mob_species = null		//Set to make them a mutant race such as lizard or skeleton. Uses the datum typepath instead of the ID.
-	var/species_index = "human"
 	var/datum/outfit/outfit = /datum/outfit	//If this is a path, it will be instanced in Initialize()
 	var/disable_pda = TRUE
 	var/disable_sensors = TRUE
@@ -168,7 +167,6 @@
 /obj/effect/mob_spawn/human/equip(mob/living/carbon/human/H)
 	if(mob_species)
 		H.set_species(mob_species)
-	species_index = H.dna.species.limbs_id ? H.dna.species.limbs_id : H.dna.species.id
 
 	if(husk)
 		H.Drain()
@@ -180,15 +178,15 @@
 	if(hair_style)
 		H.hair_style = hair_style
 	else
-		H.hair_style = random_hair_style(gender)
+		H.hair_style = random_hair_style(gender, H.dna.species.hair_id)
 	if(facial_hair_style)
 		H.facial_hair_style = facial_hair_style
 	else
-		H.facial_hair_style = random_facial_hair_style(gender)
+		H.facial_hair_style = random_facial_hair_style(gender, H.dna.species.hair_id)
 	if(skin_tone)
 		H.skin_tone = skin_tone
 	else
-		H.skin_tone = random_skin_tone(species_index)
+		H.skin_tone = random_skin_tone(H.dna.species.limbs_id)
 	H.update_hair()
 	H.update_body()
 	if(outfit)

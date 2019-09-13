@@ -271,10 +271,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	//Species
 	var/species_id
 	S["species"]			>> species_id
-	if(species_id)
-		var/newtype = GLOB.species_list[species_id]
-		if(newtype)
-			pref_species = new newtype
+	var/newtype = GLOB.species_list[species_id] ? GLOB.species_list[species_id] : null
+	pref_species = newtype ? new newtype : new /datum/species/human
 
 	if(!S["features["mcolor"]"] || S["features["mcolor"]"] == "#000")
 		WRITE_FILE(S["features["mcolor"]"]	, "#FFF")
@@ -303,21 +301,15 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["jumpsuit_style"]		>> jumpsuit_style
 	S["uplink_loc"]			>> uplink_spawn_loc
 	S["feature_mcolor"]					>> features["mcolor"]
-	S["feature_lizard_tail"]			>> features["tail_lizard"]
-	S["feature_lizard_snout"]			>> features["snout"]
-	S["feature_lizard_horns"]			>> features["horns"]
-	S["feature_lizard_frills"]			>> features["frills"]
-	S["feature_lizard_spines"]			>> features["spines"]
-	S["feature_lizard_body_markings"]	>> features["body_markings"]
-	S["feature_lizard_legs"]			>> features["legs"]
-	S["feature_moth_wings"]				>> features["moth_wings"]
-	S["feature_moth_markings"]			>> features["moth_markings"]
-	if(!CONFIG_GET(flag/join_with_mutant_humans))
-		features["tail_human"] = "none"
-		features["ears"] = "none"
-	else
-		S["feature_human_tail"]				>> features["tail_human"]
-		S["feature_human_ears"]				>> features["ears"]
+	S["feature_tail"]					>> features["tail"]
+	S["feature_snout"]					>> features["snout"]
+	S["feature_ears"]					>> features["ears"]
+	S["feature_horns"]					>> features["horns"]
+	S["feature_frills"]					>> features["frills"]
+	S["feature_tail_accessory"]			>> features["tail_accessory"]
+	S["feature_body_markings"]			>> features["body_markings"]
+	S["feature_legs"]					>> features["legs"]
+	S["feature_wings"]					>> features["wings"]
 
 	//Custom names
 	for(var/custom_name_id in GLOB.preferences_custom_names)
@@ -360,13 +352,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	be_random_species	= sanitize_integer(be_random_species, 0, 1, initial(be_random_species))
 
 	if(gender == MALE)
-		hair_style			= sanitize_inlist(hair_style, GLOB.hair_styles_male_list)
-		facial_hair_style			= sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_male_list)
-		underwear		= sanitize_inlist(underwear, GLOB.underwear_m)
-		undershirt 		= sanitize_inlist(undershirt, GLOB.undershirt_m)
+		hair_style = sanitize_inlist(hair_style, GLOB.hair_styles_male_list & (GLOB.hair_styles_list_species[pref_species.hair_id] | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]))
+		facial_hair_style = sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_male_list & (GLOB.facial_hair_styles_list_species[pref_species.hair_id] | GLOB.hair_styles_list_species[DEFAULT_SPECIES_INDEX]))
+		underwear = sanitize_inlist(underwear, GLOB.underwear_m)
+		undershirt = sanitize_inlist(undershirt, GLOB.undershirt_m)
 	else if(gender == FEMALE)
-		hair_style			= sanitize_inlist(hair_style, GLOB.hair_styles_female_list)
-		facial_hair_style			= sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_female_list)
+		hair_style			= sanitize_inlist(hair_style, GLOB.hair_styles_female_list & GLOB.hair_styles_list_species[pref_species.features_id], "Bald")
+		facial_hair_style	= sanitize_inlist(facial_hair_style, GLOB.facial_hair_styles_female_list & GLOB.facial_hair_styles_list_species[pref_species.features_id], "Shaved")
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_f)
 		undershirt		= sanitize_inlist(undershirt, GLOB.undershirt_f)
 	else
@@ -377,27 +369,17 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 
 	socks			= sanitize_inlist(socks, GLOB.socks_list)
-	age				= sanitize_integer(age, AGE_MIN, AGE_MAX, initial(age))
+	age				= sanitize_integer(age, pref_species.age_min, pref_species.age_max, initial(age))
 	hair_color			= sanitize_hexcolor(hair_color, 3, 0)
 	facial_hair_color			= sanitize_hexcolor(facial_hair_color, 3, 0)
 	underwear_color			= sanitize_hexcolor(underwear_color, 3, 0)
 	eye_color		= sanitize_hexcolor(eye_color, 3, 0)
-	skin_tone		= sanitize_inlist(skin_tone, GLOB.skin_tones_list)
+	skin_tone		= sanitize_skin_tone(skin_tone, pref_species.limbs_id)
 	backbag			= sanitize_inlist(backbag, GLOB.backbaglist, initial(backbag))
 	jumpsuit_style	= sanitize_inlist(jumpsuit_style, GLOB.jumpsuitlist, initial(jumpsuit_style))
 	uplink_spawn_loc = sanitize_inlist(uplink_spawn_loc, GLOB.uplink_spawn_loc_list, initial(uplink_spawn_loc))
-	features["mcolor"]	= sanitize_hexcolor(features["mcolor"], 3, 0)
-	features["tail_lizard"]	= sanitize_inlist(features["tail_lizard"], GLOB.tails_list_lizard)
-	features["tail_human"] 	= sanitize_inlist(features["tail_human"], GLOB.tails_list_human, "None")
-	features["snout"]	= sanitize_inlist(features["snout"], GLOB.snouts_list)
-	features["horns"] 	= sanitize_inlist(features["horns"], GLOB.horns_list)
-	features["ears"]	= sanitize_inlist(features["ears"], GLOB.ears_list, "None")
-	features["frills"] 	= sanitize_inlist(features["frills"], GLOB.frills_list)
-	features["spines"] 	= sanitize_inlist(features["spines"], GLOB.spines_list)
-	features["body_markings"] 	= sanitize_inlist(features["body_markings"], GLOB.body_markings_list)
-	features["feature_lizard_legs"]	= sanitize_inlist(features["legs"], GLOB.legs_list, "Normal Legs")
-	features["moth_wings"] 	= sanitize_inlist(features["moth_wings"], GLOB.moth_wings_list, "Plain")
-	features["moth_markings"] 	= sanitize_inlist(features["moth_markings"], GLOB.moth_markings_list, "None")
+	features = sanitize_features(features, pref_species.features_id)
+
 
 	joblessrole	= sanitize_integer(joblessrole, 1, 3, initial(joblessrole))
 	//Validate job prefs
@@ -441,16 +423,15 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["uplink_loc"]			, uplink_spawn_loc)
 	WRITE_FILE(S["species"]			, pref_species.id)
 	WRITE_FILE(S["feature_mcolor"]					, features["mcolor"])
-	WRITE_FILE(S["feature_lizard_tail"]			, features["tail_lizard"])
-	WRITE_FILE(S["feature_human_tail"]				, features["tail_human"])
-	WRITE_FILE(S["feature_lizard_snout"]			, features["snout"])
-	WRITE_FILE(S["feature_lizard_horns"]			, features["horns"])
-	WRITE_FILE(S["feature_human_ears"]				, features["ears"])
-	WRITE_FILE(S["feature_lizard_frills"]			, features["frills"])
-	WRITE_FILE(S["feature_lizard_spines"]			, features["spines"])
-	WRITE_FILE(S["feature_lizard_body_markings"]	, features["body_markings"])
-	WRITE_FILE(S["feature_lizard_legs"]			, features["legs"])
-	WRITE_FILE(S["feature_moth_wings"]			, features["moth_wings"])
+	WRITE_FILE(S["feature_tail"]					, features["tail"])
+	WRITE_FILE(S["feature_snout"]					, features["snout"])
+	WRITE_FILE(S["feature_horns"]					, features["horns"])
+	WRITE_FILE(S["feature_ears"]					, features["ears"])
+	WRITE_FILE(S["feature_frills"]					, features["frills"])
+	WRITE_FILE(S["feature_tail_accessory"]			, features["tail_accessory"])
+	WRITE_FILE(S["feature_body_markings"]			, features["body_markings"])
+	WRITE_FILE(S["feature_legs"]					, features["legs"])
+	WRITE_FILE(S["feature_wings"]					, features["wings"])
 	WRITE_FILE(S["feature_moth_markings"]		, features["moth_markings"])
 
 

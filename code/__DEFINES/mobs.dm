@@ -41,7 +41,7 @@
 #define MOB_ROBOTIC 	1 << 2
 #define MOB_UNDEAD		1 << 3
 #define MOB_HUMANOID 	1 << 4
-#define MOB_BUG 		1 << 5
+#define MOB_BUG			1 << 5
 #define MOB_BEAST		1 << 6
 #define MOB_EPIC		1 << 7 //megafauna
 #define MOB_REPTILE		1 << 8
@@ -266,6 +266,9 @@
 #define	ETHEREAL_CHARGE_FACTOR	0.12 //factor at which ethereal's charge decreases
 #define	REAGENTS_METABOLISM 0.4	//How many units of reagent are consumed per tick, by default.
 #define REAGENTS_EFFECT_MULTIPLIER (REAGENTS_METABOLISM / 0.4)	// By defining the effect multiplier this way, it'll exactly adjust all effects according to how they originally were with the 0.4 metabolism
+#define DEFAULT_SPECIES_INDEX "default" // the fallback species index to use for a sprite feature
+#define DEFAULT_FEATURES_LIST list("mcolor" = "FFFFFF", "tail" = "None", "wings" = "None", "snout" = "None", "horns" = "None", "ears" = "None", "frills" = "None", "tail_accessory" = "None", "body_markings" = "None", "legs" = "Normal Legs", "caps" = "None")
+
 
 // Roundstart trait system
 

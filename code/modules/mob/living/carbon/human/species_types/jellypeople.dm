@@ -111,6 +111,7 @@
 /datum/species/jelly/slime
 	name = "Slimeperson"
 	id = "slime"
+	hair_id = "human"
 	default_color = "00FFFF"
 	species_traits = list(MUTCOLORS,EYECOLOR,HAIR,FACEHAIR,NOBLOOD)
 	say_mod = "says"
