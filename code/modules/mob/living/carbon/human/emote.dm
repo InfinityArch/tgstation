@@ -157,14 +157,14 @@
 		return
 	if("wings" in dna.species.mutant_bodyparts)
 		dna.species.mutant_bodyparts -= "wings"
-		dna.species.mutant_bodyparts |= "wingsopen"
+		dna.species.mutant_bodyparts |= "wing_sopen"
 	update_body()
 
 /mob/living/carbon/human/proc/CloseWings()
 	if(!dna || !dna.species)
 		return
-	if("wingsopen" in dna.species.mutant_bodyparts)
-		dna.species.mutant_bodyparts -= "wingsopen"
+	if("wings_open" in dna.species.mutant_bodyparts)
+		dna.species.mutant_bodyparts -= "wings_open"
 		dna.species.mutant_bodyparts |= "wings"
 	update_body()
 	if(isturf(loc))

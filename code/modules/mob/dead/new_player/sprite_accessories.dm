@@ -32,7 +32,6 @@
 			if(initial(P.locked))
 				continue
 		var/datum/sprite_accessory/D = new path()
-
 		if(D.icon_state)
 			L[D.name] = D
 		else
@@ -41,7 +40,6 @@
 			if(!species_list[D.species])
 				species_list[D.species] = list()
 			species_list[D.species] += D.name
-
 		switch(D.gender)
 			if(MALE)
 				male += D.name
@@ -65,19 +63,24 @@
 	var/dimension_x = 32
 	var/dimension_y = 32
 	var/center = FALSE	//Should we center the sprite?
-	var/species			//What species does this belong to? Make sure to have at least one item with this set this to DEFAULT_SPECIES_INDEX, mn
+	var/species			//What species does this belong to? Make sure to have at least one item with this set this to DEFAULT_SPECIES_INDEX
 
 //////////////////////
 // Hair Definitions //
 //////////////////////
 /datum/sprite_accessory/hair
-	icon = 'icons/mob/human_face.dmi'	  // default icon for all hairs
+	icon = 'icons/mob/hair/hair.dmi'	  // default icon for all hairs
 	species = "human"
 
 	// please make sure they're sorted alphabetically and, where needed, categorized
 	// try to capitalize the names please~
 	// try to spell
 	// you do not need to define _s or _l sub-states, game automatically does this for you
+	
+/datum/sprite_accessory/hair/bald
+	name = "Bald"
+	icon_state = "bald"
+	species = DEFAULT_SPECIES_INDEX
 
 /datum/sprite_accessory/hair/afro
 	name = "Afro"
@@ -94,11 +97,6 @@
 /datum/sprite_accessory/hair/antenna
 	name = "Ahoge"
 	icon_state = "hair_antenna"
-
-/datum/sprite_accessory/hair/bald
-	name = "Bald"
-	icon_state = null
-	species = DEFAULT_SPECIES_INDEX
 
 /datum/sprite_accessory/hair/balding
 	name = "Balding Hair"
@@ -801,9 +799,15 @@
 /////////////////////////////
 
 /datum/sprite_accessory/facial_hair
-	icon = 'icons/mob/human_face.dmi'
+	icon = 'icons/mob/hair/facial_hair.dmi'
 	gender = MALE // barf (unless you're a dorf, dorfs dig chix w/ beards :P)
 	species = "human"
+
+/datum/sprite_accessory/facial_hair/shaved
+	name = "Shaved"
+	icon_state = "shaved"
+	species = DEFAULT_SPECIES_INDEX
+	gender = NEUTER
 
 // please make sure they're sorted alphabetically and categorized
 
@@ -946,12 +950,6 @@
 /datum/sprite_accessory/facial_hair/sideburn
 	name = "Sideburns"
 	icon_state = "facial_sideburn"
-
-/datum/sprite_accessory/facial_hair/shaved
-	name = "Shaved"
-	icon_state = null
-	species = DEFAULT_SPECIES_INDEX
-	gender = NEUTER
 
 ///////////////////////////
 // Underwear Definitions //

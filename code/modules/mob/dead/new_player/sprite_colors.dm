@@ -74,7 +74,7 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 ///////////////
 
 /datum/sprite_color/skin_tone
-	species = "default"
+	species = DEFAULT_SPECIES_INDEX
 	name = "greyscale"
 	color_hex = "808080"
 

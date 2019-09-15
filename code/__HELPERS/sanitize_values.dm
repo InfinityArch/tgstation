@@ -84,32 +84,22 @@ __Arguments__
 __Returns__: returns the original style if its valid for the character, and the default of "bald" and "shaved" for hair and facial hair respectively if they're
 */
 
-/proc/sanitize_hairstyle(hairstyle, species_index, gender = PLURAL, facial = FALSE)
-	var/list/intersection
-	if(facial)
-		intersection = GLOB.facial_hairstyles_list_species["default"]
-		switch(gender)
-			if(MALE)
-				intersection |= (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index])
-				hairstyle = sanitize_inlist(hairstyle, intersection)
-			if(FEMALE)
-				intersection |= (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[species_index])
-				hairstyle = sanitize_inlist(hairstyle, intersection)
-			else
-				intersection |= (GLOB.facial_hairstyles_list & GLOB.facial_hairstyles_list_species[species_index])
-				hairstyle = sanitize_inlist(hairstyle, intersection)
+/proc/sanitize_hairstyle(hairstyle, species_index, gender = NEUTER, facial = FALSE)
+	if(!facial)
+		if(gender == MALE)
+			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]))
+		else if(gender == FEMALE)
+			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[species_index]))
+		else
+			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[species_index])
+
 	else
-		intersection = GLOB.hairstyles_list_species["default"]
-		switch(gender)
-			if(MALE)
-				intersection |= (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index])
-				hairstyle = sanitize_inlist(hairstyle, intersection)
-			if(FEMALE)
-				intersection |= (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[species_index])
-				hairstyle = sanitize_inlist(hairstyle, intersection)
-			else
-				intersection |= (GLOB.hairstyles_list & GLOB.hairstyles_list_species[species_index])
-				hairstyle = sanitize_inlist(hairstyle, intersection)
+		if(gender == MALE)
+			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]))
+		else if(gender == FEMALE)
+			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[species_index]))
+		else
+			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.facial_hairstyles_list_species[species_index])
 
 	return hairstyle
 

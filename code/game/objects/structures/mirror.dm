@@ -23,28 +23,52 @@
 
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
+		if(!(FACEHAIR in H.dna.species.species_traits) && !(HAIR in H.dna.species.species_traits))
+			return
 
 		//see code/modules/mob/dead/new_player/preferences.dm at approx line 545 for comments!
 		//this is largely copypasted from there.
 
-		//handle facial hair (if necessary)
-		if(H.gender != FEMALE)
-			var/new_style = input(user, "Select a facial hairstyle", "Grooming")  as null|anything in GLOB.facial_hairstyles_list
-			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-				return	//no tele-grooming
-			if(new_style)
-				H.facial_hairstyle = new_style
-		else
-			H.facial_hairstyle = "Shaved"
+		//handle facial hair
+		if(FACEHAIR in H.dna.species.species_traits)
+			var/new_facial_hairstyle
+			switch(gender)
+				if(FEMALE)
+					if(length(GLOB.facial_hairstyles_list_species[H.dna.species.hair_id] & GLOB.facial_hairstyles_female_list))
+						new_facial_hairstyle = input(user, "Select a facial hairstyle", "Grooming")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[H.dna.species.hair_id])
+						if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+							return	//no tele-grooming
+				if(MALE)
+					if(length(GLOB.facial_hairstyles_list_species[H.dna.species.hair_id] & GLOB.facial_hairstyles_male_list))
+						new_facial_hairstyle = input(user, "Select a facial hairstyle", "Grooming")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[H.dna.species.hair_id])
+						if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+							return
+				else
+					if(length(GLOB.facial_hairstyles_list_species[H.dna.species.hair_id]))
+						new_facial_hairstyle = input(user, "Select a facial hairstyle", "Grooming")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_list_species[H.dna.species.hair_id])
+			if(new_facial_hairstyle)
+				H.facial_hairstyle = new_facial_hairstyle
 
 		//handle normal hair
-		var/new_style = input(user, "Select a hairstyle", "Grooming")  as null|anything in GLOB.hairstyles_list
-		if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-			return	//no tele-grooming
-		if(new_style)
-			H.hairstyle = new_style
+		if(HAIR in H.dna.species.species_traits)
+			var/new_hairstyle
+			switch(gender)
+				if(FEMALE)
+					if(length(GLOB.hairstyles_list_species[H.dna.species.hair_id] & GLOB.hairstyles_female_list))
+						new_hairstyle = input(user, "Select a hairstyle", "Grooming")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[H.dna.species.hair_id])
+						if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+							return
+				if(MALE)
+					if(length(GLOB.hairstyles_list_species[H.dna.species.hair_id] & GLOB.hairstyles_male_list))
+						new_hairstyle = input(user, "Select a hairstyle", "Grooming")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[H.dna.species.hair_id])
+						if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+							return
+				else
+					if(length(GLOB.hairstyles_list_species[H.dna.species.hair_id]))
+						new_hairstyle = input(user, "Select a hairstyle", "Grooming")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_list_species[H.dna.species.hair_id])
+			if(new_hairstyle)
+				H.hairstyle = new_hairstyle
 
-		H.update_hair()
 
 /obj/structure/mirror/examine_status(mob/user)
 	if(broken)
@@ -127,7 +151,39 @@
 		return
 
 	var/mob/living/carbon/human/H = user
-	var/choice = input(user, "Something to change?", "Magical Grooming") as null|anything in list("name", "race", "gender", "hair", "eyes")
+	var/list/choose_from = list("name", "species")
+	if(!AGENDER in H.dna.species.species_traits)
+		choose_from += "gender"
+	if(HAIR in H.dna.species.species_traits)
+		choose_from += "hair"
+	if(FACEHAIR in H.dna.species.species_traits)
+		choose_from += "facial hair"
+	if(MUTCOLORS in H.dna.species.species_traits)
+		choose_from += "body color"
+	if((SKIN_TONE in H.dna.species.species_traits) || (DYNCOLORS in H.dna.species.species_traits))
+		choose_from += "skin tone"
+	if(!NOEYESPRITES in H.dna.species.species_traits)
+		choose_from += "eye color"
+	if("waggingtail" in H.dna.species.mutant_bodyparts) //to prevent issues from arising later
+		H.dna.species.stop_wagging_tail(H)	
+	if(("tail" in H.dna.species.mutant_bodyparts) && (length(GLOB.tails_list_species[H.dna.species.features_id]) > 1))
+		choose_from += "tail"
+	if(("snout" in H.dna.species.mutant_bodyparts) && (length(GLOB.snouts_list_species[H.dna.species.features_id]) > 1))
+		choose_from += "snout"
+	if(("horns" in H.dna.species.mutant_bodyparts) && (length(GLOB.horns_list_species[H.dna.species.features_id] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX]) > 1))	
+		choose_from += "horns"
+	if(("frills" in H.dna.species.mutant_bodyparts) && (length(GLOB.frills_list_species[H.dna.species.features_id] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX]) > 1))
+		choose_from += "frills"
+	if(("tail_accessory" in H.dna.species.mutant_bodyparts) && (length(GLOB.tail_accessory_list_species[H.dna.species.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX]) > 1))
+		choose_from += "tail_accessory"
+	if(("body_markings" in H.dna.species.mutant_bodyparts) && (length(GLOB.body_markings_list_species[H.dna.species.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX]) > 1))
+		choose_from += "body_markings"
+	if(("ears" in H.dna.species.mutant_bodyparts) && (length(GLOB.ears_list_species[H.dna.species.features_id]) > 1))
+		choose_from += "ears"
+	if((H.dna.features["wings"] != "None") && (length(GLOB.wings_list_species[H.dna.species.features_id]) > 1))
+		choose_from += "wings"
+
+	var/choice = input(user, "Something to change?", "Magical Grooming") as null|anything in choose_from
 
 	if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 		return
@@ -147,42 +203,38 @@
 			if(H.mind)
 				H.mind.name = newname
 
-		if("race")
+		if("species")
 			var/newrace
-			var/racechoice = input(H, "What are we again?", "Race change") as null|anything in choosable_races
+			var/racechoice = input(H, "What are we again?", "Species change") as null|anything in choosable_races
 			newrace = GLOB.species_list[racechoice]
 
 			if(!newrace)
 				return
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 				return
-			H.set_species(newrace, icon_update=0)
-			if((SKIN_TONE in H.dna.species.species_traits) || (DYNCOLORS in H.dna.species.species_traits))
-				var/new_s_tone = input(user, "Choose your [H.dna.species.skin_type]", "Race change")  as null|anything in GLOB.skin_tones_list_species[H.dna.species.limbs_id]
-				if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-					return
+			H.set_species(newrace)
 
-				if(new_s_tone)
-					H.skin_tone = new_s_tone
-					H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
+		if("skin tone")
+			var/new_s_tone = input(user, "Choose your [H.dna.species.skin_type]", "Skin tone change")  as null|anything in GLOB.skin_tones_list_species[H.dna.species.limbs_id]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
 
-			if(MUTCOLORS in H.dna.species.species_traits)
-				var/new_mutantcolor = input(user, "Choose your skin color:", "Race change","#"+H.dna.features["mcolor"]) as color|null
-				if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-					return
-				if(new_mutantcolor)
-					var/temp_hsv = RGBtoHSV(new_mutantcolor)
+			if(new_s_tone)
+				H.skin_tone = new_s_tone
+				H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
 
-					if(ReadHSV(temp_hsv)[3] >= ReadHSV("#7F7F7F")[3]) // mutantcolors must be bright
-						H.dna.features["mcolor"] = sanitize_hexcolor(new_mutantcolor)
+		if("body color")
+			var/new_mutantcolor = input(user, "Choose your body color:", "Race change","#"+H.dna.features["mcolor"]) as color|null
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
+			if(new_mutantcolor)
+				var/temp_hsv = RGBtoHSV(new_mutantcolor)
 
-					else
-						to_chat(H, "<span class='notice'>Invalid color. Your color is not bright enough.</span>")
+				if(ReadHSV(temp_hsv)[3] >= ReadHSV("#7F7F7F")[3]) // mutantcolors must be bright
+					H.dna.features["mcolor"] = sanitize_hexcolor(new_mutantcolor)
 
-			H.update_body()
-			H.update_hair()
-			H.update_body_parts()
-			H.update_mutations_overlay() // no hulk lizard
+				else
+					to_chat(H, "<span class='notice'>Invalid color. Your color is not bright enough.</span>")
 
 		if("gender")
 			if(!(H.gender in list("male", "female"))) //blame the patriarchy
@@ -214,6 +266,8 @@
 				return
 			if(hairchoice == "Style") //So you just want to use a mirror then?
 				..()
+				H.dna.update_ui_block(DNA_HAIRSTYLE_BLOCK)
+				H.dna.update_ui_block(DNA_FACIAL_HAIRSTYLE_BLOCK)
 			else
 				var/new_hair_color = input(H, "Choose your hair color", "Hair Color","#"+H.hair_color) as color|null
 				if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
@@ -228,7 +282,7 @@
 						H.dna.update_ui_block(DNA_FACIAL_HAIR_COLOR_BLOCK)
 				H.update_hair()
 
-		if(BODY_ZONE_PRECISE_EYES)
+		if("eye color")
 			var/new_eye_color = input(H, "Choose your eye color", "Eye Color","#"+H.eye_color) as color|null
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 				return
@@ -236,6 +290,74 @@
 				H.eye_color = sanitize_hexcolor(new_eye_color)
 				H.dna.update_ui_block(DNA_EYE_COLOR_BLOCK)
 				H.update_body()
+
+		if("tail")
+			var/new_tail
+			new_tail = input(user, "Choose your tail:", "Tail style") as null|anything in GLOB.tails_list_species[H.dna.species.features_id]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
+			if(new_tail)
+				if("waggingtail" in H.dna.species.mutant_bodyparts)
+					H.dna.species.stop_wagging_tail(H)	
+				H.dna.features["tail"] = new_tail
+
+		if("snout")
+			var/new_snout
+			new_snout = input(user, "Choose your snout:", "Snout style") as null|anything in GLOB.snouts_list_species[H.dna.species.features_id]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
+			if(new_snout)
+				H.dna.features["snout"] = new_snout
+
+		if("horns")
+			var/new_horns
+			new_horns = input(user, "Choose your horns:", "Horns Preference") as null|anything in GLOB.horns_list_species[H.dna.species.features_id] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
+			if(new_horns)
+				H.dna.features["horns"] = new_horns
+
+		if("frills")
+			var/new_frills
+			new_frills = input(user, "Choose your frills:", "Character Preference") as null|anything in GLOB.frills_list_species[H.dna.species.features_id] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
+			if(new_frills)
+				H.dna.features["frills"] = new_frills
+
+		if("tail_accessory")
+			var/new_tail_accessory
+			new_tail_accessory = input(user, "Choose your tail accessory:", "Character Preference") as null|anything in GLOB.tail_accessory_list_species[H.dna.species.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
+			if(new_tail_accessory)
+				H.dna.features["tail_accessory"] = new_tail_accessory
+
+		if("body_markings")
+			var/new_body_markings
+			new_body_markings = input(user, "Choose your body markings:", "Character Preference") as null|anything in GLOB.body_markings_list_species[H.dna.species.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return			
+			if(new_body_markings)
+				H.dna.features["body_markings"] = new_body_markings
+
+		if("ears")
+			var/new_ears
+			new_ears = input(user, "Choose your ears:", "Character Preference") as null|anything in GLOB.ears_list_species[H.dna.species.features_id]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return		
+			if(new_ears)
+				H.dna.features["ears"] = new_ears
+
+		if("wings")
+			var/new_wings
+			new_wings = input(user, "Choose your character's wings:", "Character Preference") as null|anything in GLOB.wings_list_species[H.dna.species.features_id]
+			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+				return
+			if(new_wings)
+				H.dna.features["wings"] = new_wings
+
+
 	if(choice)
 		curse(user)
 

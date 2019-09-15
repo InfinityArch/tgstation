@@ -130,28 +130,22 @@ __Returns__:
 	return features
 
 /proc/random_hairstyle(gender, species_index = "default")
-	var/list/species_list = GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]
-	if(GLOB.hairstyles_list_species[species_index])
-		species_list |= GLOB.hairstyles_list_species[species_index]
 	switch(gender)
 		if(MALE)
-			return pick(GLOB.hairstyles_male_list & species_list)
+			return pick((GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		if(FEMALE)
-			return pick(GLOB.hairstyles_female_list & species_list)
+			return pick((GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		else
-			return pick(GLOB.hairstyles_list & species_list)
+			return pick(GLOB.hairstyles_list_species[species_index] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
 /proc/random_facial_hairstyle(gender, species_index = "default")
-	var/list/species_list = GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX]
-	if(GLOB.facial_hairstyles_list_species[species_index])
-		species_list |= GLOB.facial_hairstyles_list_species[species_index]
 	switch(gender)
 		if(MALE)
-			return pick(GLOB.facial_hairstyles_male_list & species_list)
+			return pick((GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		if(FEMALE)
-			return pick(GLOB.facial_hairstyles_female_list & species_list)
+			return pick((GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		else
-			return pick(GLOB.facial_hairstyles_list & species_list)
+			return pick(GLOB.facial_hairstyles_list_species[species_index] | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
 /proc/random_unique_name(gender, attempts_to_find_unique_name=10)
 	for(var/i in 1 to attempts_to_find_unique_name)

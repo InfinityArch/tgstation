@@ -123,7 +123,7 @@
 		var/mob/living/carbon/human/H = user
 		var/open = FALSE
 		if(H.dna.features["wings"] != "None")
-			if("wingsopen" in H.dna.species.mutant_bodyparts)
+			if("wings_open" in H.dna.species.mutant_bodyparts)
 				open = TRUE
 				H.CloseWings()
 			else

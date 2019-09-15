@@ -686,7 +686,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					S = GLOB.body_markings_list[H.dna.features["body_markings"]]
 				if("wings")
 					S = GLOB.wings_list[H.dna.features["wings"]]
-				if("wingsopen")
+				if("wings_open")
 					S = GLOB.wings_open_list[H.dna.features["wings"]]
 				if("legs")
 					S = GLOB.legs_list[H.dna.features["legs"]]
