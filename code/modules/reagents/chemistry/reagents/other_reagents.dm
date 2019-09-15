@@ -1216,77 +1216,72 @@
 	L.remove_movespeed_modifier(type)
 	..()
 
-/////////////////////////Colorful Powder////////////////////////////
+/////////////////////////Coloured Crayon Powder////////////////////////////
 //For colouring in /proc/mix_color_from_reagents
 
 
 /datum/reagent/colorful_reagent/powder
-	name = "Mundane Powder" //the name's a bit similar to the name of colorful reagent, but hey, they're practically the same chem anyway
+	name = "Crayon Powder"
 	var/colorname = "none"
-	description = "A powder that is used for coloring things."
+	description = "A powder good for colouring chemical reagents."
 	reagent_state = SOLID
 	color = "#FFFFFF" // rgb: 207, 54, 0
 	taste_description = "the back of class"
 
 /datum/reagent/colorful_reagent/powder/New()
-	if(colorname == "none")
-		description = "A rather mundane-looking powder. It doesn't look like it'd color much of anything..."
-	else if(colorname == "invisible")
-		description = "An invisible powder. Unfortunately, since it's invisible, it doesn't look like it'd color much of anything..."
-	else
-		description = "\An [colorname] powder, used for coloring things [colorname]."
+	description = "\an [colorname] powder good for colouring chemical reagents."
 
 
 /datum/reagent/colorful_reagent/powder/red
-	name = "Red Powder"
+	name = "Red Crayon Powder"
 	colorname = "red"
 	color = "#DA0000" // red
 	random_color_list = list("#FC7474")
 
 /datum/reagent/colorful_reagent/powder/orange
-	name = "Orange Powder"
+	name = "Orange Crayon Powder"
 	colorname = "orange"
 	color = "#FF9300" // orange
 	random_color_list = list("#FF9300")
 
 /datum/reagent/colorful_reagent/powder/yellow
-	name = "Yellow Powder"
+	name = "Yellow Crayon Powder"
 	colorname = "yellow"
 	color = "#FFF200" // yellow
 	random_color_list = list("#FFF200")
 
 /datum/reagent/colorful_reagent/powder/green
-	name = "Green Powder"
+	name = "Green Crayon Powder"
 	colorname = "green"
 	color = "#A8E61D" // green
 	random_color_list = list("#A8E61D")
 
 /datum/reagent/colorful_reagent/powder/blue
-	name = "Blue Powder"
+	name = "Blue Crayon Powder"
 	colorname = "blue"
 	color = "#00B7EF" // blue
 	random_color_list = list("#71CAE5")
 
 /datum/reagent/colorful_reagent/powder/purple
-	name = "Purple Powder"
+	name = "Purple Crayon Powder"
 	colorname = "purple"
 	color = "#DA00FF" // purple
 	random_color_list = list("#BD8FC4")
 
 /datum/reagent/colorful_reagent/powder/invisible
-	name = "Invisible Powder"
+	name = "Invisible Crayon Powder"
 	colorname = "invisible"
 	color = "#FFFFFF00" // white + no alpha
 	random_color_list = list(null)	//because using the powder color turns things invisible
 
 /datum/reagent/colorful_reagent/powder/black
-	name = "Black Powder"
+	name = "Black Crayon Powder"
 	colorname = "black"
 	color = "#1C1C1C" // not quite black
 	random_color_list = list("#8D8D8D")	//more grey than black, not enough to hide your true colors
 
 /datum/reagent/colorful_reagent/powder/white
-	name = "White Powder"
+	name = "White Crayon Powder"
 	colorname = "white"
 	color = "#FFFFFF" // white
 	random_color_list = list("#FFFFFF") //doesn't actually change appearance at all
