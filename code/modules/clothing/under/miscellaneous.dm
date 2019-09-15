@@ -88,6 +88,7 @@
 	item_state = "plasmaman"
 	icon = 'icons/obj/clothing/under/plasmaman.dmi'
 	mob_overlay_icon = 'icons/mob/clothing/under/plasmaman.dmi'
+	restricted_species = list("plasmaman")
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 100, "rad" = 0, "fire" = 95, "acid" = 95)
 	body_parts_covered = CHEST|GROIN|LEGS|FEET|ARMS|HANDS
 	can_adjust = FALSE

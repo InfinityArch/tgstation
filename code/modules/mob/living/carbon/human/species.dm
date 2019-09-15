@@ -788,7 +788,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(slot in no_equip)
 		if(!I.species_exception || !is_type_in_list(src, I.species_exception))
 			return FALSE
-	if(I.restricted_species || !is_type_in_list(src, I.restricted_species))
+	if((I.restricted_species) && (!limbs_id in I.restricted_species))
 		to_chat(H, "<span class='warning'>This piece of equipment is incompatible with your species!</span>")
 
 	var/num_arms = H.get_num_arms(FALSE)
