@@ -44,6 +44,7 @@
 	var/species_id = ""
 	var/should_draw_gender = FALSE
 	var/should_draw_greyscale = FALSE
+	var/should_draw_husked = FALSE
 	var/species_color = ""
 	var/mutation_color = ""
 	var/aux_color = ""
@@ -295,11 +296,17 @@
 		no_update = FALSE
 
 	if(HAS_TRAIT(C, TRAIT_HUSK) && is_organic_limb())
-		species_id = "husk" //overrides species_id
-		dmg_overlay_type = "" //no damage overlay shown when husked
-		should_draw_gender = FALSE
-		should_draw_greyscale = FALSE
-		no_update = TRUE
+		should_draw_husked = TRUE
+		dmg_overlay_type = ""
+		if(!ishuman(C))
+			species_id = "husk" //overrides species_id
+			dmg_overlay_type = "" //no damage overlay shown when husked
+			should_draw_gender = FALSE
+			should_draw_greyscale = FALSE
+			no_update = TRUE
+	else if(should_draw_husked && !(HAS_TRAIT(C, TRAIT_HUSK))) //if the limb is husked but doesn't have the trait, husk visuals get removed
+		should_draw_husked = FALSE
+		no_update = FALSE
 
 	if(no_update)
 		return
@@ -317,8 +324,8 @@
 			should_draw_greyscale = TRUE
 		else
 			skin_tone = ""
-		if(S.aux_color_override && aux_zone)
-			aux_color = S.aux_color_override
+		if(AUXCOLORS in S.species_traits && aux_zone)
+			aux_color = S.aux_color
 
 		body_gender = H.gender
 		should_draw_gender = S.sexes
@@ -337,7 +344,7 @@
 		else
 			mutation_color = ""
 
-		dmg_overlay_type = S.damage_overlay_type
+		dmg_overlay_type = should_draw_husked ? "" : S.damage_overlay_type
 
 	else if(animal_origin == MONKEY_BODYPART) //currently monkeys are the only non human mob to have damage overlays.
 		dmg_overlay_type = animal_origin
@@ -345,7 +352,7 @@
 	if(status == BODYPART_ROBOTIC)
 		dmg_overlay_type = "robotic"
 
-	if(dropping_limb)
+	if(dropping_limb || should_draw_husked)
 		no_update = TRUE //when attached, the limb won't be affected by the appearance changes of its mob owner.
 
 //to update the bodypart's icon when not attached to a mob
@@ -411,8 +418,14 @@
 				limb.icon_state = "[species_id]_[body_zone]_[icon_gender]"
 			else
 				limb.icon_state = "[species_id]_[body_zone]"
+		if(should_draw_husked)
+			limb.icon_state += "_husk"
+
 		if(aux_zone)
-			aux = image(limb.icon, "[species_id]_[aux_zone]", -aux_layer, image_dir)
+			if(should_draw_husked)
+				aux = image(limb.icon, "[species_id]_[aux_zone]_husk", -aux_layer, image_dir)
+			else
+				aux = image(limb.icon, "[species_id]_[aux_zone]", -aux_layer, image_dir)
 			. += aux
 
 	else
@@ -427,7 +440,7 @@
 		return
 
 
-	if(should_draw_greyscale)
+	if(should_draw_greyscale && !should_draw_husked)
 		var/draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))
 		if(draw_color)
 			limb.color = "#[draw_color]"

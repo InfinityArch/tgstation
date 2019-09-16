@@ -122,6 +122,8 @@
 #define AGENDER				 18
 #define NOEYESPRITES		 19 //Do not draw eyes or eyeless overlay
 #define ALTERNATE_WORN_ICONS 20
+#define AUXCOLORS			 21 // species uses auxcolors to color hands and feet and appropriate mutantbodyparts
+#define AUXCOLORS_PARTSONLY  22 // species uses auxcolors to color mutant bodyparts
 
 //organ slots
 #define ORGAN_SLOT_BRAIN "brain"

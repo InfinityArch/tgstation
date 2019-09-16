@@ -18,7 +18,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	var/hair_color	// this allows races to have specific hair colors... if null, it uses the H's hair/facial hair colors. if "mutcolor", it uses the H's mutant_color
 	var/hair_alpha = 255	// the alpha used by the hair. 255 is completely solid, 0 is transparent.
-	var/aux_color_override	// if defined, the species' aux parts will use this color
+	var/aux_color // works like hair_color, but for aux parts; if defined and species has AUXCOLORS_OVERRIDE in traits, the auxparts will be colored as such, AUXCOLORS can also be a color SRC for a 
 	var/list/feature_names = DEFAULT_FEATURES_NAMES // what the in game name of the species' features are
 	var/exotic_blood = ""	// If your race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If your race uses a non standard bloodtype (A+, O-, AB-, etc)
