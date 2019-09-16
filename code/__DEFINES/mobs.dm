@@ -268,6 +268,7 @@
 #define REAGENTS_EFFECT_MULTIPLIER (REAGENTS_METABOLISM / 0.4)	// By defining the effect multiplier this way, it'll exactly adjust all effects according to how they originally were with the 0.4 metabolism
 #define DEFAULT_SPECIES_INDEX "default" // the fallback species index to use for a sprite feature
 #define DEFAULT_FEATURES_LIST list("mcolor" = "FFFFFF", "tail" = "None", "wings" = "None", "snout" = "None", "horns" = "None", "ears" = "None", "frills" = "None", "tail_accessory" = "None", "body_markings" = "None", "legs" = "Normal Legs", "caps" = "None")
+#define DEFAULT_FEATURES_NAMES list("skin_tone" = "skin tone", "hair" = "hairstyle", "facial_hair" = "facial hairstyle", "mcolor" = "body color", "tail" = "tail", "wings" = "wings", "snout" = "snout", "horns" = "horns", "ears" = "ears", "frills" = "frills", "tail_accessory" = "tail accessory", "body_markings" = "body markings", "legs" = "legs")
 
 
 // Roundstart trait system

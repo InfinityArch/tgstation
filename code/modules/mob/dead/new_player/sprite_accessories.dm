@@ -69,7 +69,7 @@
 // Hair Definitions //
 //////////////////////
 /datum/sprite_accessory/hair
-	icon = 'icons/mob/hair/hair.dmi'	  // default icon for all hairs
+	icon = 'icons/mob/hair/human.dmi'	  // default icon for all hairs
 	species = "human"
 
 	// please make sure they're sorted alphabetically and, where needed, categorized
@@ -799,7 +799,7 @@
 /////////////////////////////
 
 /datum/sprite_accessory/facial_hair
-	icon = 'icons/mob/hair/facial_hair.dmi'
+	icon = 'icons/mob/facial_hair/human.dmi'
 	gender = MALE // barf (unless you're a dorf, dorfs dig chix w/ beards :P)
 	species = "human"
 
@@ -1554,11 +1554,11 @@
 ///////////
 
 /datum/sprite_accessory/tails
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/tails_animated
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 
 /datum/sprite_accessory/tails/none
 	name = "None"
@@ -1602,12 +1602,14 @@
 	icon_state = "spikes"
 
 /datum/sprite_accessory/tails/cat
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	name = "Cat"
 	icon_state = "cat"
 	color_src = HAIR
 	species = "felinid"
 
 /datum/sprite_accessory/tails_animated/cat
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	name = "Cat"
 	icon_state = "cat"
 	color_src = HAIR
@@ -1618,7 +1620,7 @@
 ///////////
 
 /datum/sprite_accessory/snouts
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/snouts/sharp
@@ -1643,7 +1645,7 @@
 ///////////
 
 /datum/sprite_accessory/horns
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/horns/none
@@ -1676,7 +1678,7 @@
 ////////////
 
 /datum/sprite_accessory/frills
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/frills/none
@@ -1701,11 +1703,11 @@
 //////////////////////
 
 /datum/sprite_accessory/tail_accessory
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/tail_accessory_animated
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 
 /datum/sprite_accessory/tail_accessory/none
 	name = "None"
@@ -1769,10 +1771,11 @@
 	species = DEFAULT_SPECIES_INDEX
 
 /datum/sprite_accessory/ears/cat
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	name = "Cat"
 	icon_state = "cat"
 	species = "felinid"
-	hasinner = 1
+	hasinner = TRUE
 	color_src = HAIR
 
 ////////////
@@ -1896,7 +1899,7 @@
 ///////////////////
 
 /datum/sprite_accessory/body_markings
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/bodyparts/lizard.dmi'
 	species = "lizard"
 	gender_specific = TRUE
 
@@ -1913,9 +1916,9 @@
 	name = "Light Tiger Body"
 	icon_state = "dtiger"
 
-/datum/sprite_accessory/body_markings/belly_stripes
-	name = "Belly stripes"
-	icon_state = "belly"
+/datum/sprite_accessory/body_markings/light_belly
+	name = "Light Belly"
+	icon_state = "lbelly"
 
 
 /datum/sprite_accessory/body_markings/moth // the markings that moths can have. finally something other than the boring tan

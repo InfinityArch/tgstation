@@ -1,5 +1,5 @@
 /datum/species/human
-	name = "Human"
+	name = "human"
 	id = "human"
 	default_color = "FFFFFF"
 	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS, SKIN_TONE)

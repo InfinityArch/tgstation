@@ -67,7 +67,7 @@
 		nojumpsuit = S.nojumpsuit
 		no_equip = S.no_equip.Copy()
 		limbs_id = S.limbs_id
-		skin_type = S.skin_type
+		feature_names = S.feature_names.Copy()
 		fixed_mut_color = S.fixed_mut_color
 		hair_color = S.hair_color
 		fake_species = new S.type

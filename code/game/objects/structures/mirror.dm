@@ -164,9 +164,7 @@
 		choose_from += "skin tone"
 	if(!NOEYESPRITES in H.dna.species.species_traits)
 		choose_from += "eye color"
-	if("waggingtail" in H.dna.species.mutant_bodyparts) //to prevent issues from arising later
-		H.dna.species.stop_wagging_tail(H)	
-	if(("tail" in H.dna.species.mutant_bodyparts) && (length(GLOB.tails_list_species[H.dna.species.features_id]) > 1))
+	if((H.dna.features["tail"] != "None") && (length(GLOB.tails_list_species[H.dna.species.features_id]) > 1))
 		choose_from += "tail"
 	if(("snout" in H.dna.species.mutant_bodyparts) && (length(GLOB.snouts_list_species[H.dna.species.features_id]) > 1))
 		choose_from += "snout"
@@ -215,7 +213,7 @@
 			H.set_species(newrace)
 
 		if("skin tone")
-			var/new_s_tone = input(user, "Choose your [H.dna.species.skin_type]", "Skin tone change")  as null|anything in GLOB.skin_tones_list_species[H.dna.species.limbs_id]
+			var/new_s_tone = input(user, "Choose your [H.dna.species.feature_names["skin_tone"]]", "Skin tone change")  as null|anything in GLOB.skin_tones_list_species[H.dna.species.limbs_id]
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 				return
 
@@ -224,7 +222,7 @@
 				H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
 
 		if("body color")
-			var/new_mutantcolor = input(user, "Choose your body color:", "Race change","#"+H.dna.features["mcolor"]) as color|null
+			var/new_mutantcolor = input(user, "Choose your body color:", "Body color change","#"+H.dna.features["mcolor"]) as color|null
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 				return
 			if(new_mutantcolor)
@@ -237,28 +235,31 @@
 					to_chat(H, "<span class='notice'>Invalid color. Your color is not bright enough.</span>")
 
 		if("gender")
-			if(!(H.gender in list("male", "female"))) //blame the patriarchy
-				return
-			if(H.gender == "male")
-				if(alert(H, "Become a Witch?", "Confirmation", "Yes", "No") == "Yes")
-					if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-						return
-					H.gender = "female"
-					to_chat(H, "<span class='notice'>Man, you feel like a woman!</span>")
-				else
-					return
-
-			else
-				if(alert(H, "Become a Warlock?", "Confirmation", "Yes", "No") == "Yes")
-					if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-						return
-					H.gender = "male"
+			var/list/friendlyGenders = list("Male" = "male", "Female" = "female", "Other" = "plural")
+			var/pickedGender = input(user, "Choose your gender.", "gender change", gender) as null|anything in friendlyGenders
+			if(pickedGender && friendlyGenders[pickedGender] != H.gender)
+				H.gender = friendlyGenders[pickedGender]
+				if(H.gender == "male")
 					to_chat(H, "<span class='notice'>Whoa man, you feel like a man!</span>")
+					H.underwear = sanitize_inlist(H.underwear, GLOB.underwear_m)
+					H.undershirt = sanitize_inlist(H.undershirt, GLOB.undershirt_m)
+				else if(H.gender == "female")
+					to_chat(H, "<span class='notice'>Man, you feel like a woman!</span>")
+					H.underwear = sanitize_inlist(H.underwear, GLOB.underwear_f)
+					H.undershirt = sanitize_inlist(H.undershirt, GLOB.undershirt_f)
 				else
-					return
-			H.dna.update_ui_block(DNA_GENDER_BLOCK)
-			H.update_body()
-			H.update_mutations_overlay() //(hulk male/female)
+					to_chat(H, "<span class='notice'>You feel liberated from traditional gender norms!</span>")
+				if(HAIR in H.dna.species.species_traits)
+					H.hairstyle = sanitize_hairstyle(H.hairstyle, H.dna.species.hair_id, H.gender)
+					H.dna.update_ui_block(DNA_HAIRSTYLE_BLOCK)
+				if(FACEHAIR in H.dna.species.species_traits)
+					H.facial_hairstyle = sanitize_hairstyle(H.facial_hairstyle, H.dna.species.hair_id, H.gender, TRUE)
+					H.dna.update_ui_block(DNA_FACIAL_HAIRSTYLE_BLOCK)
+				H.dna.update_ui_block(DNA_GENDER_BLOCK)
+
+				
+				H.update_body()
+				H.update_mutations_overlay() //(hulk male/female)
 
 		if("hair")
 			var/hairchoice = alert(H, "Hairstyle or hair color?", "Change Hair", "Style", "Color")
@@ -297,8 +298,6 @@
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
 				return
 			if(new_tail)
-				if("waggingtail" in H.dna.species.mutant_bodyparts)
-					H.dna.species.stop_wagging_tail(H)	
 				H.dna.features["tail"] = new_tail
 
 		if("snout")

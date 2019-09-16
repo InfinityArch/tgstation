@@ -134,7 +134,7 @@ __Returns__:
 		if(MALE)
 			return pick((GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		if(FEMALE)
-			return pick((GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
+			return pick((GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[species_index]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		else
 			return pick(GLOB.hairstyles_list_species[species_index] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
@@ -143,7 +143,7 @@ __Returns__:
 		if(MALE)
 			return pick((GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		if(FEMALE)
-			return pick((GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
+			return pick((GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[species_index]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 		else
 			return pick(GLOB.facial_hairstyles_list_species[species_index] | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 

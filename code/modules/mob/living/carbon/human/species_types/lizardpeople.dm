@@ -1,6 +1,6 @@
 /datum/species/lizard
 	// Reptilian humanoids with scaled skin and tails.
-	name = "Lizardperson"
+	name = "unathi"
 	id = "lizard"
 	say_mod = "hisses"
 	default_color = "00FF00"
@@ -63,7 +63,7 @@
 	H.update_body()
 
 /datum/species/lizard/stop_wagging_tail(mob/living/carbon/human/H)
-	if("waggingtail_lizard" in mutant_bodyparts)
+	if("waggingtail" in mutant_bodyparts)
 		mutant_bodyparts -= "waggingtail"
 		mutant_bodyparts -= "waggingtail_accessory"
 		mutant_bodyparts |= "tail"

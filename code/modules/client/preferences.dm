@@ -259,7 +259,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>[pref_species.skin_type]</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["skin_tone"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=s_tone;task=input'>[skin_tone]</a>"
 				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_SKIN_TONE]'>[(randomise[RANDOM_SKIN_TONE]) ? "Lock" : "Unlock"]</A>"
@@ -271,7 +271,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!use_skintones)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Mutant Color</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["mcolor"])]</h3>"
 
 				dat += "<span style='border: 1px solid #161616; background-color: #[features["mcolor"]];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=mutant_color;task=input'>Change</a><BR>"
 
@@ -282,7 +282,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!use_skintones && !mutant_colors)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Eye Color</h3>"
+				dat += "<h3>Eye color</h3>"
 				dat += "<span style='border: 1px solid #161616; background-color: #[eye_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=eyes;task=input'>Change</a>"
 				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_EYE_COLOR]'>[(randomise[RANDOM_EYE_COLOR]) ? "Lock" : "Unlock"]</A>"
 
@@ -295,7 +295,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				hairstyle = sanitize_hairstyle(hairstyle, pref_species.hair_id, gender)
 				dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Hairstyle</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["hair"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=hairstyle;task=input'>[hairstyle]</a>"
 				dat += "<a href='?_src_=prefs;preference=previous_hairstyle;task=input'>&lt;</a> <a href='?_src_=prefs;preference=next_hairstyle;task=input'>&gt;</a>"
@@ -304,7 +304,10 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				dat += "<br><span style='border:1px solid #161616; background-color: #[hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=hair;task=input'>Change</a>"
 				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_HAIR_COLOR]'>[(randomise[RANDOM_HAIR_COLOR]) ? "Lock" : "Unlock"]</A>"
 
-				dat += "<BR><h3>Facial Hairstyle</h3>"
+			if(FACEHAIR in pref_species.species_traits)
+
+				facial_hairstyle = sanitize_hairstyle(facial_hairstyle, pref_species.hair_id, gender, facial = TRUE)
+				dat += "<BR><h3>[capitalize(pref_species.feature_names["facial_hair"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=facial_hairstyle;task=input'>[facial_hairstyle]</a>"
 				dat += "<a href='?_src_=prefs;preference=previous_facehairstyle;task=input'>&lt;</a> <a href='?_src_=prefs;preference=next_facehairstyle;task=input'>&gt;</a>"
@@ -322,7 +325,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Tail</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["tail"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=tail;task=input'>[features["tail"]]</a><BR>"
 
@@ -336,7 +339,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Snout</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["snout"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=snout;task=input'>[features["snout"]]</a><BR>"
 
@@ -350,7 +353,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Horns</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["horns"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=horns;task=input'>[features["horns"]]</a><BR>"
 
@@ -364,7 +367,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Frills</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["frills"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=frills;task=input'>[features["frills"]]</a><BR>"
 
@@ -378,7 +381,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Tail Accessory</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["tail_accessory"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=tail_accessory;task=input'>[features["tail_accessory"]]</a><BR>"
 
@@ -391,7 +394,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Body Markings</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["body_markings"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=body_markings;task=input'>[features["body_markings"]]</a><BR>"
 
@@ -405,7 +408,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Legs</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["legs"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=legs;task=input'>[features["legs"]]</a><BR>"
 
@@ -419,7 +422,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Ears</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["ears"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=ears;task=input'>[features["ears"]]</a><BR>"
 
@@ -433,7 +436,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>Wings</h3>"
+				dat += "<h3>[capitalize(pref_species.feature_names["wings"])]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=wings;task=input'>[features["wings"]]</a><BR>"
 
@@ -1084,11 +1087,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("hairstyle")
 					var/new_hairstyle
 					if(gender == MALE)
-						new_hairstyle = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[pref_species.hair_id])
+						new_hairstyle = input(user, "Choose your character's [pref_species.feature_names["hair"]]:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[pref_species.hair_id])
 					else if(gender == FEMALE)
-						new_hairstyle = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.hair_id]) 
+						new_hairstyle = input(user, "Choose your character's [pref_species.feature_names["hair"]]:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.hair_id]) 
 					else
-						new_hairstyle = input(user, "Choose your character's hair style:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[pref_species.hair_id]
+						new_hairstyle = input(user, "Choose your character's [pref_species.feature_names["hair"]]:", "Character Preference")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[pref_species.hair_id]
 					if(new_hairstyle)
 						hairstyle = new_hairstyle
 
@@ -1116,11 +1119,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("facial_hairstyle")
 					var/new_facial_hairstyle
 					if(gender == MALE)
-						new_facial_hairstyle = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id])
+						new_facial_hairstyle = input(user, "Choose your character's [pref_species.feature_names["facial_hair"]]:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id])
 					else if(gender == FEMALE)
-						new_facial_hairstyle = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id])
+						new_facial_hairstyle = input(user, "Choose your character's [pref_species.feature_names["facial_hair"]]:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.hair_id])
 					else
-						new_facial_hairstyle = input(user, "Choose your character's facial-hair style:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_list_species[pref_species.hair_id])
+						new_facial_hairstyle = input(user, "Choose your character's [pref_species.feature_names["facial_hair"]]:", "Character Preference")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_list_species[pref_species.hair_id])
 					if(new_facial_hairstyle)
 						facial_hairstyle = new_facial_hairstyle
 
@@ -1194,7 +1197,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						age = CLAMP(age, pref_species.age_min, pref_species.age_max)
 
 				if("mutant_color")
-					var/new_mutantcolor = input(user, "Choose your character's body color:", "Character Preference","#"+features["mcolor"]) as color|null
+					var/new_mutantcolor = input(user, "Choose your character's [pref_species.feature_names["mcolor"]]:", "Character Preference","#"+features["mcolor"]) as color|null
 					if(new_mutantcolor)
 						var/temp_hsv = RGBtoHSV(new_mutantcolor)
 						if(new_mutantcolor == "#000000")
@@ -1206,60 +1209,60 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				if("tail")
 					var/new_tail
-					new_tail = input(user, "Choose your character's tail:", "Character Preference") as null|anything in GLOB.tails_list_species[pref_species.features_id]
+					new_tail = input(user, "Choose your character's [pref_species.feature_names["tail"]]:", "Character Preference") as null|anything in GLOB.tails_list_species[pref_species.features_id]
 					if(new_tail)
 						features["tail"] = new_tail
 
 				if("snout")
 					var/new_snout
-					new_snout = input(user, "Choose your character's snout:", "Character Preference") as null|anything in GLOB.snouts_list_species[pref_species.features_id]
+					new_snout = input(user, "Choose your character's [pref_species.feature_names["snout"]]:", "Character Preference") as null|anything in GLOB.snouts_list_species[pref_species.features_id]
 					if(new_snout)
 						features["snout"] = new_snout
 
 				if("horns")
 					var/new_horns
-					new_horns = input(user, "Choose your character's horns:", "Character Preference") as null|anything in GLOB.horns_list_species[pref_species.features_id] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX]
+					new_horns = input(user, "Choose your character's [pref_species.feature_names["horns"]]:", "Character Preference") as null|anything in GLOB.horns_list_species[pref_species.features_id] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX]
 					if(new_horns)
 						features["horns"] = new_horns
 
 				if("ears")
 					var/new_ears
-					new_ears = input(user, "Choose your character's ears:", "Character Preference") as null|anything in GLOB.ears_list_species[pref_species.features_id]
+					new_ears = input(user, "Choose your character's [pref_species.feature_names["ears"]]:", "Character Preference") as null|anything in GLOB.ears_list_species[pref_species.features_id]
 					if(new_ears)
 						features["ears"] = new_ears
 
 				if("wings")
 					var/new_wings
-					new_wings = input(user, "Choose your character's wings:", "Character Preference") as null|anything in GLOB.wings_list_species[pref_species.features_id]
+					new_wings = input(user, "Choose your character's [pref_species.feature_names["wings"]]:", "Character Preference") as null|anything in GLOB.wings_list_species[pref_species.features_id]
 					if(new_wings)
 						features["wings"] = new_wings
 
 				if("frills")
 					var/new_frills
-					new_frills = input(user, "Choose your character's frills:", "Character Preference") as null|anything in GLOB.frills_list_species[pref_species.features_id] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX]
+					new_frills = input(user, "Choose your character's [pref_species.feature_names["frills"]]:", "Character Preference") as null|anything in GLOB.frills_list_species[pref_species.features_id] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX]
 					if(new_frills)
 						features["frills"] = new_frills
 
 				if("tail_accessory")
 					var/new_tail_accessory
-					new_tail_accessory = input(user, "Choose your character's tail accessory:", "Character Preference") as null|anything in GLOB.tail_accessory_list_species[pref_species.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX]
+					new_tail_accessory = input(user, "Choose your character's [pref_species.feature_names["tail_accessory"]]:", "Character Preference") as null|anything in GLOB.tail_accessory_list_species[pref_species.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX]
 					if(new_tail_accessory)
 						features["tail_accessory"] = new_tail_accessory
 
 				if("body_markings")
 					var/new_body_markings
-					new_body_markings = input(user, "Choose your character's body markings:", "Character Preference") as null|anything in GLOB.body_markings_list_species[pref_species.features_id]  | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX]
+					new_body_markings = input(user, "Choose your character's [pref_species.feature_names["body_markings"]]:", "Character Preference") as null|anything in GLOB.body_markings_list_species[pref_species.features_id]  | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX]
 					if(new_body_markings)
 						features["body_markings"] = new_body_markings
 
 				if("legs")
 					var/new_legs
-					new_legs = input(user, "Choose your character's legs:", "Character Preference") as null|anything in GLOB.legs_list_species[pref_species.limbs_id] | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX]
+					new_legs = input(user, "Choose your character's [pref_species.feature_names["legs"]]:", "Character Preference") as null|anything in GLOB.legs_list_species[pref_species.limbs_id] | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX]
 					if(new_legs)
 						features["legs"] = new_legs
 
 				if("s_tone")
-					var/new_s_tone = input(user, "Choose your character's [pref_species.skin_type]:", "Character Preference")  as null|anything in GLOB.skin_tones_list_species[pref_species.limbs_id]
+					var/new_s_tone = input(user, "Choose your character's [pref_species.feature_names["skin_tone"]]:", "Character Preference")  as null|anything in GLOB.skin_tones_list_species[pref_species.limbs_id]
 					if(new_s_tone)
 						skin_tone = new_s_tone
 
@@ -1346,11 +1349,17 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					var/pickedGender = input(user, "Choose your gender.", "Character Preference", gender) as null|anything in friendlyGenders
 					if(pickedGender && friendlyGenders[pickedGender] != gender)
 						gender = friendlyGenders[pickedGender]
-						underwear = random_underwear(gender)
-						undershirt = random_undershirt(gender)
-						socks = random_socks()
-						facial_hairstyle = random_facial_hairstyle(gender, pref_species.hair_id)
-						hairstyle = random_hairstyle(gender, pref_species.hair_id)
+						if(gender == "male")
+							underwear = sanitize_inlist(underwear, GLOB.underwear_m)
+							undershirt = sanitize_inlist(undershirt, GLOB.undershirt_m)
+						else if(gender == "female")
+							underwear = sanitize_inlist(underwear, GLOB.underwear_f)
+							undershirt = sanitize_inlist(undershirt, GLOB.undershirt_f)
+					if(HAIR in pref_species.species_traits)
+						hairstyle = sanitize_hairstyle(hairstyle, pref_species.hair_id, gender)
+					if(FACEHAIR in pref_species.species_traits)
+						facial_hairstyle = sanitize_hairstyle(facial_hairstyle, pref_species.hair_id, gender, TRUE)
+
 
 				if("hotkeys")
 					hotkeys = !hotkeys
@@ -1484,7 +1493,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("tab")
 					if (href_list["tab"])
 						current_tab = text2num(href_list["tab"])
-
 	ShowChoices(user)
 	return 1
 

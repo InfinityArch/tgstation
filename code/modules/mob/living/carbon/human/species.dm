@@ -19,7 +19,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/hair_color	// this allows races to have specific hair colors... if null, it uses the H's hair/facial hair colors. if "mutcolor", it uses the H's mutant_color
 	var/hair_alpha = 255	// the alpha used by the hair. 255 is completely solid, 0 is transparent.
 	var/aux_color_override	// if defined, the species' aux parts will use this color
-	var/skin_type = "skin tone"	// what do we call this species "skin?"
+	var/list/feature_names = DEFAULT_FEATURES_NAMES // what the in game name of the species' features are
 	var/exotic_blood = ""	// If your race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If your race uses a non standard bloodtype (A+, O-, AB-, etc)
 	var/meat = /obj/item/reagent_containers/food/snacks/meat/slab/human //What the species drops on gibbing
@@ -697,12 +697,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			var/mutable_appearance/accessory_overlay = mutable_appearance(S.icon, layer = -layer)
 
-			//A little rename so we don't have to use tail_lizard or tail_human when naming the sprites.
-			//if(bodypart == "tail_lizard" || bodypart == "tail_human")
-				//bodypart = "tail"
-			//else if(bodypart == "waggingtail_lizard" || bodypart == "waggingtail_human")
-				//bodypart = "waggingtail"
-
 			if(S.gender_specific)
 				accessory_overlay.icon_state = "[g]_[bodypart]_[S.icon_state]_[layertext]"
 			else
@@ -788,8 +782,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(slot in no_equip)
 		if(!I.species_exception || !is_type_in_list(src, I.species_exception))
 			return FALSE
-	if((I.restricted_species) && (!limbs_id in I.restricted_species))
-		to_chat(H, "<span class='warning'>This piece of equipment is incompatible with your species!</span>")
+	if(length(I.restricted_species) && !(limbs_id in I.restricted_species))
+		return FALSE
 
 	var/num_arms = H.get_num_arms(FALSE)
 	var/num_legs = H.get_num_legs(FALSE)
