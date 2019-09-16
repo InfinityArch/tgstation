@@ -135,7 +135,7 @@
 	var/obj/item/bodypart/limb
 	limb = new buildpath(loc)
 	if(selected_category=="human" || selected_category=="lizard") //Species with greyscale parts should be included here
-		limb.icon = 'icons/mob/human_parts_greyscale.dmi'
+		limb.icon = file("icons/mob/bodyparts/[selected_category].dmi")
 		limb.should_draw_greyscale = TRUE
 	else
 		limb.icon = 'icons/mob/human_parts.dmi'

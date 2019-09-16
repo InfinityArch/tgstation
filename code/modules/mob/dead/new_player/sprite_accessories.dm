@@ -1554,11 +1554,11 @@
 ///////////
 
 /datum/sprite_accessory/tails
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/tails.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/tails_animated
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/tails.dmi'
 
 /datum/sprite_accessory/tails/none
 	name = "None"
@@ -1602,14 +1602,12 @@
 	icon_state = "spikes"
 
 /datum/sprite_accessory/tails/cat
-	icon = 'icons/mob/mutant_bodyparts.dmi'
 	name = "Cat"
 	icon_state = "cat"
 	color_src = HAIR
 	species = "felinid"
 
 /datum/sprite_accessory/tails_animated/cat
-	icon = 'icons/mob/mutant_bodyparts.dmi'
 	name = "Cat"
 	icon_state = "cat"
 	color_src = HAIR
@@ -1620,7 +1618,7 @@
 ///////////
 
 /datum/sprite_accessory/snouts
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/snout.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/snouts/sharp
@@ -1645,7 +1643,7 @@
 ///////////
 
 /datum/sprite_accessory/horns
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/horns.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/horns/none
@@ -1678,7 +1676,7 @@
 ////////////
 
 /datum/sprite_accessory/frills
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/frills.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/frills/none
@@ -1703,11 +1701,11 @@
 //////////////////////
 
 /datum/sprite_accessory/tail_accessory
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/tail_accessories.dmi'
 	species = "lizard"
 
 /datum/sprite_accessory/tail_accessory_animated
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/tail_accessories.dmi'
 
 /datum/sprite_accessory/tail_accessory/none
 	name = "None"
@@ -1763,7 +1761,7 @@
 //////////
 
 /datum/sprite_accessory/ears
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/sprite_accessories/ears.dmi'
 	
 /datum/sprite_accessory/ears/none
 	name = "None"
@@ -1771,7 +1769,6 @@
 	species = DEFAULT_SPECIES_INDEX
 
 /datum/sprite_accessory/ears/cat
-	icon = 'icons/mob/mutant_bodyparts.dmi'
 	name = "Cat"
 	icon_state = "cat"
 	species = "felinid"
@@ -1899,7 +1896,7 @@
 ///////////////////
 
 /datum/sprite_accessory/body_markings
-	icon = 'icons/mob/bodyparts/lizard.dmi'
+	icon = 'icons/mob/sprite_accessories/body_markings.dmi'
 	species = "lizard"
 	gender_specific = TRUE
 
@@ -1924,7 +1921,7 @@
 /datum/sprite_accessory/body_markings/moth // the markings that moths can have. finally something other than the boring tan
 	name = "Reddish"
 	icon_state = "reddish"
-	icon = 'icons/mob/moth_markings.dmi'
+	icon = 'icons/mob/sprite_accessories/moth_markings.dmi'
 	gender_specific = FALSE
 	color_src = null
 	species = "moth"
@@ -1986,7 +1983,7 @@
 	species = "lizard"
 
 /datum/sprite_accessory/caps
-	icon = 'icons/mob/mutant_bodyparts.dmi'
+	icon = 'icons/mob/sprite_accessories/misc.dmi'
 	color_src = HAIR
 
 /datum/sprite_accessory/caps/round
