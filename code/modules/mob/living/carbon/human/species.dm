@@ -42,6 +42,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/heatmod = 1		// multiplier for heat damage
 	var/stunmod = 1		// multiplier for stun duration
 	var/attack_type = BRUTE //Type of damage attack does
+	var/perk_points = QUIRK_POINTS_NORMAL // how many points this species gets to spend on perks
 	var/punchdamagelow = 1       //lowest possible punch damage. if this is set to 0, punches will always miss
 	var/punchdamagehigh = 10      //highest possible punch damage
 	var/punchstunthreshold = 10//damage at which punches from this race will stun //yes it should be to the attacked race but it's not useful that way even if it's logical
@@ -519,7 +520,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(HD && !(HAS_TRAIT(H, TRAIT_HUSK)))
 		// lipstick
 		if(H.lip_style && (LIPS in species_traits))
-			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/human_face.dmi', "lips_[H.lip_style]", -BODY_LAYER)
+			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[H.dna.species.features_id]_lips_[H.lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = H.lip_color
 			if(OFFSET_FACE in H.dna.species.offset_features)
 				lip_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
@@ -758,6 +759,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			return "ADJ"
 		if(BODY_FRONT_LAYER)
 			return "FRONT"
+		if(FRONT_MUTATIONS_LAYER)
+			return "FRONT_MUT"
 
 
 /datum/species/proc/spec_life(mob/living/carbon/human/H)
@@ -1847,7 +1850,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(GLOB.wings_list_species[features_id])
 			H.dna.features["wings"] = pick(GLOB.wings_list_species[features_id])
 		else
-			H.dna.features["wings"] = pick(GLOB.wings_list_species["human"])
+			H.dna.features["wings"] = pick(GLOB.wings_list)
 		H.update_body()
 
 /datum/species/proc/HandleFlight(mob/living/carbon/human/H)

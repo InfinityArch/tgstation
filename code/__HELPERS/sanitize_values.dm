@@ -67,7 +67,7 @@ __Returns__: returns the input list (features) with features found in *features_
 		features["feature_legs"] = sanitize_inlist(features["legs"], (GLOB.legs_list && GLOB.legs_list_species[temp_index]) | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])	
 	if("wings" in features_to_sanitize)
 		temp_index = GLOB.wings_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
-		features["wings"] = sanitize_inlist(features["wings"], GLOB.wings_list & GLOB.wings_list[species_index])
+		features["wings"] = sanitize_inlist(features["wings"], GLOB.wings_list & GLOB.wings_list_species[temp_index])
 	return features
 
 /*

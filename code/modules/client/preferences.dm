@@ -432,7 +432,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					mutant_category = 0
 
 			if(("wings" in pref_species.mutant_bodyparts) && (length(GLOB.wings_list_species[pref_species.features_id]) > 1))
+				message_admins("wing feature for tooltip: [features["wings"]]")
+				message_admins("total wing list[english_list(GLOB.wings_list)]")
+				message_admins("species wing list: [english_list(GLOB.wings_list_species[pref_species.features_id])]")
 				features = sanitize_features(features, pref_species.features_id, features_to_sanitize = list("wings"))
+				message_admins("wing feature for tooltip post sanitization: [features["wings"]]")
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
@@ -1556,6 +1560,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	if("tail" in pref_species.default_features)
 		character.dna.species.mutant_bodyparts |= "tail"
+	if("wings" in pref_species.default_features && pref_species.default_features["wings"] != "None")
+		character.dna.species.mutant_bodyparts |= "wings"
 
 	if(icon_updates)
 		character.update_body()

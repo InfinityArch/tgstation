@@ -355,6 +355,8 @@
 				return
 			if(new_wings)
 				H.dna.features["wings"] = new_wings
+				message_admins("[H.dna.features["wings"]]")
+				message_admins("[english_list(GLOB.wings_list)]")
 
 
 	if(choice)

@@ -274,6 +274,9 @@
 // Roundstart trait system
 
 #define MAX_QUIRKS 6 //The maximum amount of quirks one character can have at roundstart
+#define QUIRK_POINTS_NORMAL 3 //how many points a normal race gets to spend
+#define QUIRK_POINTS_HUMAN  6 // how many points humans get to spend
+#define MAX_NEGATIVE_QUIRKS 1 // how many negative quirks you can have 
 
 // AI Toggles
 #define AI_CAMERA_LUMINOSITY	5

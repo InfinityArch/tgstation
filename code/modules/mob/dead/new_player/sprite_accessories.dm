@@ -1823,11 +1823,13 @@
 	dimension_y = 32
 
 /datum/sprite_accessory/wings/moth
-	icon = 'icons/mob/moth_wings.dmi'
+	icon = 'icons/mob/sprite_accessories/wings.dmi'
 	name = "Plain"
 	icon_state = "plain"
 	color_src = null
 	species = "moth"
+	dimension_x = 45
+	dimension_y = 34
 
 /datum/sprite_accessory/wings/moth/monarch
 	name = "Monarch"
@@ -1925,6 +1927,8 @@
 	gender_specific = FALSE
 	color_src = null
 	species = "moth"
+	dimension_x = 45
+	dimension_y = 34
 
 /datum/sprite_accessory/body_markings/moth/royal
 	name = "Royal"

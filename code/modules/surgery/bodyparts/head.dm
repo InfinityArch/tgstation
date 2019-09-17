@@ -229,7 +229,7 @@
 
 		// lipstick
 		if(lip_style)
-			var/image/lips_overlay = image('icons/mob/human_face.dmi', "lips_[lip_style]", -BODY_LAYER, SOUTH)
+			var/image/lips_overlay = image('icons/mob/sprite_accessories/lips.dmi', "[species_id]_lips_[lip_style]", -COSMETICS_LAYER, SOUTH)
 			lips_overlay.color = lip_color
 			. += lips_overlay
 
