@@ -1612,6 +1612,15 @@
 	icon_state = "cat"
 	color_src = HAIR
 
+/datum/sprite_accessory/tails/tajaran
+	name = "Wingler"
+	icon_state = "wingler"
+	species = "tajaran"
+
+/datum/sprite_accessory/tails_animated/tajaran
+	name = "Wingler"
+	icon_state = "wingler"
+
 
 ///////////
 // Snouts//
@@ -1637,6 +1646,11 @@
 	name = "Round + Light"
 	icon_state = "roundlight"
 
+/datum/sprite_accessory/snouts/tajaran
+	name = "Normal"
+	icon_state = "tajaran"
+	species = "tajaran"
+	hasinner = TRUE
 
 ///////////
 // Horns //
@@ -1774,6 +1788,11 @@
 	species = "felinid"
 	hasinner = TRUE
 	color_src = HAIR
+
+/datum/sprite_accessory/ears/tajaran
+	name = "Pointed"
+	icon_state = "tajaran_pointed"
+	species = "tajaran"
 
 ////////////
 // Wings //

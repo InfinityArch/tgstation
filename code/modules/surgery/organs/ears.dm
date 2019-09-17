@@ -93,20 +93,43 @@
 	name = "cat ears"
 	icon = 'icons/obj/clothing/hats.dmi'
 	icon_state = "kitty"
+	var/feature_name = "Cat"
+	var/color_src = HAIR
 	damage_multiplier = 2
+
+/obj/item/organ/ears/cat/tajaran
+	name = "tajaran ears"
+	feature_name = "Pointed"
+	color_src = MUTCOLORS
+
+
 
 /obj/item/organ/ears/cat/Insert(mob/living/carbon/human/H, special = 0, drop_if_replaced = TRUE)
 	..()
 	if(istype(H))
-		color = H.hair_color
+		if(!color || owner == original_owner)
+			switch(color_src)
+				if(MUTCOLORS)
+					color = H.dna.features["mcolor"]
+				if(SKIN_TONE)
+					color = H.skin_tone
+				if(HAIR)
+					color = H.hair_color
 		H.dna.species.mutant_bodyparts |= "ears"
-		H.dna.features["ears"] = "Cat"
+		H.dna.features["ears"] = feature_name
 		H.update_body()
 
 /obj/item/organ/ears/cat/Remove(mob/living/carbon/human/H,  special = 0)
 	..()
 	if(istype(H))
-		color = H.hair_color
+		if(!color || owner == original_owner)
+			switch(color_src)
+				if(MUTCOLORS)
+					color = H.dna.features["mcolor"]
+				if(SKIN_TONE)
+					color = H.skin_tone
+				if(HAIR)
+					color = H.hair_color
 		H.dna.features["ears"] = "None"
 		H.dna.species.mutant_bodyparts -= "ears"
 		H.update_body()

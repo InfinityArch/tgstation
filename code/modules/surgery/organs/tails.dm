@@ -52,3 +52,10 @@
 	desc = "A severed lizard tail. Somewhere, no doubt, a lizard hater is very pleased with themselves."
 	color = "#116611"
 	tail_type = "Smooth"
+
+/obj/item/organ/tail/tajaran
+	name = "tajaran tail"
+	desc = "A severed tajaran tail. Somewhere, no doubt, a tajaran hater is very pleased with themselves."
+	color = "#116611"
+	tail_type = "Winger"
+	//color_src = SKIN_TONE

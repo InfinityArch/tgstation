@@ -2,6 +2,7 @@
 	name = "organ"
 	icon = 'icons/obj/surgery.dmi'
 	var/mob/living/carbon/owner = null
+	var/mob/living/carbon/original_owner = null
 	var/status = ORGAN_ORGANIC
 	w_class = WEIGHT_CLASS_SMALL
 	throwforce = 0
@@ -29,7 +30,8 @@
 /obj/item/organ/proc/Insert(mob/living/carbon/M, special = 0, drop_if_replaced = TRUE)
 	if(!iscarbon(M) || owner == M)
 		return
-
+	if(!original_owner)
+		original_owner = M
 	var/obj/item/organ/replaced = M.getorganslot(slot)
 	if(replaced)
 		replaced.Remove(M, special = 1)
