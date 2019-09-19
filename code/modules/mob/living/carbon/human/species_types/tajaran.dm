@@ -3,10 +3,11 @@
 	name = "tajaran"
 	id = "tajaran"
 	default_color = "00FF00"
-	species_traits = list(MUTCOLORS,EYECOLOR,LIPS)
+	species_traits = list(SKIN_TONE, HAIR, EYECOLOR,LIPS)
 	inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID
 	mutant_bodyparts = list("ears", "snout", "tail")
 	mutantears = /obj/item/organ/ears/cat/tajaran
+	feature_names = list("skin_tone" = "fur color")
 	//mutanttongue = /obj/item/organ/tongue/lizard
 	mutanttail = /obj/item/organ/tail/tajaran
 	default_features = list("mcolor" = "0F0", "snout" = "Normal", "ears" = "Pointed", "tail" = "Wingler")

@@ -35,7 +35,7 @@
 			if(HAIR)
 				color = H.hair_color
 			if(SKIN_TONE)
-				color = H.skin_tone
+				color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 		tail_type = H.dna.features["tail"]
 		tail_accessory = H.dna.features["tail_accessory"]
 		H.update_body()
@@ -58,4 +58,4 @@
 	desc = "A severed tajaran tail. Somewhere, no doubt, a tajaran hater is very pleased with themselves."
 	color = "#116611"
 	tail_type = "Winger"
-	//color_src = SKIN_TONE
+	color_src = SKIN_TONE

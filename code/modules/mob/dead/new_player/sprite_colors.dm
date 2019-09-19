@@ -84,8 +84,6 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 
 /datum/sprite_color/skin_tone/human
 	species = "human"
-
-/datum/sprite_color/skin_tone/human/african1
 	name = "African 1"
 	color_hex = "754523"
 
@@ -143,8 +141,6 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 /////////////////////
 /datum/sprite_color/skin_tone/ethereal
 	species = "ethereal"
-
-/datum/sprite_color/skin_tone/ethereal/green
 	name = "F Class (Green)"
 	color_hex = "97ee63"
 
@@ -176,6 +172,30 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 	name = "A Class (Cyan)"
 	color_hex = "00ffff"
 
+
+////////////////////////
+// Tajaran skin_tones//
+///////////////////////
+
+/datum/sprite_color/skin_tone/tajaran
+	species = "tajaran"
+	name = "Sand"
+	color_hex = "e6e0cc"
+
+/datum/sprite_color/skin_tone/tajaran/taupe
+	name = "Taupe"
+	color_hex = "af8d73"
+
+/datum/sprite_color/skin_tone/tajaran/chocolate
+	name = "Chocolate"
+	color_hex = "7c5a40"
+
+/datum/sprite_color/skin_tone/tajaran/silver
+	name = "Silver"
+	color_hex = "c6c6c6"
+/datum/sprite_color/skin_tone/tajaran/silver
+	name = "Black"
+	color_hex = "2d2d2d"
 
 ///////////////
 // Lipstick //

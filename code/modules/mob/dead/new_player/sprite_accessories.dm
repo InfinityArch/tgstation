@@ -1616,10 +1616,12 @@
 	name = "Wingler"
 	icon_state = "wingler"
 	species = "tajaran"
+	color_src = SKIN_TONE
 
 /datum/sprite_accessory/tails_animated/tajaran
 	name = "Wingler"
 	icon_state = "wingler"
+	color_src = SKIN_TONE
 
 
 ///////////
@@ -1651,6 +1653,7 @@
 	icon_state = "tajaran"
 	species = "tajaran"
 	hasinner = TRUE
+	color_src = SKIN_TONE
 
 ///////////
 // Horns //
@@ -1793,6 +1796,7 @@
 	name = "Pointed"
 	icon_state = "tajaran_pointed"
 	species = "tajaran"
+	color_src = SKIN_TONE
 
 ////////////
 // Wings //

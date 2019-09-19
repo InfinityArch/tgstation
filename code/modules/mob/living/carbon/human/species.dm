@@ -724,7 +724,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 						if(EYECOLOR)
 							accessory_overlay.color = "#[H.eye_color]"
 						if(SKIN_TONE)
-							accessory_overlay.color = "#[H.skin_tone]"
+							accessory_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 				else
 					accessory_overlay.color = forced_colour
 			standing += accessory_overlay

@@ -100,7 +100,7 @@
 /obj/item/organ/ears/cat/tajaran
 	name = "tajaran ears"
 	feature_name = "Pointed"
-	color_src = MUTCOLORS
+	color_src = SKIN_TONE
 
 
 
@@ -110,9 +110,9 @@
 		if(!color || owner == original_owner)
 			switch(color_src)
 				if(MUTCOLORS)
-					color = H.dna.features["mcolor"]
+					color = "#" + H.dna.features["mcolor"]
 				if(SKIN_TONE)
-					color = H.skin_tone
+					color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 				if(HAIR)
 					color = H.hair_color
 		H.dna.species.mutant_bodyparts |= "ears"
@@ -127,7 +127,7 @@
 				if(MUTCOLORS)
 					color = H.dna.features["mcolor"]
 				if(SKIN_TONE)
-					color = H.skin_tone
+					color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 				if(HAIR)
 					color = H.hair_color
 		H.dna.features["ears"] = "None"
