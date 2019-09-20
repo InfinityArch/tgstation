@@ -7,10 +7,10 @@
 	inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID
 	mutant_bodyparts = list("ears", "snout", "tail")
 	mutantears = /obj/item/organ/ears/cat/tajaran
+	hair_color = "skin_tone"
 	feature_names = list("skin_tone" = "fur color")
-	//mutanttongue = /obj/item/organ/tongue/lizard
 	mutanttail = /obj/item/organ/tail/tajaran
-	default_features = list("mcolor" = "0F0", "snout" = "Normal", "ears" = "Pointed", "tail" = "Wingler")
+	default_features = list("mcolor" = "0F0", "snout" = "Medium", "ears" = "Pointed", "tail" = "Wingler")
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC | RACE_SWAP | ERT_SPAWN | SLIME_EXTRACT
 	attack_verb = "slash"
 	attack_sound = 'sound/weapons/slash.ogg'

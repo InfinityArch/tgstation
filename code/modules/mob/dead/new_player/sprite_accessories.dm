@@ -1649,11 +1649,39 @@
 	icon_state = "roundlight"
 
 /datum/sprite_accessory/snouts/tajaran
-	name = "Normal"
-	icon_state = "tajaran"
+	name = "Light"
+	icon_state = "tajaran_light"
 	species = "tajaran"
 	hasinner = TRUE
 	color_src = SKIN_TONE
+
+/datum/sprite_accessory/snouts/tajaran/tiger_stripes_full
+	name = "Tiger Stripes Full"
+	icon_state = "tajaran_tiger_stripes_full"
+
+/datum/sprite_accessory/snouts/tajaran/tiger_stripes
+	name = "Tiger Stripes"
+	icon_state = "tajaran_tiger_stripes"
+
+/datum/sprite_accessory/snouts/tajaran/medium
+	name = "Medium"
+	icon_state = "tajaran_medium"
+
+/datum/sprite_accessory/snouts/tajaran/dark
+	name = "Dark"
+	icon_state = "tajaran_dark"
+
+/datum/sprite_accessory/snouts/tajaran/dark_2
+	name = "Dark 2"
+	icon_state = "tajaran_dark_2"
+
+/datum/sprite_accessory/snouts/tajaran/dark_3
+	name = "Dark 3"
+	icon_state = "tajaran_dark_3"
+
+/datum/sprite_accessory/snouts/tajaran/patch
+	name = "Patch"
+	icon_state = "tajaran_patch"
 
 ///////////
 // Horns //
