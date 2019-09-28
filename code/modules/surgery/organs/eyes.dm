@@ -386,7 +386,8 @@
 	name = "tajaran eyes"
 	desc = "These eyes have moderately improved night vision, at the cost of increased sensitivity to bright light."
 	see_in_dark = 4
-	flash_protect = -1
+	lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
+	flash_protect = FLASH_PROTECTION_SENSITIVE
 
 /obj/item/organ/eyes/snail
 	name = "snail eyes"
