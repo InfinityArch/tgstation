@@ -271,6 +271,12 @@
 #define DEFAULT_FEATURES_NAMES list("skin_tone" = "skin tone", "hair" = "hairstyle", "facial_hair" = "facial hairstyle", "mcolor" = "body color", "tail" = "tail", "wings" = "wings", "snout" = "snout", "horns" = "horns", "ears" = "ears", "frills" = "frills", "tail_accessory" = "tail accessory", "face_markings" = "face_markings", "body_markings" = "body markings", "legs" = "legs")
 
 
+// Eye protection
+#define FLASH_PROTECTION_SENSITIVE -1
+#define FLASH_PROTECTION_NONE 0
+#define FLASH_PROTECTION_FLASH 1
+#define FLASH_PROTECTION_WELDER 2
+
 // Roundstart trait system
 
 #define MAX_QUIRKS 6 //The maximum amount of quirks one character can have at roundstart

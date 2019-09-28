@@ -492,7 +492,7 @@
 	var/mutation = pick(candidates)
 	. = dna.add_mutation(mutation)
 
-/mob/living/carbon/proc/easy_randmut(quality = POSITIVE + NEGATIVE + MINOR_NEGATIVE, scrambled = TRUE, sequence = TRUE, exclude_monkey = TRUE)
+/mob/living/carbon/proc/easy_randmut(quality = POSITIVE + NEGATIVE + MINOR_NEGATIVE, scrambled = TRUE, sequence = TRUE, exclude_monkey = TRUE, resilient = NONE)
 	if(!has_dna())
 		return
 	var/list/mutations = list()
@@ -515,6 +515,8 @@
 			var/datum/mutation/human/HM = dna.get_mutation(mutation)
 			if(HM)
 				HM.scrambled = TRUE
+				if(HM.quality & resilient) 
+					HM.mutadone_proof = TRUE
 		return TRUE
 
 /mob/living/carbon/proc/randmuti()
