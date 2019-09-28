@@ -84,7 +84,8 @@
 	if(nuke_team && nuke_team.syndicate_name)
 		var/mob/living/carbon/human/H = owner.current
 		if(istype(H)) // Reinforcements get a real name
-			var/chosen_name = H.dna.species.random_name(H.gender,0,nuke_team.syndicate_name)
+			var/chosen_name = H.dna.species.random_name(H.gender, NAMEGEN_LIMIT, SURNAME_ONLY)
+			chosen_name= nuke_team.syndicate_name + "Operative " + chosen_name
 			H.fully_replace_character_name(H.real_name,chosen_name)
 		else
 			var/number = 1
@@ -204,11 +205,12 @@
 		var/mob/living/carbon/human/H = synd_mind.current
 		if(!istype(H))
 			continue
-		var/chosen_name = H.dna.species.random_name(H.gender,0,syndicate_name)
+		var/chosen_name = H.dna.species.random_name(H.gender,10, SURNAME_ONLY)
+		chosen_name = syndicate_name + "Operative " + chosen_name
 		H.fully_replace_character_name(H.real_name,chosen_name)
 
 /datum/antagonist/nukeop/leader/proc/ask_name()
-	var/randomname = pick(GLOB.last_names)
+	var/randomname = pick(GLOB.last_names_generic)
 	var/newname = stripped_input(owner.current,"You are the nuke operative [title]. Please choose a last name for your family.", "Name change",randomname)
 	if (!newname)
 		newname = randomname

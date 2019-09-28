@@ -62,7 +62,7 @@ __description__
 __Arguments__
 *features*: typically a list of sprite features found in datum/dna, if not given one will be generated de novo
 *species*: the species datum that should be used to deermine feature eligability, defaults to human (all features set to none) if not supplied
-*features_to_randomize*: a list of features that should be sanitized, defaults to *features* if not given. See /proc/random_features in the mobs.dm helper for an example of what that full list entails
+*features_to_randomize*: a list of features that should be sanitized, defaults to everything in *features* if not given. See DEFAULT_FEATURES_LIST in the mobs.dm define for what the full list entails
 
 __Returns__: 
 - if supplied with an input list, returns *features* with indices found in *features_to_randomize* randomized according to the species' permitted features
@@ -86,6 +86,8 @@ __Returns__:
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/legs, GLOB.legs_list, species_list = GLOB.legs_list_species)
 	if(!GLOB.body_markings_list.len)
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/body_markings, GLOB.body_markings_list, species_list = GLOB.body_markings_list_species)
+	if(!GLOB.face_markings_list.len)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/face_markings, GLOB.face_markings_list, species_list = GLOB.face_markings_list_species)
 	if(!GLOB.wings_list.len)
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/wings, GLOB.wings_list, species_list = GLOB.wings_list_species)
 	if(!GLOB.caps_list.len)
@@ -119,6 +121,9 @@ __Returns__:
 	if("tail_accessory" in features_to_randomize)
 		temp_index = "tail_accessory" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["tail_accessory"] = pick(GLOB.tail_accessory_list_species[S.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX])
+	if("face_markings" in features_to_randomize)
+		temp_index = "face_markings" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		features["face_markings"] = pick(GLOB.face_markings_list_species[S.features_id] | GLOB.face_markings_list_species[DEFAULT_SPECIES_INDEX])
 	if("body_markings" in features_to_randomize)
 		temp_index = "body_markings" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["body_markings"] = pick(GLOB.body_markings_list_species[S.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX])
@@ -129,7 +134,7 @@ __Returns__:
 		features["caps"] = pick(GLOB.caps_list)
 	return features
 
-/proc/random_hairstyle(gender, species_index = "default")
+/proc/random_hairstyle(gender, species_index = DEFAULT_SPECIES_INDEX)
 	switch(gender)
 		if(MALE)
 			return pick((GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]) | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
@@ -138,7 +143,7 @@ __Returns__:
 		else
 			return pick(GLOB.hairstyles_list_species[species_index] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
-/proc/random_facial_hairstyle(gender, species_index = "default")
+/proc/random_facial_hairstyle(gender, species_index = DEFAULT_SPECIES_INDEX)
 	switch(gender)
 		if(MALE)
 			return pick((GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]) | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
@@ -147,43 +152,21 @@ __Returns__:
 		else
 			return pick(GLOB.facial_hairstyles_list_species[species_index] | GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX])
 
-/proc/random_unique_name(gender, attempts_to_find_unique_name=10)
-	for(var/i in 1 to attempts_to_find_unique_name)
-		if(gender==FEMALE)
-			. = capitalize(pick(GLOB.first_names_female)) + " " + capitalize(pick(GLOB.last_names))
-		else
-			. = capitalize(pick(GLOB.first_names_male)) + " " + capitalize(pick(GLOB.last_names))
 
-		if(!findname(.))
-			break
+/*
+# Random skin tone
 
-/proc/random_unique_lizard_name(gender, attempts_to_find_unique_name=10)
-	for(var/i in 1 to attempts_to_find_unique_name)
-		. = capitalize(lizard_name(gender))
+__description__
+- this proc generates a valid skintone value for a supplied species index
 
-		if(!findname(.))
-			break
+__Arguments__
+*species_index*: the index value to search under for this species, should normally be the *limbs_id* found in datum/species
 
-/proc/random_unique_plasmaman_name(attempts_to_find_unique_name=10)
-	for(var/i in 1 to attempts_to_find_unique_name)
-		. = capitalize(plasmaman_name())
-
-		if(!findname(.))
-			break
-
-/proc/random_unique_ethereal_name(attempts_to_find_unique_name=10)
-	for(var/i in 1 to attempts_to_find_unique_name)
-		. = capitalize(ethereal_name())
-
-		if(!findname(.))
-			break
-
-/proc/random_unique_moth_name(attempts_to_find_unique_name=10)
-	for(var/i in 1 to attempts_to_find_unique_name)
-		. = capitalize(pick(GLOB.moth_first)) + " " + capitalize(pick(GLOB.moth_last))
-
-		if(!findname(.))
-			break
+__Returns__: 
+- If *species_index* is located in the species indexed skin_tones list, returns a random value from the list at that index
+- Otherwise it will return the value found at the default index, a grayscale skintone
+- Would theoretically runtimes if *species_index* is in the global list but has no contents, this outcome shouldn't be possible with the checks for bad arguments in proc/init_sprite_accessory_subtypes
+*/
 
 /proc/random_skin_tone(species_index = DEFAULT_SPECIES_INDEX)
 	if(species_index && GLOB.skin_tones_list_species[species_index])

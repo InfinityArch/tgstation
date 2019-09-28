@@ -319,6 +319,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["feature_horns"]					>> features["horns"]
 	S["feature_frills"]					>> features["frills"]
 	S["feature_tail_accessory"]			>> features["tail_accessory"]
+	S["feature_face_markings"]			>> features["face_markings"]
 	S["feature_body_markings"]			>> features["body_markings"]
 	S["feature_legs"]					>> features["legs"]
 	S["feature_wings"]					>> features["wings"]
@@ -348,7 +349,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	real_name = reject_bad_name(real_name)
 	gender = sanitize_gender(gender)
 	if(!real_name)
-		real_name = random_unique_name(gender)
+		real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
 
 	for(var/custom_name_id in GLOB.preferences_custom_names)
 		var/namedata = GLOB.preferences_custom_names[custom_name_id]
@@ -436,6 +437,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_ears"]					, features["ears"])
 	WRITE_FILE(S["feature_frills"]					, features["frills"])
 	WRITE_FILE(S["feature_tail_accessory"]			, features["tail_accessory"])
+	WRITE_FILE(S["feature_face_markings"]			, features["face_markings"])
 	WRITE_FILE(S["feature_body_markings"]			, features["body_markings"])
 	WRITE_FILE(S["feature_legs"]					, features["legs"])
 	WRITE_FILE(S["feature_wings"]					, features["wings"])

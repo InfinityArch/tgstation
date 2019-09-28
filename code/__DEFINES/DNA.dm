@@ -124,13 +124,14 @@
 #define NOFLASH				 16
 /// Use this if you want to change the race's color without the player being able to pick their own color. AKA special color shifting
 #define DYNCOLORS			 17
-#define AGENDER				 18
+#define AGENDER				 18 // species does not have genders
+#define NO_GENDERED_NAMES	 19 // species has genders but doesn't use gendered names
 /// Do not draw eyes or eyeless overlay
-#define NOEYESPRITES		 19
+#define NOEYESPRITES		 20
 /// Check for alternate icons for clothing in update_icon
-#define ALTERNATE_WORN_ICONS 20
-#define AUXCOLORS			 21
-#define AUXCOLORS_PARTSONLY  22
+#define ALTERNATE_WORN_ICONS 21
+#define AUXCOLORS			 22
+#define AUXCOLORS_PARTSONLY  23
 
 //organ slots
 #define ORGAN_SLOT_BRAIN "brain"

@@ -4,6 +4,7 @@
 	// 1spooky
 	name = "High-Functioning Zombie"
 	id = "zombie"
+	names_id = "human"
 	say_mod = "moans"
 	sexes = 0
 	meat = /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/zombie

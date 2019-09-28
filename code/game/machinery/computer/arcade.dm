@@ -1057,10 +1057,7 @@ GLOBAL_LIST_INIT(arcade_prize_pool, list(
 	if(specific)
 		newcrew = specific
 	else
-		if(prob(50))
-			newcrew = pick(GLOB.first_names_male)
-		else
-			newcrew = pick(GLOB.first_names_female)
+		newcrew = pick(GLOB.first_names_generic) + " " + pick(GLOB.last_names_generic)
 	if(newcrew)
 		settlers += newcrew
 		alive++

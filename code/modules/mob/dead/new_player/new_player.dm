@@ -477,7 +477,7 @@
 			return
 	if(frn)
 		client.prefs.random_character()
-		client.prefs.real_name = client.prefs.pref_species.random_name(gender,1)
+		client.prefs.real_name = client.prefs.pref_species.random_name(gender, NAMEGEN_LIMIT)
 	client.prefs.copy_to(H)
 	H.dna.update_dna_identity()
 	if(mind)

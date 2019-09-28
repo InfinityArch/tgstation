@@ -2,6 +2,8 @@
 	name = "Abductor"
 	id = "abductor"
 	say_mod = "gibbers"
+	names_id = "human"
+	naming_convention = NAME_NUM
 	sexes = FALSE
 	species_traits = list(NOBLOOD,NOEYESPRITES)
 	inherent_traits = list(TRAIT_VIRUSIMMUNE,TRAIT_CHUNKYFINGERS,TRAIT_NOHUNGER,TRAIT_NOBREATH)

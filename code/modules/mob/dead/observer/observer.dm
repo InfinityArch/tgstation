@@ -89,20 +89,21 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 			if(body.real_name)
 				name = body.real_name
 			else
-				name = random_unique_name(gender)
-
-		mind = body.mind	//we don't transfer the mind but we keep a reference to it.
-
-		set_suicide(body.suiciding) // Transfer whether they committed suicide.
+				name = pick(GLOB.first_names_generic) + " " + pick(GLOB.last_names_generic)
 
 		if(ishuman(body))
 			var/mob/living/carbon/human/body_human = body
+			name = body_human.dna.species.random_name(body_human.gender, NAMEGEN_LIMIT)
 			if(HAIR in body_human.dna.species.species_traits)
 				hairstyle = body_human.hairstyle
 				hair_color = brighten_color(body_human.hair_color)
 			if(FACEHAIR in body_human.dna.species.species_traits)
 				facial_hairstyle = body_human.facial_hairstyle
 				facial_hair_color = brighten_color(body_human.facial_hair_color)
+
+		mind = body.mind	//we don't transfer the mind but we keep a reference to it.
+
+		set_suicide(body.suiciding) // Transfer whether they committed suicide.
 
 	update_icon()
 
@@ -116,7 +117,8 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 	forceMove(T)
 
 	if(!name)							//To prevent nameless ghosts
-		name = random_unique_name(gender)
+		name = 	name = pick(GLOB.first_names_generic) + " " + pick(GLOB.last_names_generic)
+
 	real_name = name
 
 	if(!fun_verbs)
@@ -739,7 +741,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 
 	if(client.prefs.randomise[RANDOM_NAME])
-		client.prefs.real_name = random_unique_name(gender)
+		client.prefs.real_name = client.prefs.pref_species.random_name(gender, NAMEGEN_LIMIT)
 	if(client.prefs.randomise[RANDOM_BODY])
 		client.prefs.random_character(gender)
 

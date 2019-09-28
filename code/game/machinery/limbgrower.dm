@@ -28,6 +28,7 @@
 							"lizard",
 							"fly",
 							"moth",
+							"tajaran",
 							"plasmaman",
 							"other"
 							)

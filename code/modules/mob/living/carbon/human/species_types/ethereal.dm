@@ -3,6 +3,7 @@
 /datum/species/ethereal
 	name = "ethereal"
 	id = "ethereal"
+	naming_convention = NAME_LETTER
 	attack_verb = "burn"
 	attack_sound = 'sound/weapons/etherealhit.ogg'
 	miss_sound = 'sound/weapons/etherealmiss.ogg'
@@ -48,14 +49,6 @@
 	C.set_light(0)
 	UnregisterSignal(C, COMSIG_ATOM_EMAG_ACT)
 	UnregisterSignal(C, COMSIG_ATOM_EMP_ACT)
-
-/datum/species/ethereal/random_name(gender,unique,lastname)
-	if(unique)
-		return random_unique_ethereal_name()
-
-	var/randname = ethereal_name()
-
-	return randname
 
 /datum/species/ethereal/spec_updatehealth(mob/living/carbon/human/H)
 	.=..()
@@ -135,3 +128,5 @@
 	if(istype(stomach))
 		return stomach.crystal_charge
 	return ETHEREAL_CHARGE_NONE
+
+#undef ETHEREAL_COLORS

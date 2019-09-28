@@ -1,20 +1,47 @@
-/proc/lizard_name(gender)
-	if(gender == MALE)
-		return "[pick(GLOB.lizard_names_male)]-[pick(GLOB.lizard_names_male)]"
-	else
-		return "[pick(GLOB.lizard_names_female)]-[pick(GLOB.lizard_names_female)]"
+proc/init_species_names_lists(list/male, list/female, list/surnames)
+	if(istype(male) && length(male))
+		return FALSE //names lists have already being initialized
+	for(var/spath in subtypesof(/datum/species))
+		var/datum/species/S = new spath()
+			
+		//building paths for names lists
+		var/path_male = "strings/names/[S.names_id]_first_male.txt"
+		var/path_female = "strings/names/[S.names_id]_first_female.txt"
+		var/path_surname = "strings/names/[S.names_id]_last.txt"
 
-/proc/ethereal_name()
-	var/tempname = "[pick(GLOB.ethereal_names)] [random_capital_letter()]"
-	if(prob(65))
-		tempname += random_capital_letter()
-	return tempname
+		if(length(male[S.names_id]))
+			continue
 
-/proc/plasmaman_name()
-	return "[pick(GLOB.plasmaman_names)] \Roman[rand(1,99)]"
+		if((AGENDER in S.species_traits) || (NO_GENDERED_NAMES in S.species_traits))
+			path_female = "strings/names/[S.names_id]_first.txt"
+			path_male = "strings/names/[S.names_id]_first.txt"
 
-/proc/moth_name()
-	return "[pick(GLOB.moth_first)] [pick(GLOB.moth_last)]"
+		male[S.names_id] = world.file2list(path_male)
+		female[S.names_id] = world.file2list(path_female)
+
+		if(!S.naming_convention || S.naming_convention <= HYPHEN_NAME)
+			surnames[S.names_id] = world.file2list(path_surname)
+		else
+			surnames[S.names_id] = (male[S.names_id] | female[S.names_id])
+	return TRUE //proc has run
+
+//proc/lizard_name(gender)
+//	if(gender == MALE)
+//		return "[pick(GLOB.lizard_names_male)]-[pick(GLOB.lizard_names_male)]"
+//	else
+//		return "[pick(GLOB.lizard_names_female)]-[pick(GLOB.lizard_names_female)]"
+
+//proc/ethereal_name()
+	//var/tempname = "[pick(GLOB.ethereal_names)] [random_capital_letter()]"
+	//if(prob(65))
+	//	tempname += random_capital_letter()
+	//return tempname
+
+//proc/plasmaman_name()
+	//return "[pick(GLOB.plasmaman_names)] \Roman[rand(1,99)]"
+
+//proc/moth_name()
+//	return "[pick(GLOB.moth_first)] [pick(GLOB.moth_last)]"
 
 /proc/church_name()
 	var/static/church_name
@@ -218,13 +245,8 @@ GLOBAL_DATUM(syndicate_code_response_regex, /regex)
 						if(names.len&&prob(70))
 							. += pick(names)
 						else
-							if(prob(10))
-								. += pick(lizard_name(MALE),lizard_name(FEMALE))
-							else
-								var/new_name = pick(pick(GLOB.first_names_male,GLOB.first_names_female))
-								new_name += " "
-								new_name += pick(GLOB.last_names)
-								. += new_name
+							var/new_name = pick(GLOB.first_names_generic) + " " + pick(GLOB.last_names_generic)
+							. += new_name
 					if(2)
 						. += pick(get_all_jobs())//Returns a job.
 				safety -= 1

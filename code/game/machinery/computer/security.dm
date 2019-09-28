@@ -881,10 +881,8 @@ What a mess.*/
 		if(prob(10/severity))
 			switch(rand(1,8))
 				if(1)
-					if(prob(10))
-						R.fields["name"] = "[pick(lizard_name(MALE),lizard_name(FEMALE))]"
-					else
-						R.fields["name"] = "[pick(pick(GLOB.first_names_male), pick(GLOB.first_names_female))] [pick(GLOB.last_names)]"
+					var/datum/species/S = new (pick(GLOB.roundstart_races))
+					R.fields["name"] = S.random_name(pick(MALE, FEMALE, PLURAL), NAMEGEN_LIMIT)
 				if(2)
 					R.fields["gender"] = pick("Male", "Female", "Other")
 				if(3)

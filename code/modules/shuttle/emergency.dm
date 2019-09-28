@@ -156,7 +156,7 @@
 		// must be important, surely
 		var/obj/item/card/id/ID = new(src)
 		var/datum/job/J = pick(SSjob.occupations)
-		ID.registered_name = S.random_name(pick(MALE, FEMALE))
+		ID.registered_name = S.random_name(pick(MALE, FEMALE, PLURAL))
 		ID.assignment = J.title
 
 		authorized += ID

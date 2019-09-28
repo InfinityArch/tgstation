@@ -7,7 +7,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/limbs_id		// used by species that use a different species' normal bodyparts
 	var/features_id //what index to look under for the species' sprite accessories
 	var/hair_id
+	var/voice_id = "human" // what sound set to use for voiced emotes
 	var/name	// this is the fluff name. these will be left generic (such as 'Lizardperson' for the lizard race) so servers can change them to whatever
+	var/names_id // what index the species' names will be found under, defaults to limbs_id
+	var/naming_convention // what naming convention this species uses, if left null it defaults to 50:50 between eastern and western naming orders
 	var/default_color = "#FFF"	// if alien colors are disabled, this is the color that will be used by that race
 
 	var/sexes = 1		// whether or not the race has sexual characteristics. at the moment this is only 0 for skeletons and shadows
@@ -96,13 +99,15 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 
 /datum/species/New()
-	//customization related id values are defaulted to species id if left null
+	//libms_id defaults to species id, all other values default to limbs_id to make life easier for demihumans
 	if(!limbs_id)
 		limbs_id = id
 	if(!features_id)
 		features_id = limbs_id
 	if(!hair_id)
 		hair_id = limbs_id
+	if(!names_id)
+		names_id = limbs_id
 	..()
 
 
@@ -119,23 +124,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(id in (CONFIG_GET(keyed_list/roundstart_races)))
 		return TRUE
 	return FALSE
-
-/datum/species/proc/random_name(gender,unique,lastname)
-	if(unique)
-		return random_unique_name(gender)
-
-	var/randname
-	if(gender == MALE)
-		randname = pick(GLOB.first_names_male)
-	else
-		randname = pick(GLOB.first_names_female)
-
-	if(lastname)
-		randname += " [lastname]"
-	else
-		randname += " [pick(GLOB.last_names)]"
-
-	return randname
 
 //Called when cloning, copies some vars that should be kept
 /datum/species/proc/copy_properties_from(datum/species/old_species)
@@ -275,10 +263,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			C.dropItemToGround(thing)
 	if(C.hud_used)
 		C.hud_used.update_locked_slots()
-	if((SKIN_TONE in species_traits) || (DYNCOLORS in species_traits)) //check for valid skin tone values
-		var/mob/living/carbon/human/H = C
-		if(istype(H))
-			H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
+	
+	var/mob/living/carbon/human/H = C
+	if(istype(H))
+		H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
+		H.dna.update_ui_block(DNA_HAIRSTYLE_BLOCK)
+		H.dna.update_ui_block(DNA_FACIAL_HAIRSTYLE_BLOCK)
 
 	// this needs to be FIRST because qdel calls update_body which checks if we have DIGITIGRADE legs or not and if not then removes DIGITIGRADE from species_traits
 	if(("legs" in C.dna.species.mutant_bodyparts) && C.dna.features["legs"] == "Digitigrade Legs")
@@ -430,7 +420,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				if(hair_color)
 					if(hair_color == "mutcolor")
 						facial_overlay.color = "#" + H.dna.features["mcolor"]
-					if(hair_color == "skin_tone")
+					else if(hair_color == "skin_tone")
 						facial_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 					else
 						facial_overlay.color = "#" + hair_color
@@ -492,6 +482,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					if(hair_color)
 						if(hair_color == "mutcolor")
 							hair_overlay.color = "#" + H.dna.features["mcolor"]
+						else if(hair_color == "skin_tone")
+							hair_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 						else
 							hair_overlay.color = "#" + hair_color
 					else
@@ -512,8 +504,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 /datum/species/proc/handle_body(mob/living/carbon/human/H)
 	H.remove_overlay(BODY_LAYER)
+	H.remove_overlay(COSMETICS_LAYER)
 
 	var/list/standing = list()
+	var/list/cosmetics_standing = list()
 
 	var/obj/item/bodypart/head/HD = H.get_bodypart(BODY_ZONE_HEAD)
 
@@ -521,11 +515,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		// lipstick
 		if(H.lip_style && (LIPS in species_traits))
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[H.dna.species.features_id]_lips_[H.lip_style]", -COSMETICS_LAYER)
-			lip_overlay.color = H.lip_color
+			lip_overlay.color = "#" + H.lip_color
+			lip_overlay.alpha = MAKEUP_OPACITY
 			if(OFFSET_FACE in H.dna.species.offset_features)
 				lip_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
 				lip_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
-			standing += lip_overlay
+			cosmetics_standing += lip_overlay
 
 		// eyes
 		if(!(NOEYESPRITES in species_traits))
@@ -567,18 +562,22 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				standing += mutable_appearance(socks.icon, socks.icon_state, -BODY_LAYER)
 
 	if(standing.len)
-		H.overlays_standing[BODY_LAYER] = standing
+		H.overlays_standing[BODY_LAYER] = standing 
+	if(cosmetics_standing.len)
+		H.overlays_standing[COSMETICS_LAYER] = cosmetics_standing
 
 	H.apply_overlay(BODY_LAYER)
+	H.apply_overlay(COSMETICS_LAYER)
 	handle_mutant_bodyparts(H)
 
 /datum/species/proc/handle_mutant_bodyparts(mob/living/carbon/human/H, forced_colour)
 	var/list/bodyparts_to_add = mutant_bodyparts.Copy()
-	var/list/relevent_layers = list(BODY_BEHIND_LAYER, BODY_ADJ_LAYER, BODY_FRONT_LAYER)
+	var/list/relevent_layers = list(BODY_BEHIND_LAYER, BODY_ADJ_LAYER, BODY_FRONT_LAYER, FRONT_MUTPARTS_LAYER)
 	var/list/standing	= list()
 
 	H.remove_overlay(BODY_BEHIND_LAYER)
 	H.remove_overlay(BODY_ADJ_LAYER)
+	H.remove_overlay(FRONT_MUTPARTS_LAYER)
 	H.remove_overlay(BODY_FRONT_LAYER)
 
 	if(!mutant_bodyparts)
@@ -609,6 +608,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if("snout" in mutant_bodyparts) //Take a closer look at that snout!
 		if((!H.dna.features["snout"] || H.dna.features["snout"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || HD.status == BODYPART_ROBOTIC)
 			bodyparts_to_add -= "snout"
+
+	if("face_markings" in mutant_bodyparts)
+		if((!H.dna.features["face_markings"] || H.dna.features["face_markings"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || HD.status == BODYPART_ROBOTIC)
+			bodyparts_to_add -= "face_markings"
 
 	if("frills" in mutant_bodyparts)
 		if(!H.dna.features["frills"] || H.dna.features["frills"] == "None" || H.head && (H.head.flags_inv & HIDEEARS) || !HD || HD.status == BODYPART_ROBOTIC)
@@ -683,6 +686,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 					S = GLOB.horns_list[H.dna.features["horns"]]
 				if("ears")
 					S = GLOB.ears_list[H.dna.features["ears"]]
+				if("face_markings")
+					S = GLOB.face_markings_list[H.dna.features["face_markings"]]
 				if("body_markings")
 					S = GLOB.body_markings_list[H.dna.features["body_markings"]]
 				if("wings")
@@ -717,6 +722,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 						if(HAIR)
 							if(hair_color == "mutcolor")
 								accessory_overlay.color = "#[H.dna.features["mcolor"]]"
+							else if(hair_color == "skin_tone")
+								accessory_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 							else
 								accessory_overlay.color = "#[H.hair_color]"
 						if(FACEHAIR)
@@ -746,6 +753,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	H.apply_overlay(BODY_BEHIND_LAYER)
 	H.apply_overlay(BODY_ADJ_LAYER)
+	H.apply_overlay(FRONT_MUTPARTS_LAYER)
 	H.apply_overlay(BODY_FRONT_LAYER)
 
 
@@ -757,11 +765,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			return "BEHIND"
 		if(BODY_ADJ_LAYER)
 			return "ADJ"
+		if(FRONT_MUTPARTS_LAYER)
+			return "FRONT_MUT"
 		if(BODY_FRONT_LAYER)
 			return "FRONT"
-		if(FRONT_MUTATIONS_LAYER)
-			return "FRONT_MUT"
-
 
 /datum/species/proc/spec_life(mob/living/carbon/human/H)
 	if(HAS_TRAIT(H, TRAIT_NOBREATH))
@@ -1833,6 +1840,122 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 /datum/species/proc/start_wagging_tail(mob/living/carbon/human/H)
 
 /datum/species/proc/stop_wagging_tail(mob/living/carbon/human/H)
+
+/*
+# Ranom name
+
+__description__
+- this proc generates random unique names for a human type mob of a given species
+- before running it checks the length of GLOB.first_names_male to assess whether
+-  the names lists have been initialized, and fires the initialization proc if needed
+
+__Arguments__
+*gender*: the gender of the mob that needs a name generated, should be one of the gender defines
+*attempts_to_find_unique_names*: The limit on the number of times the proc should generate an unused name before automatically returning, must be a finite integer
+
+__Returns__: 
+- Improper initialization of the names lists can occur if the require files are missing or formatted wrong, leading to runtimes or name generation errors. See /proc/init_species_names_lists in \_HELPERS\mobs.dm
+- Returns "NAME_GENERATION_ERROR" if it fails to find a valid name for the supplied arguments without encountering an exception
+- Returns a valid name string after it finds an unused one or reaches the limit of *attempts_to_find_unique_name*
+*/
+
+/datum/species/proc/random_name(gender = PLURAL, attempts_to_find_unique_name=1, naming_convention_override)
+	. = "NAME_GENERATION_ERROR"
+	if(!length(GLOB.first_names_male))
+		init_species_names_lists(GLOB.first_names_male, GLOB.first_names_female, GLOB.last_names)
+	if(!naming_convention_override)
+		naming_convention_override = naming_convention ? naming_convention : pick(HUMAN_WESTERN, HUMAN_EASTERN)
+		
+	for(var/i in 1 to attempts_to_find_unique_name)
+		if(gender == FEMALE)
+			switch(naming_convention_override)
+				if(HUMAN_WESTERN)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
+				if(HUMAN_EASTERN)
+					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_female[names_id]))
+				if(APO_NAME)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + "'" + pick(GLOB.last_names[names_id])
+				if(APO_NAME_REV)
+					. = capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_female[names_id])
+				if(APO_NAME_EXT)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + "'"
+					if(prob(65))
+						. += (pick(GLOB.first_names_female[names_id]) + "'") 
+					. += pick(GLOB.last_names[names_id])
+				if(HYPHEN_NAME)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
+				if(GIVEN_ONLY)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) 
+				if(SURNAME_ONLY)
+					. = capitalize(pick(GLOB.last_names[names_id])) 
+				if(NAME_NUMERAL)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
+				if(NAME_NUM)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " [rand(1,99)]"
+				if(NAME_LETTER)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " [random_capital_letter()]"
+					if(prob(65))
+						. += random_capital_letter()
+		else if(gender == MALE)
+			switch(naming_convention_override)
+				if(HUMAN_WESTERN)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
+				if(HUMAN_EASTERN)
+					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_male[names_id]))
+				if(APO_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'" + pick(GLOB.last_names[names_id])
+				if(APO_NAME_REV)
+					. = capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_male[names_id])
+				if(APO_NAME_EXT)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'" 
+					if(prob(65))
+						. += (pick(GLOB.first_names_male[names_id]) + "'") 
+					. += pick(GLOB.last_names[names_id])
+				if(HYPHEN_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + "-" + pick(GLOB.last_names[names_id])
+				if(GIVEN_ONLY)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) 
+				if(SURNAME_ONLY)
+					. = capitalize(pick(GLOB.last_names[names_id])) 
+				if(NAME_NUMERAL)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " \Roman[rand(1,99)]"
+				if(NAME_NUM)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " [rand(1,99)]"
+				if(NAME_LETTER)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " [random_capital_letter()]"
+					if(prob(65))
+						. += random_capital_letter()
+		else
+			switch(naming_convention_override)
+				if(HUMAN_WESTERN)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
+				if(HUMAN_EASTERN)
+					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]))
+				if(APO_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "'" + pick(GLOB.last_names[names_id])
+				if(APO_NAME_REV)
+					. =  capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])
+				if(APO_NAME_EXT)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "'"
+					if(prob(65))
+						. += (pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]) + "'")
+					. += pick(GLOB.last_names[names_id])
+				if(HYPHEN_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
+				if(GIVEN_ONLY)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) 
+				if(SURNAME_ONLY)
+					. = capitalize(pick(GLOB.last_names[names_id])) 
+				if(NAME_NUMERAL)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
+				if(NAME_NUM)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "[rand(1,99)]"
+				if(NAME_LETTER)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " [random_capital_letter()]"
+					if(prob(65))
+						. += random_capital_letter()
+		if(!findname(.))
+			break
 
 ///////////////
 //FLIGHT SHIT//

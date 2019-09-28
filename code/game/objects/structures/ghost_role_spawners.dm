@@ -50,9 +50,7 @@
 	var/datum/team/ashwalkers/team
 
 /obj/effect/mob_spawn/human/ash_walker/special(mob/living/new_spawn)
-	new_spawn.fully_replace_character_name(null,random_unique_lizard_name(gender))
 	to_chat(new_spawn, "<b>Drag the corpses of men and beasts to your nest. It will absorb them to create more of your kind. Don't leave your nest undefended, protect it with your life. Glory to the Necropolis!</b>")
-
 	new_spawn.grant_language(/datum/language/draconic)
 	var/datum/language_holder/holder = new_spawn.get_language_holder()
 	holder.selected_default_language = /datum/language/draconic
@@ -61,6 +59,7 @@
 
 	if(ishuman(new_spawn))
 		var/mob/living/carbon/human/H = new_spawn
+		H.fully_replace_character_name(null, H.dna.species.random_name(gender))
 		H.underwear = "Nude"
 		H.update_body()
 
@@ -161,7 +160,7 @@
 			if(has_owner)
 				H.fully_replace_character_name(null, "[initial(X.prefix)] Golem ([rand(1,999)])")
 			else
-				H.fully_replace_character_name(null, H.dna.species.random_name())
+				H.fully_replace_character_name(null, H.dna.species.random_name(H.gender, NAMEGEN_LIMIT))
 		else
 			H.fully_replace_character_name(null, name)
 	if(has_owner)

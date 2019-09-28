@@ -99,7 +99,7 @@
 		add_atom_colour("#FFD7A7", FIXED_COLOUR_PRIORITY)
 	switch(new_appearance)
 		if("Assistant")
-			name = "[pick(GLOB.first_names_male)] [pick(GLOB.last_names)]"
+			name = pick(GLOB.first_names_generic) + " " + pick(GLOB.last_names_generic)
 			desc = "A cardboat cutout of an assistant."
 			icon_state = "cutout_greytide"
 		if("Clown")
@@ -123,7 +123,7 @@
 			desc = "A cardboard cutout of a cultist."
 			icon_state = "cutout_cultist"
 		if("Clockwork Cultist")
-			name = "[pick(GLOB.first_names_male)] [pick(GLOB.last_names)]"
+			name = pick(GLOB.first_names_generic) + " " + pick(GLOB.last_names_generic)
 			desc = "A cardboard cutout of a servant of Ratvar."
 			icon_state = "cutout_servant"
 		if("Revolutionary")
@@ -153,7 +153,7 @@
 			desc = "A cardboard cutout of a swarmer."
 			icon_state = "cutout_swarmer"
 		if("Ash Walker")
-			name = lizard_name(pick(MALE, FEMALE))
+			name = pick(GLOB.first_names_male["lizard"] | GLOB.first_names_female["lizard"]) + "-" + pick(GLOB.last_names["lizard"])
 			desc = "A cardboard cutout of an ash walker."
 			icon_state = "cutout_free_antag"
 		if("Deathsquad Officer")

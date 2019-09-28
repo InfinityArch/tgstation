@@ -27,7 +27,7 @@
 	colour_type - a typepath (subtyped from /datum/client_colour)
 */
 /mob/proc/add_client_colour(colour_type)
-	if(!ispath(colour_type, /datum/client_colour))
+	if(!ispath(colour_type, /datum/client_colour) || !src.client)
 		return
 
 	var/datum/client_colour/CC = new colour_type()
@@ -41,7 +41,7 @@
 	colour_type - a typepath (subtyped from /datum/client_colour)
 */
 /mob/proc/remove_client_colour(colour_type)
-	if(!ispath(colour_type, /datum/client_colour))
+	if(!ispath(colour_type, /datum/client_colour) || !src.client)
 		return
 
 	for(var/cc in client_colours)

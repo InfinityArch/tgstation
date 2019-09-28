@@ -195,8 +195,10 @@
 				else
 					setblock(uni_identity, blocknumber, construct_block(G_PLURAL, 3))
 		if(DNA_FACIAL_HAIRSTYLE_BLOCK)
+			H.facial_hairstyle = sanitize_hairstyle(H.facial_hairstyle, H.dna.species.hair_id, H.gender, facial = TRUE)
 			setblock(uni_identity, blocknumber, construct_block(GLOB.facial_hairstyles_list.Find(H.facial_hairstyle), GLOB.facial_hairstyles_list.len))
 		if(DNA_HAIRSTYLE_BLOCK)
+			H.hairstyle = sanitize_hairstyle(H.hairstyle, H.dna.species.hair_id, H.gender)
 			setblock(uni_identity, blocknumber, construct_block(GLOB.hairstyles_list.Find(H.hairstyle), GLOB.hairstyles_list.len))
 
 //Please use add_mutation or activate_mutation instead

@@ -267,8 +267,8 @@
 #define	REAGENTS_METABOLISM 0.4	//How many units of reagent are consumed per tick, by default.
 #define REAGENTS_EFFECT_MULTIPLIER (REAGENTS_METABOLISM / 0.4)	// By defining the effect multiplier this way, it'll exactly adjust all effects according to how they originally were with the 0.4 metabolism
 #define DEFAULT_SPECIES_INDEX "default" // the fallback species index to use for a sprite feature
-#define DEFAULT_FEATURES_LIST list("mcolor" = "FFFFFF", "tail" = "None", "wings" = "None", "snout" = "None", "horns" = "None", "ears" = "None", "frills" = "None", "tail_accessory" = "None", "body_markings" = "None", "legs" = "Normal Legs", "caps" = "None")
-#define DEFAULT_FEATURES_NAMES list("skin_tone" = "skin tone", "hair" = "hairstyle", "facial_hair" = "facial hairstyle", "mcolor" = "body color", "tail" = "tail", "wings" = "wings", "snout" = "snout", "horns" = "horns", "ears" = "ears", "frills" = "frills", "tail_accessory" = "tail accessory", "body_markings" = "body markings", "legs" = "legs")
+#define DEFAULT_FEATURES_LIST list("mcolor" = "FFFFFF", "tail" = "None", "wings" = "None", "snout" = "None", "horns" = "None", "ears" = "None", "frills" = "None", "tail_accessory" = "None", "face_markings" = "None", "body_markings" = "None", "legs" = "Normal Legs", "caps" = "None")
+#define DEFAULT_FEATURES_NAMES list("skin_tone" = "skin tone", "hair" = "hairstyle", "facial_hair" = "facial hairstyle", "mcolor" = "body color", "tail" = "tail", "wings" = "wings", "snout" = "snout", "horns" = "horns", "ears" = "ears", "frills" = "frills", "tail_accessory" = "tail accessory", "face_markings" = "face_markings", "body_markings" = "body markings", "legs" = "legs")
 
 
 // Roundstart trait system
@@ -312,5 +312,21 @@
 #define SLIME_EXTRACT (1<<5)
 //Wabbacjack staff projectiles
 #define WABBAJACK     (1<<6)
+
+//Flags for naming conventions
+#define HUMAN_WESTERN   0 // Given_name Surname
+#define HUMAN_EASTERN   1 // Surname Given_name
+#define APO_NAME  	    2 // Given_name'surname 
+#define APO_NAME_REV    3 // Surname'given_name
+#define APO_NAME_EXT	4 // Given_name'given_name'surname
+#define HYPHEN_NAME	    5 // Given_name-surname
+#define GIVEN_ONLY	    6 // Given_name
+#define SURNAME_ONLY	7 // Surname
+#define NAME_NUMERAL	8 // Given_name Numeral
+#define NAME_NUM		9 // Given_name Number
+#define NAME_LETTER     10 // Given_name Letter
+
+//other naming defines
+#define NAMEGEN_LIMIT 10 // limit for how many names the random_name() function should genearte
 
 #define SLEEP_CHECK_DEATH(X) sleep(X); if(QDELETED(src) || stat == DEAD) return;

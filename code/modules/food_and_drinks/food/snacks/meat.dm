@@ -37,7 +37,7 @@
 	cooked_type = /obj/item/reagent_containers/food/snacks/meat/steak/plain/human
 	slice_path = /obj/item/reagent_containers/food/snacks/meat/rawcutlet/plain/human
 	tastes = list("tender meat" = 1)
-	foodtype = MEAT | RAW | GROSS
+	foodtype = MEAT | RAW | GROSS | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/initialize_slice(obj/item/reagent_containers/food/snacks/meat/rawcutlet/plain/human/slice, reagents_per_slice)
 	..()
@@ -64,7 +64,7 @@
 	list_reagents = list(/datum/reagent/consumable/nutriment = 3, /datum/reagent/toxin/slimejelly = 3)
 	filling_color = "#00FFFF"
 	tastes = list("slime" = 1, "jelly" = 1)
-	foodtype = MEAT | RAW | TOXIC
+	foodtype = MEAT | RAW | TOXIC | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/golem
 	icon_state = "golemmeat"
@@ -72,48 +72,54 @@
 	list_reagents = list(/datum/reagent/consumable/nutriment = 3, /datum/reagent/iron = 3)
 	filling_color = "#A9A9A9"
 	tastes = list("rock" = 1)
-	foodtype = MEAT | RAW | GROSS
+	foodtype = MEAT | RAW | GROSS | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/golem/adamantine
 	icon_state = "agolemmeat"
 	desc = "From the slime pen to the rune to the kitchen, science."
 	filling_color = "#66CDAA"
-	foodtype = MEAT | RAW | GROSS
+	foodtype = MEAT | RAW | GROSS |SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/lizard
 	icon_state = "lizardmeat"
 	desc = "Delicious dino damage."
 	filling_color = "#6B8E23"
 	tastes = list("meat" = 4, "scales" = 1)
-	foodtype = MEAT | RAW
+	foodtype = MEAT | RAW |SENTIENT
+
+/obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/tajaran
+	icon_state = "meat"
+	desc = "Look what the cat dragged in."
+	tastes = list("meat" = 4, "fur" = 1)
+	foodtype = MEAT | RAW | GROSS | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/plant
 	icon_state = "plantmeat"
 	desc = "All the joys of healthy eating with all the fun of cannibalism."
 	filling_color = "#E9967A"
 	tastes = list("salad" = 1, "wood" = 1)
-	foodtype = VEGETABLES
+	foodtype = VEGETABLES |SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/shadow
 	icon_state = "shadowmeat"
 	desc = "Ow, the edge."
 	filling_color = "#202020"
 	tastes = list("darkness" = 1, "meat" = 1)
-	foodtype = MEAT | RAW
+	foodtype = MEAT | RAW | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/fly
 	icon_state = "flymeat"
 	desc = "Nothing says tasty like maggot filled radioactive mutant flesh."
 	list_reagents = list(/datum/reagent/consumable/nutriment = 3, /datum/reagent/uranium = 3)
 	tastes = list("maggots" = 1, "the inside of a reactor" = 1)
-	foodtype = MEAT | RAW | GROSS
+	foodtype = MEAT | RAW | GROSS | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/moth
 	icon_state = "mothmeat"
 	desc = "Unpleasantly powdery and dry. Kind of pretty, though."
 	filling_color = "#BF896B"
 	tastes = list("dust" = 1, "powder" = 1, "meat" = 2)
-	foodtype = MEAT | RAW
+	foodtype = MEAT | RAW | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/skeleton
 	name = "bone"
@@ -122,7 +128,7 @@
 	filling_color = "#F0F0F0"
 	tastes = list("bone" = 1)
 	slice_path = null  //can't slice a bone into cutlets
-	foodtype = GROSS
+	foodtype = GROSS | SENTIENT
 
 /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/zombie
 	name = " meat (rotten)"
@@ -138,7 +144,7 @@
 	filling_color = "#97ee63"
 	list_reagents = list(/datum/reagent/consumable/liquidelectricity = 3)
 	tastes = list("pure electrictiy" = 2, "meat" = 1)
-	foodtype = RAW | MEAT | TOXIC
+	foodtype = RAW | MEAT | TOXIC | SENTIENT
 
 ////////////////////////////////////// OTHER MEATS ////////////////////////////////////////////////////////
 

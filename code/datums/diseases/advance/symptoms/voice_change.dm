@@ -62,7 +62,7 @@ Bonus
 		else
 			if(ishuman(M))
 				var/mob/living/carbon/human/H = M
-				H.SetSpecialVoice(H.dna.species.random_name(H.gender))
+				H.SetSpecialVoice(H.dna.species.random_name(H.gender, NAMEGEN_LIMIT))
 				if(scramble_language)
 					H.remove_language(current_language)
 					current_language = pick(subtypesof(/datum/language) - /datum/language/common)

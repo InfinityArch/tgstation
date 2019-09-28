@@ -11,11 +11,12 @@
 
 
 //Human Overlays Indexes/////////
-#define MUTATIONS_LAYER			29		//mutations. Tk headglows, cold resistance glow, etc
-#define BODY_BEHIND_LAYER		28		//certain mutantrace features (tail when looking south) that must appear behind the body parts
-#define BODYPARTS_LAYER			27		//Initially "AUGMENTS", this was repurposed to be a catch-all bodyparts flag
-#define BODY_ADJ_LAYER			26		//certain mutantrace features (snout, body markings) that must appear above the body parts
-#define BODY_LAYER				25		//underwear, undershirts, socks, eyes, lips(makeup)
+#define MUTATIONS_LAYER			30		//mutations. Tk headglows, cold resistance glow, etc
+#define BODY_BEHIND_LAYER		29		//certain mutantrace features (tail when looking south) that must appear behind the body parts
+#define BODYPARTS_LAYER			28		//Initially "AUGMENTS", this was repurposed to be a catch-all bodyparts flag
+#define BODY_ADJ_LAYER			27		//certain mutantrace features (snout, body markings) that must appear above the body parts
+#define BODY_LAYER				26		//underwear, undershirts, socks, eyes, lips(makeup)
+#define FRONT_MUTPARTS_LAYER	25		//parts like snouts that need to appear over other parts but under clothing
 #define FRONT_MUTATIONS_LAYER	24		//mutations that should appear above body, body_adj and bodyparts layer (e.g. laser eyes)
 #define COSMETICS_LAYER			23	    //cosmetics like lipstick and blush will appear on this layer
 #define DAMAGE_LAYER			22		//damage indicators (cuts and burns)
@@ -40,7 +41,7 @@
 #define BODY_FRONT_LAYER		3
 #define HALO_LAYER				2		//blood cult ascended halo, because there's currently no better solution for adding/removing
 #define FIRE_LAYER				1		//If you're on fire
-#define TOTAL_LAYERS			29		//KEEP THIS UP-TO-DATE OR SHIT WILL BREAK ;_;
+#define TOTAL_LAYERS			30		//KEEP THIS UP-TO-DATE OR SHIT WILL BREAK ;_;
 
 //Human Overlay Index Shortcuts for alternate_worn_layer, layers
 //Because I *KNOW* somebody will think layer+1 means "above"
@@ -168,7 +169,8 @@ GLOBAL_LIST_EMPTY(bloody_footprints_cache)
 #define POLLTYPE_MULTI		"MULTICHOICE"
 #define POLLTYPE_IRV		"IRV"
 
-
+//cosmetics stuff
+#define MAKEUP_OPACITY 150 //alpha value used by makeup overlays
 
 //subtypesof(), typesof() without the parent path
 #define subtypesof(typepath) ( typesof(typepath) - typepath )

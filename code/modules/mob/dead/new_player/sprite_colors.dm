@@ -179,8 +179,8 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 
 /datum/sprite_color/skin_tone/tajaran
 	species = "tajaran"
-	name = "Sand"
-	color_hex = "e6e0cc"
+	name = "Silver"
+	color_hex = "c6c6c6"
 
 /datum/sprite_color/skin_tone/tajaran/taupe
 	name = "Taupe"
@@ -190,10 +190,11 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 	name = "Chocolate"
 	color_hex = "7c5a40"
 
-/datum/sprite_color/skin_tone/tajaran/silver
-	name = "Silver"
-	color_hex = "c6c6c6"
-/datum/sprite_color/skin_tone/tajaran/silver
+/datum/sprite_color/skin_tone/tajaran/sand
+	name = "Sand"
+	color_hex = "dbc991"
+
+/datum/sprite_color/skin_tone/tajaran/black
 	name = "Black"
 	color_hex = "2d2d2d"
 

@@ -31,12 +31,12 @@
 	var/special_name_chance = 5
 	var/owner //dobby is a free golem
 
-/datum/species/golem/random_name(gender,unique,lastname)
+/datum/species/golem/random_name(gender, attempts_to_find_unique_name, naming_convention_override)
 	var/golem_surname = pick(GLOB.golem_names)
 	// 3% chance that our golem has a human surname, because
 	// cultural contamination
 	if(prob(human_surname_chance))
-		golem_surname = pick(GLOB.last_names)
+		golem_surname = pick(GLOB.last_names_generic)
 	else if(special_names && special_names.len && prob(special_name_chance))
 		golem_surname = pick(special_names)
 
@@ -525,7 +525,7 @@
 	. = ..()
 	UnregisterSignal(C, COMSIG_MOB_SAY)
 
-/datum/species/golem/bananium/random_name(gender,unique,lastname)
+/datum/species/golem/bananium/random_name(gender, attempts_to_find_unique_name, naming_convention_override)
 	var/clown_name = pick(GLOB.clown_names)
 	var/golem_name = "[uppertext(clown_name)]"
 	return golem_name
@@ -590,7 +590,7 @@
 	var/obj/effect/proc_holder/spell/targeted/abyssal_gaze/abyssal_gaze
 	var/obj/effect/proc_holder/spell/targeted/dominate/dominate
 
-/datum/species/golem/runic/random_name(gender,unique,lastname)
+/datum/species/golem/runic/random_name(gender, attempts_to_find_unique_name, naming_convention_override)
 	var/edgy_first_name = pick("Razor","Blood","Dark","Evil","Cold","Pale","Black","Silent","Chaos","Deadly","Coldsteel")
 	var/edgy_last_name = pick("Edge","Night","Death","Razor","Blade","Steel","Calamity","Twilight","Shadow","Nightmare") //dammit Razor Razor
 	var/golem_name = "[edgy_first_name] [edgy_last_name]"
@@ -712,7 +712,7 @@
 		return TRUE
 	return ..()
 
-/datum/species/golem/cloth/random_name(gender,unique,lastname)
+/datum/species/golem/cloth/random_name(gender, attempts_to_find_unique_name, naming_convention_override)
 	var/pharaoh_name = pick("Neferkare", "Hudjefa", "Khufu", "Mentuhotep", "Ahmose", "Amenhotep", "Thutmose", "Hatshepsut", "Tutankhamun", "Ramses", "Seti", \
 	"Merenptah", "Djer", "Semerkhet", "Nynetjer", "Khafre", "Pepi", "Intef", "Ay") //yes, Ay was an actual pharaoh
 	var/golem_name = "[pharaoh_name] \Roman[rand(1,99)]"

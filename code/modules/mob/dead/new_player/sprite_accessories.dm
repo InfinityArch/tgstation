@@ -794,6 +794,80 @@
 	name = "Wisp"
 	icon_state = "hair_wisp"
 
+/datum/sprite_accessory/hair/tajaran
+	name = "Braid (Tajaran)"
+	species = "tajaran"
+	icon_state= "braid"
+	icon = 'icons/mob/hair/tajaran.dmi'
+
+/datum/sprite_accessory/hair/tajaran/beaded
+	name = "Beaded Braid (Tajaran)"
+	icon_state= "braid_beaded"
+
+/datum/sprite_accessory/hair/tajaran/clean
+	name = "Clean (Tajaran)"
+	icon_state= "clean"
+
+/datum/sprite_accessory/hair/tajaran/clean
+	name = "Bangs (Tajaran)"
+	icon_state= "bangs"
+
+/datum/sprite_accessory/hair/tajaran/shaggy
+	name = "Shaggy (Tajaran)"
+	icon_state= "shaggy"
+
+/datum/sprite_accessory/hair/tajaran/mohawk
+	name = "Mohawk (Tajaran)"
+	icon_state= "mohawk"
+
+/datum/sprite_accessory/hair/tajaran/plait
+	name = "Plait (Tajaran)"
+	icon_state= "plait"
+
+/datum/sprite_accessory/hair/tajaran/straight
+	name = "Straight (Tajaran)"
+	icon_state= "straight"
+
+/datum/sprite_accessory/hair/tajaran/long
+	name = "Long (Tajaran)"
+	icon_state= "long"
+
+/datum/sprite_accessory/hair/tajaran/rattail
+	name = "Rattail (Tajaran)"
+	icon_state= "rattail"
+
+/datum/sprite_accessory/hair/tajaran/spikey
+	name = "Spikey (Tajaran)"
+	icon_state= "spikey"
+
+/datum/sprite_accessory/hair/tajaran/messy
+	name = "Messy (Tajaran)"
+	icon_state= "messy"
+
+/datum/sprite_accessory/hair/tajaran/curly
+	name = "Curly (Tajaran)"
+	icon_state= "curly"
+
+/datum/sprite_accessory/hair/tajaran/ladies_retro
+	name = "Retro (Tajaran)"
+	icon_state= "ladiesretro"
+
+/datum/sprite_accessory/hair/tajaran/victory
+	name = "Victory (Tajaran)"
+	icon_state= "victory"
+
+/datum/sprite_accessory/hair/tajaran/bob
+	name = "Bob (Tajaran)"
+	icon_state= "bob"
+
+/datum/sprite_accessory/hair/tajaran/fingerwave
+	name = "Fingerwave (Tajaran)"
+	icon_state= "fingerwave"
+
+/datum/sprite_accessory/hair/tajaran/bedhead
+	name = "Bedhead (Tajaran)"
+	icon_state= "bedhead"
+
 /////////////////////////////
 // Facial Hair Definitions //
 /////////////////////////////
@@ -950,6 +1024,47 @@
 /datum/sprite_accessory/facial_hair/sideburn
 	name = "Sideburns"
 	icon_state = "facial_sideburn"
+
+
+/datum/sprite_accessory/facial_hair/tajaran
+	name = "Goatee (tajaran)"
+	icon_state = "facial_goatee"
+	species = "tajaran"
+	icon = 'icons/mob/facial_hair/tajaran.dmi'
+
+/datum/sprite_accessory/facial_hair/tajaran/faded
+	name = "Goatee Faded (tajaran)"
+	icon_state = "facial_goatee_faded"
+
+/datum/sprite_accessory/facial_hair/tajaran
+	name = "Goatee (tajaran)"
+	icon_state = "facial_goatee"
+	species = "tajaran"
+	icon = 'icons/mob/facial_hair/tajaran.dmi'
+
+/datum/sprite_accessory/facial_hair/tajaran/faded
+	name = "Goatee Faded (tajaran)"
+	icon_state = "facial_goatee_faded"
+
+/datum/sprite_accessory/facial_hair/tajaran/moustache
+	name = "Moustache (tajaran)"
+	icon_state = "facial_moustache"
+
+/datum/sprite_accessory/facial_hair/tajaran/mutton
+	name = "Mutton (tajaran)"
+	icon_state = "facial_mutton"
+
+/datum/sprite_accessory/facial_hair/tajaran/pencil
+	name = "Pencilstache (tajaran)"
+	icon_state = "facial_pencilstache"
+
+/datum/sprite_accessory/facial_hair/tajaran/sideburns
+	name = "Sideburns (tajaran)"
+	icon_state = "facial_sideburns"
+
+/datum/sprite_accessory/facial_hair/tajaran/smallstache
+	name = "Small moustache (tajaran)"
+	icon_state = "facial_smallstache"
 
 ///////////////////////////
 // Underwear Definitions //
@@ -1654,34 +1769,7 @@
 	species = "tajaran"
 	hasinner = TRUE
 	color_src = SKIN_TONE
-
-/datum/sprite_accessory/snouts/tajaran/tiger_stripes_full
-	name = "Tiger Stripes Full"
-	icon_state = "tajaran_tiger_stripes_full"
-
-/datum/sprite_accessory/snouts/tajaran/tiger_stripes
-	name = "Tiger Stripes"
-	icon_state = "tajaran_tiger_stripes"
-
-/datum/sprite_accessory/snouts/tajaran/medium
-	name = "Medium"
-	icon_state = "tajaran_medium"
-
-/datum/sprite_accessory/snouts/tajaran/dark
-	name = "Dark"
-	icon_state = "tajaran_dark"
-
-/datum/sprite_accessory/snouts/tajaran/dark_2
-	name = "Dark 2"
-	icon_state = "tajaran_dark_2"
-
-/datum/sprite_accessory/snouts/tajaran/dark_3
-	name = "Dark 3"
-	icon_state = "tajaran_dark_3"
-
-/datum/sprite_accessory/snouts/tajaran/patch
-	name = "Patch"
-	icon_state = "tajaran_patch"
+	gender_specific = TRUE
 
 ///////////
 // Horns //
@@ -1943,10 +2031,20 @@
 	name = "Snow"
 	icon_state = "snow"
 
-
+////////////////////
+// Face Markings  //
+///////////////////
 ////////////////////
 // Body Markings //
 ///////////////////
+/datum/sprite_accessory/face_markings
+	icon = 'icons/mob/sprite_accessories/face_markings.dmi'
+	species = "tajaran"
+
+/datum/sprite_accessory/face_markings/none
+	name = "None"
+	icon_state = "none"
+	species = DEFAULT_SPECIES_INDEX
 
 /datum/sprite_accessory/body_markings
 	icon = 'icons/mob/sprite_accessories/body_markings.dmi'

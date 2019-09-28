@@ -59,11 +59,14 @@ __Returns__: returns the input list (features) with features found in *features_
 	if("tail_accessory" in features_to_sanitize)
 		temp_index = GLOB.tail_accessory_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["tail_accessory"] = sanitize_inlist(features["tail_accessory"], (GLOB.tail_accessory_list & GLOB.tail_accessory_list_species[temp_index]) | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX])
+	if("face_markings" in features_to_sanitize)
+		temp_index = GLOB.face_markings_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
+		features["face_markings"] = sanitize_inlist(features["face_markings"], (GLOB.face_markings_list & GLOB.face_markings_list_species[temp_index]) | GLOB.face_markings_list_species[DEFAULT_SPECIES_INDEX])
 	if("body_markings" in features_to_sanitize)
 		temp_index = GLOB.body_markings_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["body_markings"] = sanitize_inlist(features["body_markings"], (GLOB.body_markings_list & GLOB.body_markings_list_species[temp_index]) | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX])
 	if("legs" in features_to_sanitize)
-		temp_index = GLOB.body_markings_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
+		temp_index = GLOB.legs_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["feature_legs"] = sanitize_inlist(features["legs"], (GLOB.legs_list && GLOB.legs_list_species[temp_index]) | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])	
 	if("wings" in features_to_sanitize)
 		temp_index = GLOB.wings_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
@@ -85,23 +88,24 @@ __Returns__: returns the original style if its valid for the character, and the 
 */
 
 /proc/sanitize_hairstyle(hairstyle, species_index, gender = NEUTER, facial = FALSE)
+	var/hair_type = hairstyle
 	if(!facial)
 		if(gender == MALE)
-			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]))
+			hair_type = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]))
 		else if(gender == FEMALE)
-			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[species_index]))
+			hair_type = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[species_index]))
 		else
-			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[species_index])
+			hair_type = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[species_index])
 
 	else
 		if(gender == MALE)
-			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]))
+			hair_type = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]))
 		else if(gender == FEMALE)
-			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[species_index]))
+			hair_type = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[species_index]))
 		else
-			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.facial_hairstyles_list_species[species_index])
+			hair_type = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.facial_hairstyles_list_species[species_index])
 
-	return hairstyle
+	return hair_type
 
 /*
 # sanitize_skin_tone

@@ -63,6 +63,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/facial_hair_color = "000"		//Facial hair color
 	var/skin_tone = "greyscale"			//Skin color
 	var/eye_color = "000"				//Eye color
+	var/lip_style
+	var/lip_color = "FFFFFF"
 	var/datum/species/pref_species = new /datum/species/human()	//Mutant race
 	var/list/features = DEFAULT_FEATURES_LIST
 	var/list/randomise = list(RANDOM_UNDERWEAR = TRUE, RANDOM_UNDERWEAR_COLOR = TRUE, RANDOM_UNDERSHIRT = TRUE, RANDOM_SOCKS = TRUE, RANDOM_BACKPACK = TRUE, RANDOM_JUMPSUIT_STYLE = TRUE, RANDOM_HAIRSTYLE = TRUE, RANDOM_HAIR_COLOR = TRUE, RANDOM_FACIAL_HAIRSTYLE = TRUE, RANDOM_FACIAL_HAIR_COLOR = TRUE, RANDOM_SKIN_TONE = TRUE, RANDOM_EYE_COLOR = TRUE)
@@ -123,7 +125,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			return
 	//we couldn't load character data so just randomize the character appearance + name
 	random_character()		//let's create a random character then - rather than a fat, bald and naked man.
-	real_name = pref_species.random_name(gender,1)
+	real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
 	if(!loaded_preferences_successfully)
 		save_preferences()
 	save_character()		//let's save this new random character so it doesn't keep generating new ones.
@@ -256,10 +258,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				skin_tone = sanitize_skin_tone(skin_tone, pref_species.limbs_id)
 				use_skintones = TRUE
 			if(use_skintones)
+				var/skin_feature_name = pref_species.feature_names["skin_tone"] ? capitalize(pref_species.feature_names["skin_tone"]) : capitalize(DEFAULT_FEATURES_NAMES["skin_tone"])
 
 				dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>[capitalize(pref_species.feature_names["skin_tone"])]</h3>"
+				dat += "<h3>[skin_feature_name]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=s_tone;task=input'>[skin_tone]</a>"
 				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_SKIN_TONE]'>[(randomise[RANDOM_SKIN_TONE]) ? "Lock" : "Unlock"]</A>"
@@ -267,11 +270,13 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			var/mutant_colors
 			if((MUTCOLORS in pref_species.species_traits) || (MUTCOLORS_PARTSONLY in pref_species.species_traits))
+				var/mutcolors_feature_name = pref_species.feature_names["mcolor"] ? capitalize(pref_species.feature_names["mcolor"]) : capitalize(DEFAULT_FEATURES_NAMES["mcolor"])
+
 
 				if(!use_skintones)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>[capitalize(pref_species.feature_names["mcolor"])]</h3>"
+				dat += "<h3>[mutcolors_feature_name]</h3>"
 
 				dat += "<span style='border: 1px solid #161616; background-color: #[features["mcolor"]];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=mutant_color;task=input'>Change</a><BR>"
 
@@ -291,41 +296,60 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				dat += "</td>"
 
 			if(HAIR in pref_species.species_traits)
+				var/hair_feature_name = pref_species.feature_names["hair"] ? capitalize(pref_species.feature_names["hair"]) : capitalize(DEFAULT_FEATURES_NAMES["hair"])
 
 				hairstyle = sanitize_hairstyle(hairstyle, pref_species.hair_id, gender)
 				dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>[capitalize(pref_species.feature_names["hair"])]</h3>"
+				dat += "<h3>[hair_feature_name]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=hairstyle;task=input'>[hairstyle]</a>"
 				dat += "<a href='?_src_=prefs;preference=previous_hairstyle;task=input'>&lt;</a> <a href='?_src_=prefs;preference=next_hairstyle;task=input'>&gt;</a>"
 				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_HAIRSTYLE]'>[(randomise[RANDOM_HAIRSTYLE]) ? "Lock" : "Unlock"]</A>"
 
-				dat += "<br><span style='border:1px solid #161616; background-color: #[hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=hair;task=input'>Change</a>"
-				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_HAIR_COLOR]'>[(randomise[RANDOM_HAIR_COLOR]) ? "Lock" : "Unlock"]</A>"
+				if(!pref_species.hair_color)
+					dat += "<br><span style='border:1px solid #161616; background-color: #[hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=hair;task=input'>Change</a>"
+					dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_HAIR_COLOR]'>[(randomise[RANDOM_HAIR_COLOR]) ? "Lock" : "Unlock"]</A>"
 
 			if(FACEHAIR in pref_species.species_traits)
+				var/facehair_feature_name = pref_species.feature_names["facial_hair"] ? capitalize(pref_species.feature_names["facial_hair"]) : capitalize(DEFAULT_FEATURES_NAMES["facial_hair"])
 
 				facial_hairstyle = sanitize_hairstyle(facial_hairstyle, pref_species.hair_id, gender, facial = TRUE)
-				dat += "<BR><h3>[capitalize(pref_species.feature_names["facial_hair"])]</h3>"
+				dat += "<BR><h3>[facehair_feature_name]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=facial_hairstyle;task=input'>[facial_hairstyle]</a>"
 				dat += "<a href='?_src_=prefs;preference=previous_facehairstyle;task=input'>&lt;</a> <a href='?_src_=prefs;preference=next_facehairstyle;task=input'>&gt;</a>"
 				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_FACIAL_HAIRSTYLE]'>[(randomise[RANDOM_FACIAL_HAIRSTYLE]) ? "Lock" : "Unlock"]</A>"
+				if(!pref_species.hair_color)
+					dat += "<br><span style='border: 1px solid #161616; background-color: #[facial_hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=facial;task=input'>Change</a>"
+					dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_FACIAL_HAIR_COLOR]'>[(randomise[RANDOM_FACIAL_HAIR_COLOR]) ? "Lock" : "Unlock"]</A>"
 
-				dat += "<br><span style='border: 1px solid #161616; background-color: #[facial_hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=facial;task=input'>Change</a>"
-				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_FACIAL_HAIR_COLOR]'>[(randomise[RANDOM_FACIAL_HAIR_COLOR]) ? "Lock" : "Unlock"]</A>"
-				dat += "<br></td>"
+			if(LIPS in pref_species.species_traits)
+
+				dat += "<h3>lip color</h3>"
+
+				dat += "<span style='border: 1px solid #161616; background-color: #[lip_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=lip_color;task=input'>Change</a><BR>"
+				if(lip_style)
+					dat += "<a href='?_src_=prefs;preference=remove_lipstick;task=input'>remove lipstick</a><BR>"
+
+			else
+				lip_style = null
+				lip_color = "FFFFFF"
+
+			
+			dat += "<br></td>"
 
 			//Features
 			var/mutant_category = 0
-
+		
 			if(("tail" in pref_species.mutant_bodyparts) && (length(GLOB.tails_list_species[pref_species.features_id]) > 1))
+				var/tail_feature_name = pref_species.feature_names["tail"] ? capitalize(pref_species.feature_names["tail"]) : capitalize(DEFAULT_FEATURES_NAMES["tail"])				
+
 				features = sanitize_features(features, pref_species.features_id, features_to_sanitize = list("tail"))
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
-				dat += "<h3>[capitalize(pref_species.feature_names["tail"])]</h3>"
+				dat += "<h3>[tail_feature_name]</h3>"
 
 				dat += "<a href='?_src_=prefs;preference=tail;task=input'>[features["tail"]]</a><BR>"
 
@@ -390,6 +414,19 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					dat += "</td>"
 					mutant_category = 0
 
+			if(("face_markings" in pref_species.mutant_bodyparts) && (length(GLOB.face_markings_list_species[pref_species.features_id] | GLOB.face_markings_list_species[DEFAULT_SPECIES_INDEX]) > 1))
+				if(!mutant_category)
+					dat += APPEARANCE_CATEGORY_COLUMN
+
+				dat += "<h3>[capitalize(pref_species.feature_names["face_markings"])]</h3>"
+
+				dat += "<a href='?_src_=prefs;preference=face_markings;task=input'>[features["face_markings"]]</a><BR>"
+
+				mutant_category++
+				if(mutant_category >= MAX_MUTANT_ROWS)
+					dat += "</td>"
+					mutant_category = 0
+
 			if(("body_markings" in pref_species.mutant_bodyparts) && (length(GLOB.body_markings_list_species[pref_species.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX]) > 1))
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
@@ -432,11 +469,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					mutant_category = 0
 
 			if(("wings" in pref_species.mutant_bodyparts) && (length(GLOB.wings_list_species[pref_species.features_id]) > 1))
-				message_admins("wing feature for tooltip: [features["wings"]]")
-				message_admins("total wing list[english_list(GLOB.wings_list)]")
-				message_admins("species wing list: [english_list(GLOB.wings_list_species[pref_species.features_id])]")
 				features = sanitize_features(features, pref_species.features_id, features_to_sanitize = list("wings"))
-				message_admins("wing feature for tooltip post sanitization: [features["wings"]]")
 				if(!mutant_category)
 					dat += APPEARANCE_CATEGORY_COLUMN
 
@@ -998,7 +1031,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		if("random")
 			switch(href_list["preference"])
 				if("name")
-					real_name = pref_species.random_name(gender,1)
+					real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
 				if("age")
 					age = rand(AGE_MIN, AGE_MAX)
 				if("hair")
@@ -1200,6 +1233,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						features = sanitize_features(features, pref_species.features_id)
 						age = CLAMP(age, pref_species.age_min, pref_species.age_max)
 
+				if("remove_lipstick")
+					lip_style = null
+
+				if("lip_color")
+					var/new_lip_color = input(user, "Choose your character's lipstick color:", "Character Preference","#"+ lip_color) as color|null
+					if(new_lip_color)
+						lip_color = sanitize_hexcolor(new_lip_color)
+						lip_style = "lipstick"
+
+
 				if("mutant_color")
 					var/new_mutantcolor = input(user, "Choose your character's [pref_species.feature_names["mcolor"]]:", "Character Preference","#"+features["mcolor"]) as color|null
 					if(new_mutantcolor)
@@ -1252,6 +1295,12 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					new_tail_accessory = input(user, "Choose your character's [pref_species.feature_names["tail_accessory"]]:", "Character Preference") as null|anything in GLOB.tail_accessory_list_species[pref_species.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX]
 					if(new_tail_accessory)
 						features["tail_accessory"] = new_tail_accessory
+
+				if("face_markings")
+					var/new_face_markings
+					new_face_markings = input(user, "Choose your character's [pref_species.feature_names["face_markings"]]:", "Character Preference") as null|anything in GLOB.face_markings_list_species[pref_species.features_id]  | GLOB.face_markings_list_species[DEFAULT_SPECIES_INDEX]
+					if(new_face_markings)
+						features["face_markings"] = new_face_markings
 
 				if("body_markings")
 					var/new_body_markings
@@ -1491,7 +1540,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("changeslot")
 					if(!load_character(text2num(href_list["num"])))
 						random_character()
-						real_name = random_unique_name(gender)
+						real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
 						save_character()
 
 				if("tab")
@@ -1509,16 +1558,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		random_character(gender)
 
 	if(randomise[RANDOM_NAME] && !character_setup)
-		real_name = pref_species.random_name(gender)
+		real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
 
 	if(roundstart_checks)
 		if(CONFIG_GET(flag/humans_need_surnames) && (pref_species.id == "human"))
 			var/firstspace = findtext(real_name, " ")
 			var/name_length = length(real_name)
 			if(!firstspace)	//we need a surname
-				real_name += " [pick(GLOB.last_names)]"
+				real_name += " [pick(pref_species.random_name(gender, NAMEGEN_LIMIT, SURNAME_ONLY))]"
 			else if(firstspace == name_length)
-				real_name += "[pick(GLOB.last_names)]"
+				real_name += "[pick(pref_species.random_name(gender, NAMEGEN_LIMIT, SURNAME_ONLY))]"
 
 	character.real_name = real_name
 	character.name = character.real_name
@@ -1538,6 +1587,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	character.skin_tone = skin_tone
 	character.hairstyle = hairstyle
 	character.facial_hairstyle = facial_hairstyle
+	character.lip_style = lip_style
+	character.lip_color = lip_color
 	character.underwear = underwear
 	character.underwear_color = underwear_color
 	character.undershirt = undershirt
@@ -1571,7 +1622,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 /datum/preferences/proc/get_default_name(name_id)
 	switch(name_id)
 		if("human")
-			return random_unique_name()
+			var/datum/species/S = new /datum/species/human
+			return S.random_name(gender)
 		if("ai")
 			return pick(GLOB.ai_names)
 		if("cyborg")
@@ -1584,7 +1636,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			return DEFAULT_RELIGION
 		if("deity")
 			return DEFAULT_DEITY
-	return random_unique_name()
+	return pref_species.random_name(gender, NAMEGEN_LIMIT)
 
 /datum/preferences/proc/ask_for_custom_name(mob/user,name_id)
 	var/namedata = GLOB.preferences_custom_names[name_id]

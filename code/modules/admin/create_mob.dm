@@ -11,8 +11,11 @@
 	user << browse(create_panel_helper(create_mob_html), "window=create_mob;size=425x475")
 
 /proc/randomize_human(mob/living/carbon/human/H)
-	H.gender = pick(MALE, FEMALE)
-	H.real_name = random_unique_name(H.gender)
+	if(AGENDER in H.dna.species.species_traits)
+		H.gender = PLURAL
+	else
+		H.gender = pick(MALE, FEMALE, PLURAL)
+	H.real_name = H.dna.species.random_name(H.gender, NAMEGEN_LIMIT)
 	H.name = H.real_name
 	H.underwear = random_underwear(H.gender)
 	H.underwear_color = random_short_color()

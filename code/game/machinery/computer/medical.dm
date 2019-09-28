@@ -540,10 +540,8 @@
 			if(prob(10/severity))
 				switch(rand(1,6))
 					if(1)
-						if(prob(10))
-							R.fields["name"] = random_unique_lizard_name(R.fields["gender"],1)
-						else
-							R.fields["name"] = random_unique_name(R.fields["gender"],1)
+						var/datum/species/S = new (pick(GLOB.roundstart_races))
+						R.fields["name"] = S.random_name(pick(MALE, FEMALE, PLURAL), NAMEGEN_LIMIT)
 					if(2)
 						R.fields["gender"]	= pick("Male", "Female", "Other")
 					if(3)

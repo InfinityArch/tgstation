@@ -411,14 +411,8 @@ update_label()
 			if(!t || t == "Unknown" || t == "floor" || t == "wall" || t == "r-wall") //Same as mob/dead/new_player/prefrences.dm
 				if (ishuman(user))
 					var/mob/living/carbon/human/human_agent = user
-
 					// Invalid/blank names give a randomly generated one.
-					if (human_agent.gender == "male")
-						registered_name = "[pick(GLOB.first_names_male)] [pick(GLOB.last_names)]"
-					else if (human_agent.gender == "female")
-						registered_name = "[pick(GLOB.first_names_female)] [pick(GLOB.last_names)]"
-					else
-						registered_name = "[pick(GLOB.first_names)] [pick(GLOB.last_names)]"
+					registered_name = human_agent.dna.species.random_name(user.gender)
 				else
 					alert ("Invalid name.")
 					return

@@ -4,7 +4,7 @@
 	if(randomise[RANDOM_SPECIES])
 		random_species()
 	else if(randomise[RANDOM_NAME])
-		real_name = pref_species.random_name(gender,1)
+		real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
 	if(gender_override && !(randomise[RANDOM_GENDER]))
 		gender = gender_override
 	else
@@ -44,7 +44,7 @@
 	var/random_species_type = GLOB.species_list[pick(GLOB.roundstart_races)]
 	pref_species = new random_species_type
 	if(randomise[RANDOM_NAME])
-		real_name = pref_species.random_name(gender,1)
+		real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
 
 /datum/preferences/proc/update_preview_icon()
 	// Determine what job is marked as 'High' priority, and dress them up as such.

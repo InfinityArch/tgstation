@@ -55,6 +55,8 @@ GLOBAL_LIST_EMPTY(wings_open_list)
 GLOBAL_LIST_EMPTY(wings_list_species)
 
 	//Other features
+GLOBAL_LIST_EMPTY(face_markings_list)
+GLOBAL_LIST_EMPTY(face_markings_list_species)
 GLOBAL_LIST_EMPTY(body_markings_list)
 GLOBAL_LIST_EMPTY(body_markings_list_species)
 GLOBAL_LIST_EMPTY(caps_list)

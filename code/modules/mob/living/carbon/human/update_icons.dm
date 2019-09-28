@@ -59,6 +59,7 @@ There are several things that need to be remembered:
 
 /mob/living/carbon/human/update_body()
 	remove_overlay(BODY_LAYER)
+	remove_overlay(COSMETICS_LAYER)
 	dna.species.handle_body(src)
 	..()
 
@@ -646,7 +647,8 @@ generate/load female uniform sprites matching all previously decided variables
 		// lipstick
 		if(lip_style && (LIPS in dna.species.species_traits))
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[dna.species.features_id]_lips_[lip_style]", -COSMETICS_LAYER)
-			lip_overlay.color = lip_color
+			lip_overlay.color = "#" + lip_color
+			lip_overlay.alpha = MAKEUP_OPACITY
 			if(OFFSET_FACE in dna.species.offset_features)
 				lip_overlay.pixel_x += dna.species.offset_features[OFFSET_FACE][1]
 				lip_overlay.pixel_y += dna.species.offset_features[OFFSET_FACE][2]

@@ -147,6 +147,8 @@
 			if(S.hair_color)
 				if(S.hair_color == "mutcolor")
 					facial_hair_color = H.dna.features["mcolor"]
+				else if(S.hair_color == "skin_tone")
+					facial_hair_color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 				else
 					facial_hair_color = S.hair_color
 			else
@@ -162,6 +164,8 @@
 			if(S.hair_color)
 				if(S.hair_color == "mutcolor")
 					hair_color = H.dna.features["mcolor"]
+				else if(S.hair_color == "skin_tone")
+					hair_color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
 				else
 					hair_color = S.hair_color
 			else
@@ -177,7 +181,7 @@
 			lip_color = H.lip_color
 		else
 			lip_style = null
-			lip_color = "white"
+			lip_color = "FFFFFF"
 	..()
 
 /obj/item/bodypart/head/update_icon_dropped()
@@ -230,7 +234,7 @@
 		// lipstick
 		if(lip_style)
 			var/image/lips_overlay = image('icons/mob/sprite_accessories/lips.dmi', "[species_id]_lips_[lip_style]", -COSMETICS_LAYER, SOUTH)
-			lips_overlay.color = lip_color
+			lips_overlay.color = "#" + lip_color
 			. += lips_overlay
 
 		// eyes
