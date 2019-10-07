@@ -93,7 +93,7 @@
 			
 /datum/species/human/felinid/handle_chemicals(datum/reagent/chem, mob/living/carbon/human/M)
 	.=..()
-	if(chem.type == /datum/reagent/consumable/coco)
+	if(chem.type == /datum/reagent/consumable/coco || chem.type == /datum/reagent/consumable/hot_coco || chem.type ==/datum/reagent/consumable/milk/chocolate_milk)
 		if(prob(20))
 			M.adjust_disgust(20)
 		if(prob(5))
@@ -122,7 +122,7 @@
 /proc/purrbation_toggle(mob/living/carbon/human/H, silent = FALSE)
 	if(!ishumanbasic(H))
 		return
-	if(!iscatperson(H))
+	if(!isfelinid(H))
 		purrbation_apply(H, silent)
 		. = TRUE
 	else
@@ -130,7 +130,7 @@
 		. = FALSE
 
 /proc/purrbation_apply(mob/living/carbon/human/H, silent = FALSE)
-	if(!ishuman(H) || iscatperson(H))
+	if(!ishuman(H) || isfelinid(H))
 		return
 	H.set_species(/datum/species/human/felinid)
 
@@ -139,7 +139,7 @@
 		playsound(get_turf(H), 'sound/effects/meow1.ogg', 50, TRUE, -1)
 
 /proc/purrbation_remove(mob/living/carbon/human/H, silent = FALSE)
-	if(!ishuman(H) || !iscatperson(H))
+	if(!ishuman(H) || !isfelinid(H))
 		return
 
 	H.set_species(/datum/species/human)
