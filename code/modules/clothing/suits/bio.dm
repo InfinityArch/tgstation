@@ -76,11 +76,13 @@
 	icon_state = "bio_scientist"
 
 //CMO's biosuit, blue stripe
+
+/obj/item/clothing/head/bio_hood/cmo
+	icon_state = "bio_cmo"
+
 /obj/item/clothing/suit/utility/bio_suit/cmo
 	icon_state = "bio_cmo"
 
-/obj/item/clothing/suit/bio_suit/cmo
-	icon_state = "bio_cmo"
 
 /obj/item/clothing/suit/bio_suit/cmo/Initialize()
 	. = ..()

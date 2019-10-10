@@ -67,7 +67,7 @@
 	if(amount>0)
 		var/old_eye_blind = eye_blind
 		eye_blind = amount
-		if(client && !old_eye_blind)
+		if(!old_eye_blind)
 			if(stat == CONSCIOUS || stat == SOFT_CRIT)
 				throw_alert("blind", /obj/screen/alert/blind)
 			overlay_fullscreen("blind", /obj/screen/fullscreen/blind)

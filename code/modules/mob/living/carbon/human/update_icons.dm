@@ -645,7 +645,7 @@ generate/load female uniform sprites matching all previously decided variables
 
 	if(HD && !(HAS_TRAIT(src, TRAIT_HUSK)))
 		// lipstick
-		if(lip_style && (LIPS in dna.species.species_traits))
+		if(lip_style && (LIPS in dna.species.species_traits) && !(HIDEFACE in head.flags_inv || HIDEFACE in wear_mask.flags_inv) && HD.status != BODYPART_ROBOTIC)
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[dna.species.features_id]_lips_[lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = "#" + lip_color
 			lip_overlay.alpha = MAKEUP_OPACITY

@@ -10,7 +10,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/voice_id = "human" // what sound set to use for voiced emotes
 	var/name	// this is the fluff name. these will be left generic (such as 'Lizardperson' for the lizard race) so servers can change them to whatever
 	var/names_id // what index the species' names will be found under, defaults to limbs_id
-	var/naming_convention // what naming convention this species uses, if left null it defaults to 50:50 between eastern and western naming orders
+	var/naming_convention = HUMAN_WESTERN // what naming convention this species uses, if left null it defaults to 50:50 between eastern and western naming orders
 	var/default_color = "#FFF"	// if alien colors are disabled, this is the color that will be used by that race
 
 	var/sexes = 1		// whether or not the race has sexual characteristics. at the moment this is only 0 for skeletons and shadows
@@ -513,7 +513,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	if(HD && !(HAS_TRAIT(H, TRAIT_HUSK)))
 		// lipstick
-		if(H.lip_style && (LIPS in species_traits))
+		if(H.lip_style && (LIPS in species_traits) && !(H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) && !(H.head && (H.head.flags_inv & HIDEFACE)) && !(HD.status == BODYPART_ROBOTIC))
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[H.dna.species.features_id]_lips_[H.lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = "#" + H.lip_color
 			lip_overlay.alpha = MAKEUP_OPACITY
