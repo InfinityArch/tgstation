@@ -480,6 +480,10 @@
 			return
 	if(frn)
 		client.prefs.random_character()
+		client.prefs.real_name = client.prefs.pref_species.random_name(gender,NAMEGEN_LIMIT)
+
+	var/is_antag
+	if(mind in GLOB.pre_setup_antags)
 		is_antag = TRUE
 	
 	client.prefs.copy_to(H, antagonist = is_antag)
@@ -487,6 +491,7 @@
 	if(mind)
 		if(transfer_after)
 			mind.late_joiner = TRUE
+		mind.active = 0					//we wish to transfer the key manually
 		mind.transfer_to(H)					//won't transfer key since the mind is not active
 
 	H.name = real_name
