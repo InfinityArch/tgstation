@@ -53,7 +53,6 @@ GLOBAL_LIST_INIT(arcade_prize_pool, list(
 	icon_state = "arcade"
 	icon_keyboard = null
 	icon_screen = "invaders"
-	clockwork = TRUE //it'd look weird
 	var/list/prize_override
 	light_color = LIGHT_COLOR_GREEN
 
@@ -79,7 +78,7 @@ GLOBAL_LIST_INIT(arcade_prize_pool, list(
 	if(prob(0.0001)) //1 in a million
 		new /obj/item/gun/energy/pulse/prize(src)
 		visible_message("<span class='notice'>[src] dispenses.. woah, a gun! Way past cool.</span>", "<span class='notice'>You hear a chime and a shot.</span>")
-		SSmedals.UnlockMedal(MEDAL_PULSE, user.client)
+		user.client.give_award(/datum/award/achievement/misc/pulse, user)
 		return
 
 	if(!contents.len)
@@ -1080,7 +1079,7 @@ GLOBAL_LIST_INIT(arcade_prize_pool, list(
 
 
 //Remove Random/Specific crewmember
-/obj/machinery/computer/arcade/orion_trail/proc/remove_crewmember(var/specific = "", var/dont_remove = "")
+/obj/machinery/computer/arcade/orion_trail/proc/remove_crewmember(specific = "", dont_remove = "")
 	var/list/safe2remove = settlers
 	var/removed = ""
 	if(dont_remove)
