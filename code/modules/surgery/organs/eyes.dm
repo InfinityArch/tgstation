@@ -24,7 +24,9 @@
 	var/tint = 0
 	var/eye_color = "" //set to a hex code to override a mob's eye color
 	var/eye_icon_state = "eyes"
+	var/eye_icon_base = 'icons/mob/human_face.dmi'
 	var/old_eye_color = "fff"
+
 	var/flash_protect = FLASH_PROTECTION_NONE
 	var/see_invisible = SEE_INVISIBLE_LIVING
 	var/lighting_alpha
@@ -37,10 +39,8 @@
 		var/mob/living/carbon/human/HMN = owner
 		old_eye_color = HMN.eye_color
 		if(eye_color)
-			HMN.eye_color = eye_color
+			//HMN.eye_color = eye_color
 			HMN.regenerate_icons()
-		else
-			eye_color = HMN.eye_color
 		if(HAS_TRAIT(HMN, TRAIT_NIGHT_VISION) && !lighting_alpha)
 			lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
 	M.update_tint()
@@ -395,3 +395,18 @@
 	eye_icon_state = "snail_eyes"
 	icon_state = "snail_eyeballs"
 
+/obj/item/organ/eyes/silicon
+	name = "optical sensory package"
+	icon_state = "silicon_eyeballs"
+	desc = "A robot's optical sensory package"
+	status = ORGAN_ROBOTIC
+	organ_flags = ORGAN_SYNTHETIC | ORGAN_SILICON
+
+/obj/item/organ/eyes/silicon/emp_act(severity)
+	. = ..()
+	if(!owner || . & EMP_PROTECT_SELF)
+		return
+	if(prob(10 * severity))
+		return
+	to_chat(owner, "<span class='warning'>Static obfuscates your vision!</span>")
+	owner.flash_act(visual = 1)

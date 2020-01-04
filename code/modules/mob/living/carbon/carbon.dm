@@ -494,10 +494,13 @@
 
 /mob/living/carbon/update_mobility()
 	. = ..()
+	if(HAS_TRAIT(src, TRAIT_NO_RUN) && m_intent == MOVE_INTENT_RUN)
+		toggle_move_intent()
 	if(!(mobility_flags & MOBILITY_STAND))
 		add_movespeed_modifier(MOVESPEED_ID_CARBON_CRAWLING, TRUE, multiplicative_slowdown = CRAWLING_ADD_SLOWDOWN)
 	else
 		remove_movespeed_modifier(MOVESPEED_ID_CARBON_CRAWLING, TRUE)
+
 
 //Updates the mob's health from bodyparts and mob damage variables
 /mob/living/carbon/updatehealth()
@@ -940,7 +943,17 @@
 				if("augment")
 					if(ishuman(src))
 						if(BP)
-							BP.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
+							var/augstyle
+							var/augtype
+							var/augcolor
+							augstyle = input(usr, "Select an augmentation style") as null|anything in GLOB.augmentation_styles_list
+							if(!augstyle)
+								return
+							augtype = input(usr, "Select the type of augmentation to install") as null|anything in get_eligible_augmentation_types(augstyle, BP.body_zone)
+							if(!augtype)
+								return	
+							augcolor = input(usr, "Select a color for this augmentation") as null|anything in GLOB.aug_colors_list	
+							BP.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE, augstyle, augtype, augcolor)
 						else
 							to_chat(usr, "<span class='boldwarning'>[src] doesn't have such bodypart.</span>")
 					else

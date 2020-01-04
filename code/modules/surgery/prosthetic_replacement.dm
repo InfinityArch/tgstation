@@ -5,6 +5,7 @@
 	possible_locs = list(BODY_ZONE_R_ARM, BODY_ZONE_L_ARM, BODY_ZONE_L_LEG, BODY_ZONE_R_LEG, BODY_ZONE_HEAD)
 	requires_bodypart = FALSE //need a missing limb
 	requires_bodypart_type = 0
+	required_biotypes = MOB_ORGANIC|MOB_MINERAL
 
 /datum/surgery/prosthetic_replacement/can_start(mob/user, mob/living/carbon/target)
 	if(!iscarbon(target))
@@ -34,10 +35,10 @@
 	if(istype(tool, /obj/item/bodypart))
 		var/obj/item/bodypart/BP = tool
 		if(ismonkey(target))// monkey patient only accept organic monkey limbs
-			if(BP.status == BODYPART_ROBOTIC || BP.animal_origin != MONKEY_BODYPART)
+			if(!BP.is_organic_limb() || BP.animal_origin != MONKEY_BODYPART)
 				to_chat(user, "<span class='warning'>[BP] doesn't match the patient's morphology.</span>")
 				return -1
-		if(BP.status != BODYPART_ROBOTIC)
+		if(BP.is_organic_limb())
 			organ_rejection_dam = 10
 			if(ishuman(target))
 				if(BP.animal_origin)
@@ -46,6 +47,7 @@
 				var/mob/living/carbon/human/H = target
 				if(H.dna.species.id != BP.species_id)
 					organ_rejection_dam = 30
+
 
 		if(target_zone == BP.body_zone) //so we can't replace a leg with an arm, or a human arm with a monkey arm.
 			display_results(user, target, "<span class='notice'>You begin to replace [target]'s [parse_zone(target_zone)] with [tool]...</span>",
@@ -86,6 +88,74 @@
 			"<span class='notice'>[user] finishes attaching [tool]!</span>",
 			"<span class='notice'>[user] finishes the attachment procedure!</span>")
 		qdel(tool)
+		if(istype(tool, /obj/item/twohanded/required/chainsaw)) // Groovy!
+			var/obj/item/mounted_chainsaw/new_arm = new(target)
+			target_zone == BODY_ZONE_R_ARM ? target.put_in_r_hand(new_arm) : target.put_in_l_hand(new_arm)
+			return 1
+		else if(istype(tool, /obj/item/melee/synthetic_arm_blade))
+			var/obj/item/melee/arm_blade/new_arm = new(target,TRUE,TRUE)
+			target_zone == BODY_ZONE_R_ARM ? target.put_in_r_hand(new_arm) : target.put_in_l_hand(new_arm)
+			return 1
+
+/datum/surgery/prosthetic_replacement/silicon
+	name = "Limb installation"
+	steps =	list(/datum/surgery_step/prepare_electronics,
+				/datum/surgery_step/mechanic_wrench,
+				/datum/surgery_step/add_prosthetic/silicon)
+	target_mobtypes = list(/mob/living/carbon/human)
+	lying_required = FALSE
+	required_biotypes = MOB_ROBOTIC
+
+/datum/surgery_step/add_prosthetic/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	if(istype(tool, /obj/item/organ_storage))
+		tool.icon_state = initial(tool.icon_state)
+		tool.desc = initial(tool.desc)
+		tool.cut_overlays()
+		tool = tool.contents[1]
+	if(istype(tool, /obj/item/bodypart))
+		var/obj/item/bodypart/BP = tool
+		if(BP.is_organic_limb())
+			to_chat(user, "<span class='warning'>[BP] isn't compatible with the subject.</span>")
+			return -1
+
+			if(ishuman(target))
+				if(BP.animal_origin)
+					to_chat(user, "<span class='warning'>[BP] doesn't match the subjects's morphology.</span>")
+					return -1
+
+		if(target_zone == BP.body_zone) //so we can't replace a leg with an arm, or a human arm with a monkey arm.
+			display_results(user, target, "<span class='notice'>You begin to replace [target]'s [parse_zone(target_zone)] with [tool]...</span>",
+				"<span class='notice'>[user] begins to replace [target]'s [parse_zone(target_zone)] with [tool].</span>",
+				"<span class='notice'>[user] begins to replace [target]'s [parse_zone(target_zone)].</span>")
+		else
+			to_chat(user, "<span class='warning'>[tool] isn't the right type for [parse_zone(target_zone)].</span>")
+			return -1
+	else if(target_zone == BODY_ZONE_L_ARM || target_zone == BODY_ZONE_R_ARM)
+		display_results(user, target, "<span class='notice'>You begin to attach [tool] onto [target]...</span>",
+			"<span class='notice'>[user] begins to attach [tool] onto [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] begins to attach something onto [target]'s [parse_zone(target_zone)].</span>")
+	else
+		to_chat(user, "<span class='warning'>[tool] must be installed onto an arm.</span>")
+		return -1
+
+
+/datum/surgery_step/add_prosthetic/silicon/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	if(istype(tool, /obj/item/bodypart) && user.temporarilyRemoveItemFromInventory(tool))
+		var/obj/item/bodypart/L = tool
+		L.attach_limb(target)
+		display_results(user, target, "<span class='notice'>You succeed in replacing [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] successfully replaces [target]'s [parse_zone(target_zone)] with [tool]!</span>",
+			"<span class='notice'>[user] successfully replaces [target]'s [parse_zone(target_zone)]!</span>")
+		return 1
+	else
+		var/obj/item/bodypart/L = target.newBodyPart(target_zone, FALSE, FALSE)
+		L.is_pseudopart = TRUE
+		L.attach_limb(target)
+		user.visible_message("<span class='notice'>[user] finishes attaching [tool]!</span>", "<span class='notice'>You attach [tool].</span>")
+		display_results(user, target, "<span class='notice'>You attach [tool].</span>",
+			"<span class='notice'>[user] finishes attaching [tool]!</span>",
+			"<span class='notice'>[user] finishes the attachment procedure!</span>")
+		qdel(tool)
 		if(istype(tool, /obj/item/twohanded/required/chainsaw))
 			var/obj/item/mounted_chainsaw/new_arm = new(target)
 			target_zone == BODY_ZONE_R_ARM ? target.put_in_r_hand(new_arm) : target.put_in_l_hand(new_arm)
@@ -94,3 +164,4 @@
 			var/obj/item/melee/arm_blade/new_arm = new(target,TRUE,TRUE)
 			target_zone == BODY_ZONE_R_ARM ? target.put_in_r_hand(new_arm) : target.put_in_l_hand(new_arm)
 			return 1
+

@@ -5,6 +5,7 @@
 	icon_state = "default_human_head"
 	max_damage = 200
 	body_zone = BODY_ZONE_HEAD
+	status = BODYPART_ORGANIC
 	body_part = HEAD
 	w_class = WEIGHT_CLASS_BULKY //Quite a hefty load
 	slowdown = 1 //Balancing measure
@@ -30,10 +31,17 @@
 	var/facial_hair_color = "000"
 	var/facial_hairstyle = "Shaved"
 	//Eye Colouring
+	var/eye_optics = ""
+	var/monitor_state = ""
 
 	var/lip_style = null
 	var/lip_color = "white"
 
+	//mutant bodyparts
+	var/horns = ""
+	var/facial_markings = ""
+	var/snout = ""
+	var/frills = ""
 
 /obj/item/bodypart/head/Destroy()
 	QDEL_NULL(brainmob) //order is sensitive, see warning in handle_atom_del() below
@@ -63,7 +71,7 @@
 
 /obj/item/bodypart/head/examine(mob/user)
 	. = ..()
-	if(status == BODYPART_ORGANIC)
+	if(is_organic_limb() && !TORSO_BRAIN in species_flags_list)
 		if(!brain)
 			. += "<span class='info'>The brain has been removed from [src].</span>"
 		else if(brain.suicided || brainmob?.suiciding)
@@ -79,25 +87,23 @@
 			. += "<span class='info'>It seems particularly lifeless. Perhaps there'll be a chance for them later.</span>"
 		else
 			. += "<span class='info'>It seems completely devoid of life.</span>"
+	if(!eyes)
+		. += "<span class='info'>[real_name]'s eyes appear to have been removed.</span>"
 
-		if(!eyes)
-			. += "<span class='info'>[real_name]'s eyes appear to have been removed.</span>"
+	if(!ears)
+		. += "<span class='info'>[real_name]'s ears appear to have been removed.</span>"
 
-		if(!ears)
-			. += "<span class='info'>[real_name]'s ears appear to have been removed.</span>"
-
-		if(!tongue)
-			. += "<span class='info'>[real_name]'s tongue appears to have been removed.</span>"
-
+	if(!tongue)
+		. += "<span class='info'>[real_name]'s tongue appears to have been removed.</span>"
 
 /obj/item/bodypart/head/can_dismember(obj/item/I)
-	if(!((owner.stat == DEAD) || owner.InFullCritical()))
+	if(!((owner.stat == DEAD) || TORSO_BRAIN in species_flags_list || owner.InFullCritical()))
 		return FALSE
 	return ..()
 
 /obj/item/bodypart/head/drop_organs(mob/user, violent_removal)
 	var/turf/T = get_turf(src)
-	if(status != BODYPART_ROBOTIC)
+	if(is_organic_limb())
 		playsound(T, 'sound/misc/splort.ogg', 50, TRUE, -1)
 	for(var/obj/item/I in src)
 		if(I == brain)
@@ -184,6 +190,31 @@
 			lip_color = "FFFFFF"
 	..()
 
+/obj/item/bodypart/head/change_bodypart_status(new_limb_status, heal_limb, change_icon_to_default, aug_style_target, aug_type = AUG_TYPE_ROBOTIC, aug_color_target)
+	. = ..()
+	var/augmentation_type = get_augtype()
+	message_admins("[augmentation_type]")
+	if(!augmentation_type) //if its an organic limb
+		eye_optics = ""
+		monitor_state = ""
+		return
+	if(augmentation_type !=  AUG_TYPE_MONITOR)
+		monitor_state = ""
+	var/datum/sprite_accessory/augmentation/augmentation_style = GLOB.augmentation_styles_list[aug_id2augstyle(aug_id)]
+	if(LAZYLEN(augmentation_style.optics_types) && augmentation_type in augmentation_style.optics_types)
+		eye_optics = "[aug_id]_[augmentation_type]"
+		return
+	if(eye_optics)
+		var/datum/sprite_accessory/optics/S = GLOB.augmentation_optics_list[eye_optics]
+		if(S.species && S.species != aug_id)
+			eye_optics = ""
+			return
+		if(S.augtype && S.augtype != augmentation_type)
+			eye_optics = ""
+		
+	
+
+
 /obj/item/bodypart/head/update_icon_dropped()
 	var/list/standing = get_limb_icon(1)
 	if(!standing.len)
@@ -199,7 +230,7 @@
 	. = ..()
 	if(dropped) //certain overlays only appear when the limb is being detached from its owner.
 
-		if(status != BODYPART_ROBOTIC) //having a robotic head hides certain features.
+		if(draw_organic_features) //having a robotic head hides certain features.
 			//facial hair
 			if(facial_hairstyle)
 				var/datum/sprite_accessory/S = GLOB.facial_hairstyles_list[facial_hairstyle]
@@ -210,7 +241,7 @@
 					. += facial_overlay
 
 			//Applies the debrained overlay if there is no brain
-			if(!brain)
+			if(!brain && !TORSO_BRAIN in species_flags_list && is_organic_limb())
 				var/image/debrain_overlay = image(layer = -HAIR_LAYER, dir = SOUTH)
 				if(animal_origin == ALIEN_BODYPART)
 					debrain_overlay.icon = 'icons/mob/animal_parts.dmi'
@@ -231,20 +262,27 @@
 					. += hair_overlay
 
 
-		// lipstick
-		if(lip_style)
-			var/image/lips_overlay = image('icons/mob/sprite_accessories/lips.dmi', "[species_id]_lips_[lip_style]", -COSMETICS_LAYER, SOUTH)
-			lips_overlay.color = "#" + lip_color
-			. += lips_overlay
+			// lipstick
+			if(lip_style)
+				var/image/lips_overlay = image('icons/mob/sprite_accessories/lips.dmi', "[species_id]_lips_[lip_style]", -COSMETICS_LAYER, SOUTH)
+				lips_overlay.color = "#" + lip_color
+				. += lips_overlay
 
 		// eyes
-		var/image/eyes_overlay = image('icons/mob/human_face.dmi', "eyes_missing", -BODY_LAYER, SOUTH)
-		. += eyes_overlay
-		if(eyes)
-			eyes_overlay.icon_state = eyes.eye_icon_state
-
+		var/image/eyes_overlay
+		if(eye_optics)
+			var/datum/sprite_accessory/optics/O = GLOB.augmentation_optics_list[eye_optics]
+			eyes_overlay = image('icons/mob/augmentation/aug_optics.dmi', O.icon_state, -BODY_LAYER, SOUTH)
+			eyes_overlay.color = AUG_OPTICS_DEFAULT_COLOR
+			. += eyes_overlay
+		else if(eyes)
+			eyes_overlay = image('icons/mob/human_face.dmi', eyes.eye_icon_state, -BODY_LAYER, SOUTH)
 			if(eyes.eye_color)
 				eyes_overlay.color = "#" + eyes.eye_color
+			. += eyes_overlay
+		else if(is_organic_limb())
+			eyes_overlay = image('icons/mob/human_face.dmi', "eyes_missing", -BODY_LAYER, SOUTH)
+			. += eyes_overlay
 
 /obj/item/bodypart/head/monkey
 	icon = 'icons/mob/animal_parts.dmi'

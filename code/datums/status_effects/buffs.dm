@@ -58,12 +58,26 @@
 	icon_state = "power_regen"
 
 /datum/status_effect/cyborg_power_regen/tick()
-	var/mob/living/silicon/robot/cyborg = owner
-	if(!istype(cyborg) || !cyborg.cell)
+	if(iscyborg(owner))
+		var/mob/living/silicon/robot/cyborg = owner
+		if(cyborg.cell)
+			playsound(cyborg, 'sound/effects/light_flicker.ogg', 50, TRUE)
+			cyborg.cell.give(power_to_give)
+		else
+			qdel(src)
+			return
+	else if(owner.mob_biotypes & MOB_ROBOTIC)
+		var/mob/living/carbon/human/H = owner
+		var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
+		if(B && B.cell)
+			B.cell.give(power_to_give)
+			playsound(H, 'sound/effects/light_flicker.ogg', 50, TRUE)
+		else
+			qdel(src)
+			return
+	else
 		qdel(src)
 		return
-	playsound(cyborg, 'sound/effects/light_flicker.ogg', 50, TRUE)
-	cyborg.cell.give(power_to_give)
 
 /datum/status_effect/his_grace
 	id = "his_grace"

@@ -453,8 +453,14 @@
   * triggers an update the move intent hud as well
   */
 /mob/proc/toggle_move_intent(mob/user)
+	if(!user)
+		user = src
 	if(m_intent == MOVE_INTENT_RUN)
 		m_intent = MOVE_INTENT_WALK
+	else if(iscarbon(user))
+		var/mob/living/carbon/C = user
+		if(!HAS_TRAIT(C, TRAIT_NO_RUN))
+			m_intent = MOVE_INTENT_RUN
 	else
 		m_intent = MOVE_INTENT_RUN
 	if(hud_used && hud_used.static_inventory)

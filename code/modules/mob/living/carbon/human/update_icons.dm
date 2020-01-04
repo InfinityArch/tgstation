@@ -592,7 +592,7 @@ generate/load female uniform sprites matching all previously decided variables
 	for(var/X in bodyparts)
 		var/obj/item/bodypart/BP = X
 		. += "-[BP.body_zone]"
-		if(BP.status == BODYPART_ORGANIC)
+		if(BP.is_organic_limb())
 			. += "-organic"
 		else
 			. += "-robotic"
@@ -633,7 +633,7 @@ generate/load female uniform sprites matching all previously decided variables
 	if (!dna.species)
 		return
 
-	var/obj/item/bodypart/HD = get_bodypart("head")
+	var/obj/item/bodypart/head/HD = get_bodypart("head")
 
 	if (!istype(HD))
 		return
@@ -645,7 +645,7 @@ generate/load female uniform sprites matching all previously decided variables
 
 	if(HD && !(HAS_TRAIT(src, TRAIT_HUSK)))
 		// lipstick
-		if(lip_style && (LIPS in dna.species.species_traits) && !(HIDEFACE in head.flags_inv || HIDEFACE in wear_mask.flags_inv) && HD.status != BODYPART_ROBOTIC)
+		if(lip_style && (LIPS in dna.species.species_traits) && !(HIDEFACE in head.flags_inv || HIDEFACE in wear_mask.flags_inv || !(HD.draw_organic_features)))
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[dna.species.features_id]_lips_[lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = "#" + lip_color
 			lip_overlay.alpha = MAKEUP_OPACITY
@@ -657,13 +657,26 @@ generate/load female uniform sprites matching all previously decided variables
 		// eyes
 		if(!(NOEYESPRITES in dna.species.species_traits))
 			var/obj/item/organ/eyes/E = getorganslot(ORGAN_SLOT_EYES)
+			var/eye_color = ""
+			if(E)
+				eye_color = E.eye_color ? E.eye_color : eye_color
 			var/mutable_appearance/eye_overlay
-			if(!E)
-				eye_overlay = mutable_appearance('icons/mob/human_face.dmi', "eyes_missing", -BODY_LAYER)
-			else
+			if(HD.eye_optics)
+				var/datum/sprite_accessory/optics/O = GLOB.augmentation_optics_list[HD.eye_optics]
+				eye_overlay = mutable_appearance('icons/mob/augmentation/aug_optics.dmi', O.icon_state, -BODY_LAYER)
+				if(HD.bodypart_draw_flags & BODYPART_DRAW_MONITOR)
+					if(HD.monitor_state)
+						eye_overlay.icon_state += "_[HD.monitor_state]"
+					else
+						eye_overlay.color = AUG_OPTICS_DEFAULT_COLOR
+				else
+					eye_overlay.color = stat < UNCONSCIOUS ? "#" + eye_color : AUG_OPTICS_DEFAULT_COLOR
+			else if(E)
 				eye_overlay = mutable_appearance('icons/mob/human_face.dmi', E.eye_icon_state, -BODY_LAYER)
-			if((EYECOLOR in dna.species.species_traits) && E)
-				eye_overlay.color = "#" + eye_color
+				if(EYECOLOR in dna.species.species_traits)
+					eye_overlay.color = E.eye_color ? "#[E.eye_color]" : "#[eye_color]"
+			else
+				eye_overlay = mutable_appearance('icons/mob/human_face.dmi', "eyes_Missing", -BODY_LAYER)
 			if(OFFSET_FACE in dna.species.offset_features)
 				eye_overlay.pixel_x += dna.species.offset_features[OFFSET_FACE][1]
 				eye_overlay.pixel_y += dna.species.offset_features[OFFSET_FACE][2]

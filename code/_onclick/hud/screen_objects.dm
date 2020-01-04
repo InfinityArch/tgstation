@@ -362,6 +362,11 @@
 /obj/screen/mov_intent/proc/toggle(mob/user)
 	if(isobserver(user))
 		return
+	if(iscarbon(user))
+		var/mob/living/carbon/C = user
+		if(HAS_TRAIT(C, TRAIT_NO_RUN) && C.m_intent == MOVE_INTENT_WALK)
+			to_chat(user, "<span class='warning'>You are not capable of running.</span>")
+			return
 	user.toggle_move_intent(user)
 
 /obj/screen/pull

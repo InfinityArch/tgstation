@@ -453,6 +453,55 @@ Recharging stations are available in robotics, the dormitory bathrooms, and the 
 	desc = "Unit's power cell is running low. Recharging stations are available in robotics, the dormitory bathrooms, and the AI satellite."
 	icon_state = "lowcell"
 
+/obj/screen/alert/cell_status
+	name = "Power Cell Status"
+	desc = "Contact a coder, this alert is broken"
+	icon_state = "cell"
+	icon = 'icons/mob/screen_alert_silicon.dmi'
+
+/obj/screen/alert/cell_status/MouseEntered(location,control,params)
+	if(!QDELETED(src))
+		var/mob/living/carbon/C = usr
+		if(istype(C))
+			var/obj/item/organ/silicon/battery/B = C.getorganslot(ORGAN_SLOT_BATTERY)
+			if(B)
+				var/obj/item/stock_parts/cell/RC = B.get_cell()
+				if(RC)
+					desc = "[RC.name]: [100 * RC.charge / RC.maxcharge]% \n current charge:[RC.charge] \n maximum charge: [RC.maxcharge]"
+				else
+					desc = "Unit has no power cell. No modules available until a power cell is reinstalled. Robotics may provide assistance."
+			else
+				desc = "ERROR: No battery assembly detected!"
+
+		else
+			desc = initial(desc)
+		openToolTip(usr,src,params,title = name,content = desc,theme = alerttooltipstyle)
+
+/obj/screen/alert/vtec
+	name = "vtec"
+	desc = "VTEC System online"
+	icon_state = "vtec"
+	icon = 'icons/mob/screen_alert_silicon.dmi'
+
+
+/obj/screen/alert/overheat
+	name = "Overheating"
+	desc = "CAUTION: System thermal load exceeds cooling capacity, internal temperature may exceed recommended operating temperature."
+	icon_state = "overheating"
+	icon = 'icons/mob/screen_alert_silicon.dmi'
+
+/obj/screen/alert/hot/silicon
+	name = "High Temperature Alarm"
+	desc = "ALERT: Internal temperature exceeds safe operating limits! \
+Recommended course of action: Increase power to cooling or change environemntal parameters."
+	icon = 'icons/mob/screen_alert_silicon.dmi'
+
+/obj/screen/alert/cold/silicon
+	name = "Low Temperature Alarm"
+	desc = "ALERT: Internal temperature is dangerously low! \
+Recommended course of action: Increase heat load or change environmental parameters."
+	icon = 'icons/mob/screen_alert_silicon.dmi'
+
 //Ethereal
 
 /obj/screen/alert/etherealcharge

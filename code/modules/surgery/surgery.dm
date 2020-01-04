@@ -6,6 +6,7 @@
 	var/step_in_progress = FALSE								//Actively performing a Surgery
 	var/can_cancel = TRUE										//Can cancel this surgery after step 1 with cautery
 	var/list/target_mobtypes = list(/mob/living/carbon/human)	//Acceptable Species
+	var/required_biotypes = MOB_ORGANIC|MOB_MINERAL				//Required biotypes for this location
 	var/location = BODY_ZONE_CHEST								//Surgery location
 	var/requires_bodypart_type = BODYPART_ORGANIC				//Prevents you from performing an operation on incorrect limbs. 0 for any limb type
 	var/list/possible_locs = list() 							//Multiple locations

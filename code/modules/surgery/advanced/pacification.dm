@@ -1,5 +1,5 @@
 /datum/surgery/advanced/pacify
-	name = "Pacification"
+	name = "Nerve stapling"
 	desc = "A surgical procedure which permanently inhibits the aggression center of the brain, making the patient unwilling to cause direct harm."
 	steps = list(/datum/surgery_step/incise,
 				/datum/surgery_step/retract_skin,
@@ -24,12 +24,12 @@
 	time = 40
 
 /datum/surgery_step/pacify/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
-	display_results(user, target, "<span class='notice'>You begin to pacify [target]...</span>",
+	display_results(user, target, "<span class='notice'>You begin to nerve staple [target]...</span>",
 		"<span class='notice'>[user] begins to fix [target]'s brain.</span>",
 		"<span class='notice'>[user] begins to perform surgery on [target]'s brain.</span>")
 
 /datum/surgery_step/pacify/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
-	display_results(user, target, "<span class='notice'>You succeed in neurologically pacifying [target].</span>",
+	display_results(user, target, "<span class='notice'>You succeed in nerve stapling [target].</span>",
 		"<span class='notice'>[user] successfully fixes [target]'s brain!</span>",
 		"<span class='notice'>[user] completes the surgery on [target]'s brain.</span>")
 	target.gain_trauma(/datum/brain_trauma/severe/pacifism, TRAUMA_RESILIENCE_LOBOTOMY)

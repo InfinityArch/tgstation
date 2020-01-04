@@ -51,3 +51,6 @@
 #define ORGAN_FAILING			(1<<2)	//Failing organs perform damaging effects until replaced or fixed
 #define ORGAN_EXTERNAL			(1<<3)	//Was this organ implanted/inserted/etc, if true will not be removed during species change.
 #define ORGAN_VITAL				(1<<4)	//Currently only the brain
+#define ORGAN_SILICON			(1<<5)	// Silicon "organs" (components). cannot be inserted into organics, and IPCs/borgs can only use these organs
+#define ORGAN_UPGRADE			(1<<6)  // borg/ipc upgrades
+#define ORGAN_ABSTRACT			(1<<7)	// Abstract organs, immune to damage, will not show up on scanners, and can't be dismembered

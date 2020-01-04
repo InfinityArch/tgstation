@@ -151,6 +151,8 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_PASSTABLE			"passtable"
 #define TRAIT_NOFLASH			"noflash" //Makes you immune to flashes
 #define TRAIT_XENO_IMMUNE		"xeno_immune"//prevents xeno huggies implanting skeletons
+#define TRAIT_NOPAIN			"no_pain" // Won't scream involuntarily, and lack of sedation doesn't affect surgery success chance
+#define TRAIT_NO_RUN			"no_run"  // cannot use run intent
 
 //non-mob traits
 #define TRAIT_PARALYSIS			 "paralysis" //Used for limb-based paralysis, where replacing the limb will fix it

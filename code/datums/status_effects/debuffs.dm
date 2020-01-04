@@ -89,7 +89,7 @@
 	if(prob(20))
 		if(carbon_owner)
 			carbon_owner.handle_dreams()
-		if(prob(10) && owner.health > owner.crit_threshold)
+		if(prob(10) && owner.health > owner.crit_threshold && !HAS_TRAIT(owner, TRAIT_NOBREATH))
 			owner.emote("snore")
 
 /obj/screen/alert/status_effect/asleep
@@ -135,6 +135,33 @@
         name = "Stasis"
         desc = "Your biological functions have halted. You could live forever this way, but it's pretty boring."
         icon_state = "stasis"
+
+
+//SLEEP MODE
+/datum/status_effect/incapacitating/sleep_mode
+	id = "sleep_mode"
+	alert_type = /obj/screen/alert/status_effect/sleep_mode
+	duration = -1
+	tick_interval = 10
+
+/datum/status_effect/incapacitating/sleep_mode/on_creation(mob/living/new_owner, updating_canmove)
+	. = ..()
+	if(.)
+		if(updating_canmove)
+			owner.update_mobility()
+
+/datum/status_effect/incapacitating/sleep_mode/proc/end_sleepmode(mob/living/carbon/C, voluntary)
+	if(voluntary && owner)
+		to_chat(C, "<span class='robot notice'>Boot sequence complete, now leaving sleep mode.</span>")
+	else
+		to_chat(C, "<span class='robot notice'>Power restored, now exiting sleep mode.</span>")
+	duration = world.time
+	
+
+/obj/screen/alert/status_effect/sleep_mode
+	name = "Sleep Mode"
+	desc = "All non-essential systems have shut down and you are running on emergency power, unless someone comes to help you're trapped"
+	icon_state = "locked"
 
 //GOLEM GANG
 

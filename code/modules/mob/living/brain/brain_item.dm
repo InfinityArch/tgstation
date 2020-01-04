@@ -30,7 +30,7 @@
 /obj/item/organ/brain/Insert(mob/living/carbon/C, special = 0,no_id_transfer = FALSE)
 	..()
 
-	name = "brain"
+	name = initial(name)
 
 	if(C.mind && C.mind.has_antag_datum(/datum/antagonist/changeling) && !no_id_transfer)	//congrats, you're trapped in a body you don't control
 		if(brainmob && !(C.stat == DEAD || (HAS_TRAIT(C, TRAIT_DEATHCOMA))))
@@ -74,7 +74,7 @@
 		..()
 
 /obj/item/organ/brain/proc/transfer_identity(mob/living/L)
-	name = "[L.name]'s brain"
+	name = "[L.name]'s [initial(name)]"
 	if(brainmob || decoy_override)
 		return
 	if(!L.mind)
@@ -161,33 +161,36 @@
 		return ..()
 
 	add_fingerprint(user)
-
-	if(user.zone_selected != BODY_ZONE_HEAD)
+	var/brain_zone = BODY_ZONE_HEAD
+	if(ishuman(C))
+		var/mob/living/carbon/human/H = C
+		brain_zone = TORSO_BRAIN in H.dna.species.species_traits ? BODY_ZONE_CHEST : BODY_ZONE_HEAD
+	if(user.zone_selected != brain_zone || brain_zone != zone)
 		return ..()
 
 	var/target_has_brain = C.getorgan(/obj/item/organ/brain)
 
 	if(!target_has_brain && C.is_eyes_covered())
-		to_chat(user, "<span class='warning'>You're going to need to remove [C.p_their()] head cover first!</span>")
+		to_chat(user, "<span class='warning'>You're going to need to remove [C.p_their()] [brain_zone] cover first!</span>")
 		return
 
 //since these people will be dead M != usr
 
 	if(!target_has_brain)
-		if(!C.get_bodypart(BODY_ZONE_HEAD) || !user.temporarilyRemoveItemFromInventory(src))
+		if(!C.get_bodypart(brain_zone) || !user.temporarilyRemoveItemFromInventory(src))
 			return
-		var/msg = "[C] has [src] inserted into [C.p_their()] head by [user]."
+		var/msg = "[C] has [src] inserted into [C.p_their()] [brain_zone] by [user]."
 		if(C == user)
-			msg = "[user] inserts [src] into [user.p_their()] head!"
+			msg = "[user] inserts [src] into [user.p_their()] [brain_zone]!"
 
 		C.visible_message("<span class='danger'>[msg]</span>",
 						"<span class='userdanger'>[msg]</span>")
 
 		if(C != user)
-			to_chat(C, "<span class='notice'>[user] inserts [src] into your head.</span>")
-			to_chat(user, "<span class='notice'>You insert [src] into [C]'s head.</span>")
+			to_chat(C, "<span class='notice'>[user] inserts [src] into your [brain_zone].</span>")
+			to_chat(user, "<span class='notice'>You insert [src] into [C]'s [brain_zone].</span>")
 		else
-			to_chat(user, "<span class='notice'>You insert [src] into your head.</span>"	)
+			to_chat(user, "<span class='notice'>You insert [src] into your [brain_zone].</span>")
 
 		Insert(C)
 	else
@@ -201,7 +204,7 @@
 
 /obj/item/organ/brain/on_life()
 	if(damage >= BRAIN_DAMAGE_DEATH) //rip
-		to_chat(owner, "<span class='userdanger'>The last spark of life in your brain fizzles out...</span>")
+		to_chat(owner, "<span class='userdanger'>The last spark of life in your [initial(name)] fizzles out...</span>")
 		owner.death()
 		brain_death = TRUE
 

@@ -341,7 +341,7 @@
 		if(mob.anti_magic_check(FALSE, TRUE))
 			continue
 		new /obj/effect/temp_visual/revenant(mob.loc)
-		if(iscarbon(mob))
+		if(iscarbon(mob) && !(mob.mob_biotypes & MOB_ROBOTIC))
 			if(ishuman(mob))
 				var/mob/living/carbon/human/H = mob
 				if(H.dna && H.dna.species)

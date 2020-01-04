@@ -224,3 +224,25 @@
 	. = ..()
 	laws = new /datum/ai_laws/syndicate_override()
 	radio.on = FALSE
+
+
+
+
+
+/obj/item/organ/brain/mmi
+	name = "\improper Man-Machine Interface"
+	desc = "The Warrior's bland acronym, MMI, obscures the true horror of this monstrosity, that nevertheless has become standard-issue on Federation stations."
+	icon = 'icons/obj/assemblies.dmi'
+	icon_state = "mmi_off"
+	zone = BODY_ZONE_CHEST
+	organ_flags = ORGAN_VITAL|ORGAN_SYNTHETIC|ORGAN_SILICON
+	w_class = WEIGHT_CLASS_NORMAL
+	var/braintype = "Cyborg"
+	var/obj/item/radio/radio = null //Let's give it a radio.
+	var/mob/living/silicon/robot = null //Appears unused.
+	var/obj/mecha = null //This does not appear to be used outside of reference in mecha.dm.
+	var/obj/item/organ/brain/brain = null //The actual brain
+	//var/obj/item/organ/silicon/law_module/law_module = null //the law module
+	var/datum/ai_laws/laws = new()
+	var/force_replace_ai_name = FALSE
+	var/overrides_aicore_laws = FALSE // Whether the laws on the MMI, if any, override possible pre-existing laws loaded on the AI core.

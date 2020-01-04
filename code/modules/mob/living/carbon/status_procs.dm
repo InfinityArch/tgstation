@@ -3,8 +3,14 @@
 //eye_blind, eye_blurry, druggy, TRAIT_BLIND trait, TRAIT_NEARSIGHT trait, and TRAIT_HUSK trait.
 
 
-/mob/living/carbon/IsParalyzed(include_stamcrit = TRUE)
+/mob/living/carbon/IsParalyzed(include_sleep_mode = TRUE, include_stamcrit = TRUE)
 	return ..() || (include_stamcrit && stam_paralyzed)
+
+/mob/living/carbon/AmountParalyzed()
+	var/datum/status_effect/incapacitating/paralyzed/P = IsParalyzed(FALSE, FALSE)
+	if(P)
+		return P.duration - world.time
+	return 0
 
 /mob/living/carbon/proc/enter_stamcrit()
 	if(!(status_flags & CANKNOCKDOWN) || HAS_TRAIT(src, TRAIT_STUNIMMUNE))

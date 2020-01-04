@@ -66,6 +66,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/eye_color = "000"				//Eye color
 	var/lip_style
 	var/lip_color = "FFFFFF"
+	var/aug_color = AUG_COLOR_DEFAULT // cybernetic part color
+	var/list/cyberparts = list()  // roundstart cybernetic limbs, these will replace the 
+	var/list/cyberorgans = list() // roundstart cybernetic implants or alternative organs, ie posibrain vs mmi for robotic species
 	var/datum/species/pref_species = new /datum/species/human()	//Mutant race
 	var/list/features = DEFAULT_FEATURES_LIST
 	var/list/randomise = list(RANDOM_UNDERWEAR = TRUE, RANDOM_UNDERWEAR_COLOR = TRUE, RANDOM_UNDERSHIRT = TRUE, RANDOM_SOCKS = TRUE, RANDOM_BACKPACK = TRUE, RANDOM_JUMPSUIT_STYLE = TRUE, RANDOM_HAIRSTYLE = TRUE, RANDOM_HAIR_COLOR = TRUE, RANDOM_FACIAL_HAIRSTYLE = TRUE, RANDOM_FACIAL_HAIR_COLOR = TRUE, RANDOM_SKIN_TONE = TRUE, RANDOM_EYE_COLOR = TRUE)

@@ -129,12 +129,18 @@
 #define BODYTEMP_COOLING_MAX				-100
 /// The maximum number of degrees that your body can heat up in 1 tick, due to the environment, when in a hot area.
 #define BODYTEMP_HEATING_MAX				30
+/// The minimum overheating multiplier for an overheating robot
+#define BODYTEMP_OVERHEAT_MIN				0.1
+/// The maximum overheating modifier for an overheating robot
+#define BODYTEMP_OVERHEAT_MAX				1
+
 
 /// The limit the human body can take before it starts taking damage from heat.
 #define BODYTEMP_HEAT_DAMAGE_LIMIT			(BODYTEMP_NORMAL + 50)
 /// The limit the human body can take before it starts taking damage from coldness.
 #define BODYTEMP_COLD_DAMAGE_LIMIT			(BODYTEMP_NORMAL - 50)
-
+// factor by which excess heat silicon heat load is multiplied to determine the amount of excess heating
+#define SILICON_HEAT_LOAD_FACTOR		20
 
 /// what min_cold_protection_temperature is set to for space-helmet quality headwear. MUST NOT BE 0.
 #define SPACE_HELM_MIN_TEMP_PROTECT			2.0

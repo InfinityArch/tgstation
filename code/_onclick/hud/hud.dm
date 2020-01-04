@@ -14,8 +14,13 @@ GLOBAL_LIST_INIT(available_ui_styles, list(
 	"Clockwork" = 'icons/mob/screen_clockwork.dmi'
 ))
 
+//ui styles not normally selectable
+GLOBAL_LIST_INIT(locked_ui_styles, list(
+	"ipc" = 'icons/mob/screen_robot.dmi'
+))
+
 /proc/ui_style2icon(ui_style)
-	return GLOB.available_ui_styles[ui_style] || GLOB.available_ui_styles[GLOB.available_ui_styles[1]]
+	return GLOB.available_ui_styles[ui_style] || GLOB.locked_ui_styles[ui_style] || GLOB.available_ui_styles[GLOB.available_ui_styles[1]]
 
 /datum/hud
 	var/mob/mymob

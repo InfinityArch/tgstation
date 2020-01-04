@@ -34,7 +34,12 @@
 		create_mob_hud()
 	if(hud_used)
 		hud_used.show_hud(hud_used.hud_version)
-		hud_used.update_ui_style(ui_style2icon(client.prefs.UI_style))
+		var/ui_style_to_use = ui_style2icon(client.prefs.UI_style)
+		if(ishuman(src))
+			var/mob/living/carbon/human/H = src
+			if(H.dna.species.species_hud)
+				ui_style_to_use = ui_style2icon(H.dna.species.species_hud)
+		hud_used.update_ui_style(ui_style_to_use)
 
 	next_move = 1
 

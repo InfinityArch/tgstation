@@ -109,6 +109,15 @@
 
 /obj/item/stock_parts/cell/proc/explode()
 	var/turf/T = get_turf(src.loc)
+	if(istype(loc, /obj/item/organ/silicon/battery)) //if its inside of a battery assembly
+		var/obj/item/organ/silicon/battery/B = loc
+		var/mob/living/carbon/C = B.owner
+		if(C)
+			T = get_turf(C)
+		else
+			T = get_turf(B)
+	if(!T)
+		return
 	if (charge==0)
 		return
 	var/devastation_range = -1 //round(charge/11000)

@@ -87,13 +87,16 @@
 /obj/item/organ/examine(mob/user)
 	. = ..()
 	if(organ_flags & ORGAN_FAILING)
-		if(status == ORGAN_ROBOTIC)
+		if(organ_flags & ORGAN_SYNTHETIC)
 			. += "<span class='warning'>[src] seems to be broken!</span>"
 			return
 		. += "<span class='warning'>[src] has decayed for too long, and has turned a sickly color! It doesn't look like it will work anymore!</span>"
 		return
 	if(damage > high_threshold)
-		. += "<span class='warning'>[src] is starting to look discolored.</span>"
+		if(!(organ_flags & ORGAN_SYNTHETIC))
+			. += "<span class='warning'>[src] is starting to look discolored.</span>"
+		else
+			. += "<span class='warning'>[src] looks damaged.</span>"
 
 
 /obj/item/organ/proc/prepare_eat()
@@ -129,7 +132,7 @@
 /obj/item/organ/attack(mob/living/carbon/M, mob/user)
 	if(M == user && ishuman(user))
 		var/mob/living/carbon/human/H = user
-		if(status == ORGAN_ORGANIC)
+		if(!organ_flags & (ORGAN_SYNTHETIC))
 			var/obj/item/reagent_containers/food/snacks/S = prepare_eat(H)
 			if(S)
 				qdel(src)

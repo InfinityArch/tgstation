@@ -174,7 +174,7 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 
 
 ////////////////////////
-// Tajaran skin_tones//
+// Tajaran fur colors//
 ///////////////////////
 
 /datum/sprite_color/skin_tone/tajaran
@@ -203,3 +203,63 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 /////////////
 
 /datum/sprite_color/lip_color
+
+//////////////////////////
+// Augmentation Colors //
+/////////////////////////
+
+/datum/sprite_color/aug_color
+	name = "Steel"
+	color_hex = "c6c8c9"
+
+/datum/sprite_color/aug_color/matte
+	name = "Matte"
+	color_hex = "414a53"
+
+/datum/sprite_color/aug_color
+	name = "Gunmetal"
+	color_hex = "414a53"
+
+/datum/sprite_color/aug_color
+	name = "Rust"
+	color_hex = "414a53"
+
+/datum/sprite_color/aug_color/chromium
+	name = "Chromium"
+	color_hex = "fffafa"
+
+/datum/sprite_color/aug_color/brass
+	name = "Brass"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/cobalt
+	name = "Cobalt"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/ruby
+	name = "Ruby"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/malachite
+	name = "Malachite"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/electrum
+	name = "Electrum"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/electrum
+	name = "Silver"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/gold
+	name = "Gold"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/platinum
+	name = "Platinum"
+	color_hex = "ffdead"
+
+/datum/sprite_color/aug_color/titanium
+	name = "Titanium"
+	color_hex = "ffdead"

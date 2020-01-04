@@ -8,7 +8,6 @@
 	max_integrity = 200
 	var/obj/item/bodypart/storedpart
 	var/initial_icon_state
-	var/static/list/style_list_icons = list("standard" = 'icons/mob/augmentation/augments.dmi', "engineer" = 'icons/mob/augmentation/augments_engineer.dmi', "security" = 'icons/mob/augmentation/augments_security.dmi', "mining" = 'icons/mob/augmentation/augments_mining.dmi')
 
 /obj/machinery/aug_manipulator/examine(mob/user)
 	. = ..()
@@ -59,7 +58,7 @@
 
 	else if(istype(O, /obj/item/bodypart))
 		var/obj/item/bodypart/B = O
-		if(B.status != BODYPART_ROBOTIC)
+		if(B.is_organic_limb())
 			to_chat(user, "<span class='warning'>The machine only accepts cybernetics!</span>")
 			return
 		if(storedpart)
@@ -101,14 +100,43 @@
 	add_fingerprint(user)
 
 	if(storedpart)
-		var/augstyle = input(user, "Select style.", "Augment Custom Fitting") as null|anything in style_list_icons
+		if(storedpart.is_organic_limb()) // break glass in case of badminnery
+			to_chat(user, "<span class='warning'>\The [storedpart] is not a robotic limb!</span>")
+			eject_part(user)
+			return 
+
+		var/augstyle = input(user, "Select augmentation style.", "Augment Custom Fitting") as null|anything in GLOB.augmentation_styles_list
 		if(!augstyle)
 			return
 		if(!in_range(src, user))
 			return
 		if(!storedpart)
 			return
-		storedpart.icon = style_list_icons[augstyle]
+		var/augtype = input(user, "Select augmentation type.", "Augment Custom Fitting") as null|anything in get_eligible_augmentation_types(augstyle, storedpart.body_zone)
+		if(!augtype)
+			return
+		if(!in_range(src, user))
+			return
+		if(!storedpart)
+			return
+		var/augcolor = input(user, "Select augmentation color.", "Augment Custom Fitting") as null|anything in GLOB.aug_colors_list
+		if(!augcolor)
+			return
+		if(!in_range(src, user))
+			return
+		if(!storedpart)
+			return
+		//if(augmentation.use_decal)
+			//var/decalcolor = input(user, "Select augmentation decal color.", "Augment Custom Fitting") as null|anything in GLOB.aug_decals_list
+			//if(!in_range(src, user))
+				//return
+			//if(!storedpart)
+				//return
+			//if(decalcolor)
+				//storedpart.change_bodypart_decal(augmentation.aug_id, decalcolor)
+		storedpart.change_bodypart_status(FALSE, FALSE, TRUE, augstyle, augtype, augcolor)
+		storedpart.no_update = FALSE
+		storedpart.original_owner = null
 		eject_part(user)
 
 	else

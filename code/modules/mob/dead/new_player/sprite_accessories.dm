@@ -2134,3 +2134,139 @@
 /datum/sprite_accessory/caps/round
 	name = "Round"
 	icon_state = "round"
+
+////////////////////////
+// Augmentation Parts //
+////////////////////////
+
+//augmented limb sets
+
+/datum/sprite_accessory/augmentation
+	var/list/eligible_bodyparts = list()
+	var/list/optics_types = list()
+	icon_state = TRUE // a bit of a hack, this makes sure the datums are indexed properly in the global list
+
+/datum/sprite_accessory/augmentation/nanotrasen
+	name = "Nanotrasen Robotics Division"
+	species = "nanotrasen"
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR),
+								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))
+	optics_types = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR)
+
+/datum/sprite_accessory/augmentation/bishop
+	name = "Bishop Cybernetics"
+	species = "bishop"
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR, AUG_TYPE_ANDROID, AUG_TYPE_ROBOTIC_ALT),
+								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID),
+								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID),
+								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID),
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID, AUG_TYPE_DIGITIGRADE),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID, AUG_TYPE_DIGITIGRADE))
+	optics_types = list(AUG_TYPE_ROBOTIC_ALT, AUG_TYPE_MONITOR)
+
+/datum/sprite_accessory/augmentation/medical
+	name = "Ward-Takahashi Robotics Medical Line"
+	species = "wt-medical"
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID, AUG_TYPE_ROBOTIC_ALT),
+								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))
+	optics_types = list(AUG_TYPE_ROBOTIC_ALT, AUG_TYPE_MONITOR)
+
+/datum/sprite_accessory/augmentation/industrial
+	name = "Ward-Takahashi Robotics Industrial Line"
+	species = "wt-industrial"
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR),
+								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))
+	optics_types = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR)
+
+/datum/sprite_accessory/augmentation/shellguard
+	name = "Ward-Takahashi Robotics Shellguard Line"
+	species = "wt-shellguard"
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR),
+								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))	
+	optics_types = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR)
+
+/datum/sprite_accessory/augmentation/prosthetic
+	name = "Ward-Takahashi Robotics Prosthetics Line"
+	species = "wt-prosthetic" 
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ANDROID),
+								BODY_ZONE_CHEST = list(AUG_TYPE_ANDROID),
+								BODY_ZONE_L_ARM = list(AUG_TYPE_ANDROID),
+								BODY_ZONE_R_ARM = list(AUG_TYPE_ANDROID),
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ANDROID),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ANDROID))		
+//optics
+/datum/sprite_accessory/optics
+	name = "Standard Optics"
+	icon = 'icons/mob/augmentation/aug_optics.dmi'
+	color_src = EYECOLOR
+	var/augtype
+
+/datum/sprite_accessory/optics/visor
+	name = "Visor Optics"
+	icon_state = "visor"
+
+/datum/sprite_accessory/optics/goggles
+	name = "Goggle Optics"
+	icon_state = "goggles"
+
+/datum/sprite_accessory/optics/nanotrasen
+	name = "Nanotrasen Optics"
+	species = "nanotrasen"
+	augtype = AUG_TYPE_ROBOTIC
+
+/datum/sprite_accessory/optics/bishop
+	name = "Bishop Cybernetics Optics"
+	species = "bishop"
+	augtype = AUG_TYPE_ROBOTIC_ALT
+
+/datum/sprite_accessory/optics/medical
+	name = "Ward-Takahashi Medical Optics"
+	species = "wt-medical"
+	augtype = AUG_TYPE_ROBOTIC_ALT
+
+/datum/sprite_accessory/optics/industrial
+	name = "Ward-Takahashi Industrial Optics"
+	species = "wt-industrial"
+	augtype = AUG_TYPE_ROBOTIC
+
+
+//augmented legs
+
+/datum/sprite_accessory/legs/augmentations
+	name = "Nanotrasen Robotic Legs (Digitigrade)"
+	species = "nanotrasen"
+
+/datum/sprite_accessory/legs/augmentations/bishop
+	name = "Bishop Cybernetics Legs (Digitigrade)"
+	species = "bishop"
+
+/datum/sprite_accessory/legs/augmentations/medical
+	name = "Ward-Takahashi Medical Legs (Digitigrade)"
+	species = "wt-medical"
+
+
+/datum/sprite_accessory/legs/augmentations/industrial
+	name = "Ward-Takahashi Industrial Legs (Digitigrade)"
+	species = "wt-industrial"
+
+/datum/sprite_accessory/legs/augmentations/shellguard
+	name = "Ward-Takahashi Shellguard Legs (Digitigrade)"
+	species = "wt-shellguard"
+
+//augmented tails

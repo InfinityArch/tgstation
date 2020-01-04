@@ -465,7 +465,14 @@ GLOBAL_LIST_INIT(cable_coil_recipes, list(new/datum/stack_recipe("cable restrain
 		return ..()
 
 	var/obj/item/bodypart/affecting = H.get_bodypart(check_zone(user.zone_selected))
-	if(affecting && affecting.status == BODYPART_ROBOTIC)
+	if(affecting && !affecting.is_organic_limb())
+			
+		var/excess_damage = ((affecting.body_zone == BODY_ZONE_CHEST) || (affecting.body_zone == BODY_ZONE_HEAD)) ? 0.25 * affecting.max_damage : 0.5 * affecting.max_damage
+
+		if(affecting.burn_dam >= excess_damage)
+			to_chat(user, "<span class='warning'>[H == user ? "your" : "[H]'s"] [affecting.name] is too badly damaged for field repairs!</span>")
+			return
+			
 		if(user == H)
 			user.visible_message("<span class='notice'>[user] starts to fix some of the wires in [H]'s [affecting.name].</span>", "<span class='notice'>You start fixing some of the wires in [H == user ? "your" : "[H]'s"] [affecting.name].</span>")
 			if(!do_mob(user, H, 50))

@@ -177,7 +177,7 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC)
+			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
 	. = L
 
 /mob/living/carbon/monkey/newBodyPart(zone, robotic, fixed_icon)
@@ -198,7 +198,7 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC)
+			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
 	. = L
 
 /mob/living/carbon/alien/larva/newBodyPart(zone, robotic, fixed_icon)
@@ -211,7 +211,7 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC)
+			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
 	. = L
 
 /mob/living/carbon/alien/humanoid/newBodyPart(zone, robotic, fixed_icon)
@@ -232,7 +232,7 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC)
+			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
 	. = L
 
 
@@ -300,3 +300,26 @@
 				H.update_inv_w_uniform()
 		if(H.shoes && !swap_back)
 			H.dropItemToGround(H.shoes)
+
+/proc/aug_id2augstyle(aug_id)
+	switch(aug_id)
+		if("nanotrasen")
+			return "Nanotrasen Robotics Division"
+		if("bishop")
+			return "Bishop Cybernetics"
+		if("wt-medical")
+			return "Ward-Takahashi Robotics Medical Line"
+		if("wt-industrial")
+			return "Ward-Takahashi Robotics Industrial Line"
+		if("wt-shellguard")
+			return "Ward-Takahashi Robotics Shellguard Line"
+		if("wt-prosthetic")
+			return "Ward-Takahashi Robotics Prosthetics Line"
+
+/proc/get_eligible_augmentation_types(augname, body_zone)
+	var/datum/sprite_accessory/augmentation/S = GLOB.augmentation_styles_list[augname]
+	if(!istype(S))
+		return
+	return S.eligible_bodyparts[body_zone]
+
+

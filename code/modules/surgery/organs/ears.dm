@@ -175,3 +175,16 @@
 	if(. & EMP_PROTECT_SELF)
 		return
 	damage += 40/severity
+
+/obj/item/organ/ears/silicon
+	name = "auditory reciever module"
+	icon_state = "ears-silicon"
+	desc = "An audio reciever module used in machines and androids"
+	status = ORGAN_ROBOTIC
+	organ_flags = ORGAN_SYNTHETIC | ORGAN_SILICON
+
+/obj/item/organ/ears/silicon/emp_act(severity)
+	. = ..()
+	if(. & EMP_PROTECT_SELF)
+		return
+	damage += 40/severity

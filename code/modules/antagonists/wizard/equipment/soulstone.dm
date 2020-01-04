@@ -77,6 +77,8 @@
 	if(spent)
 		to_chat(user, "<span class='warning'>There is no power left in the shard.</span>")
 		return
+	if(isloresilicon(M))
+		to_chat(user, "<span class='warning'>There is no soul to claim witin this metal shell.</span>")
 	if(!ishuman(M))//If target is not a human.
 		return ..()
 	if(!M.mind.hasSoul || isdevil(M))

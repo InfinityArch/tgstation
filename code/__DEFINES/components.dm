@@ -357,6 +357,14 @@
 	#define COMPONENT_PROGRAM_NOT_INSTALLED		2				//Installation failed, but there are still nanites
 #define COMSIG_NANITE_SYNC "nanite_sync"						//(datum/component/nanites, full_overwrite, copy_activation) Called to sync the target's nanites to a given nanite component
 
+//IPCs and Borgs
+#define COMSIG_SILICON_COMPONENT_ADDED "silicon_component_added"					// (obj/item/organ/silicon) sent to a carbon owner  when a silicon component (organ/silicon) is installled
+#define COMSIG_SILICON_COMPONENT_REMOVED "silicon_component_removed"				// (obj/item/organ/silicon) sent to a carbon owner when a silicon component (organ/silicon) is removed
+#define COMSIG_SILICON_COMPONENT_BATTERY_UPDATE "silicon_component_battery_update"	// () sent to a carbon owner when a silicon battery assembly's cell rating changes
+#define COMSIG_SILICON_COMPONENT_POWER_UPDATE "silicon_component_power_update"		// () sent to a carbon owner whenever a silicon component (organ/silicon) successfully changes power state
+#define COMSIG_HANDLE_APC_RECHARGING "handle_apc_recharging"						// (obj/item/stock_parts/cell) sent upon attacking an installed APC, a SMES, or a power cell with a charging cable
+
+
 // /datum/component/storage signals
 #define COMSIG_CONTAINS_STORAGE "is_storage"							//() - returns bool.
 #define COMSIG_TRY_STORAGE_INSERT "storage_try_insert"					//(obj/item/inserting, mob/user, silent, force) - returns bool

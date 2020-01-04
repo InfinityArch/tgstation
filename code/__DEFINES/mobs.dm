@@ -51,8 +51,45 @@
 #define ORGAN_ORGANIC   1
 #define ORGAN_ROBOTIC   2
 
-#define BODYPART_ORGANIC   1
-#define BODYPART_ROBOTIC   2
+//bodypart life states
+#define BODYPART_ORGANIC	1
+#define BODYPART_ROBOTIC	2
+
+
+//bodypart status flags
+#define BODYPART_STATUS_DISABLED_DAMAGE 	1 << 0
+#define BODYPART_STATUS_DISABLED_PAIN	  	1 << 1
+#define BODYPART_STATUS_DISABLED_PARALYSIS	1 << 2
+#define BODYPART_STATUS_NO_BONES			1 << 3
+#define BODYPART_STATUS_BROKEN_BONES		1 << 4
+#define BODYPART_STATUS_SPLINTED_BONES		1 << 5
+#define BODYPART_STATUS_EMAGGED				1 << 6
+
+//bodypart draw flags
+#define BODYPART_DRAW_MONITOR	 	  	1 << 1 // monitor heads
+#define BODYPART_DRAW_ROBOTIC_ALT		1 << 2 // alternate robotic icons
+#define BODYPART_DRAW_DIGITIGRADE	  	1 << 3 // makes legs draw in digitigrade style, blocks equiping of shoes that aren't fitted for digitigrade
+#define BODYPART_DRAW_ANDROID_SKELETAL	1 << 4 // causes android parts to render in their flesh stripped state
+
+//augmentation customization defaults
+#define AUG_COLOR_DEFAULT			"Matte"
+#define AUG_STYLE_DEFAULT			"Nanotrasen Robotics Division"
+#define AUG_OPTICS_DEFAULT_COLOR	"#013220" //color hex for optics that are currently off
+
+// augmentation types
+#define AUG_TYPE_ROBOTIC		"robotic"
+#define AUG_TYPE_ROBOTIC_ALT	"robotic_alt"
+#define AUG_TYPE_DIGITIGRADE	"robotic_digitigrade"
+#define AUG_TYPE_ANDROID		"android"
+#define AUG_TYPE_MONITOR		"monitor"
+
+//silicon component power states
+#define POWER_STATE_OFF 		0
+#define POWER_STATE_LOW			0.5
+#define POWER_STATE_NORMAL 		1
+#define POWER_STATE_OVERDRIVE	2
+
+
 
 #define BODYPART_NOT_DISABLED 0
 #define BODYPART_DISABLED_DAMAGE 1
@@ -65,6 +102,7 @@
 #define ALIEN_BODYPART "alien"
 #define LARVA_BODYPART "larva"
 #define DEVIL_BODYPART "devil"
+#define CYBORG_BODYPART "cyborg"
 /*see __DEFINES/inventory.dm for bodypart bitflag defines*/
 
 // Health/damage defines for carbon mobs

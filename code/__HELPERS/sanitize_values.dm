@@ -31,23 +31,23 @@ __Arguments__
 *features*: typically a list of sprite features found in datum/dna, but should work on any list
 *species_index*: what index to search under in the global features lists for this species; this should normally be *features_id* from a mob's datum/species, but will accept any string
 *features_to_sanitize*: a list of features that should be sanitized, defaults to *features* if not given. See /proc/random_features in the mobs.dm helper for an example of what that full list entails
-
+*aug_exempt*: if true, cybernetic features will not be sanitized
 __Returns__: returns the input list (features) with features found in *features_to_sanitize* corrected to permitted values for the given *species_index*, runtimes if no input list is given
 */
 
-/proc/sanitize_features(list/features, species_index = DEFAULT_SPECIES_INDEX, list/features_to_sanitize = list())
+/proc/sanitize_features(list/features, species_index = DEFAULT_SPECIES_INDEX, list/features_to_sanitize = list(), aug_exmpt = FALSE)
 	var/temp_index // this stores the species_index, and is checked for validity prior to sanitizing a feature, if there's nothing at species_index, then we use DEFAULT_SPECIES_INDEX instead 
 	if(!features_to_sanitize.len)
 		features_to_sanitize = features
 	if("mcolor" in features_to_sanitize)
 		features["mcolor"] = sanitize_hexcolor(features["mcolor"], 3, 0)
-	if("tail" in features_to_sanitize)
+	if("tail" in features_to_sanitize) //&& (!aug_exempt || !(features["tail"] in GLOB.tails_list_species["augment"])))
 		temp_index = GLOB.tails_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["tail"] = sanitize_inlist(features["tail"], GLOB.tails_list & GLOB.tails_list_species[temp_index])
-	if("snout" in features_to_sanitize)
+	if("snout" in features_to_sanitize) //&& (!aug_exempt || !(features["snout"] in GLOB.snouts_list_species["augment"])))
 		temp_index = GLOB.snouts_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["snout"] = sanitize_inlist(features["snout"], GLOB.snouts_list & GLOB.snouts_list_species[temp_index])
-	if("horns" in features_to_sanitize)
+	if("horns" in features_to_sanitize) //&& (!aug_exempt || !(features["horns"] in GLOB.horns_list_species["augment"])))
 		temp_index = GLOB.horns_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["horns"] = sanitize_inlist(features["horns"], (GLOB.horns_list & GLOB.horns_list_species[temp_index]) | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX])
 	if("ears" in features_to_sanitize)

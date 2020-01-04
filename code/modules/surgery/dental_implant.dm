@@ -2,6 +2,7 @@
 	name = "Dental implant"
 	steps = list(/datum/surgery_step/drill, /datum/surgery_step/insert_pill)
 	possible_locs = list(BODY_ZONE_PRECISE_MOUTH)
+	required_biotypes = MOB_ORGANIC|MOB_MINERAL
 
 /datum/surgery_step/insert_pill
 	name = "insert pill"

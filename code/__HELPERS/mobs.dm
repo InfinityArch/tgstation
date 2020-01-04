@@ -296,7 +296,7 @@ GLOBAL_LIST_EMPTY(species_list)
 
 		if(isliving(user))
 			var/mob/living/L = user
-			if(L.IsStun() || L.IsParalyzed())
+			if(L.IsStun() || L.IsParalyzed(FALSE))
 				. = 0
 				break
 

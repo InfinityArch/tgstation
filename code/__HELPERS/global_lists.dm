@@ -11,6 +11,10 @@
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/facial_hair, GLOB.facial_hairstyles_list, GLOB.facial_hairstyles_male_list, GLOB.facial_hairstyles_female_list, species_list = GLOB.facial_hairstyles_list_species)
 	//skin tone
 	init_sprite_color_subtypes(/datum/sprite_color/skin_tone, GLOB.skin_tones_list, GLOB.skin_tones_list_species)
+	//augmentation
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/augmentation, GLOB.augmentation_styles_list)
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/optics, GLOB.augmentation_optics_list)
+	init_sprite_color_subtypes(/datum/sprite_color/aug_color, GLOB.aug_colors_list)
 	//underwear
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/underwear, GLOB.underwear_list, GLOB.underwear_m, GLOB.underwear_f)
 	//undershirt
@@ -20,6 +24,8 @@
 	//head features
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/ears, GLOB.ears_list, species_list = GLOB.ears_list_species)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/snouts, GLOB.snouts_list, species_list = GLOB.snouts_list_species)
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/horns,GLOB.horns_list, species_list = GLOB.horns_list_species)
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/frills, GLOB.frills_list, species_list = GLOB.frills_list_species)
 	//tails
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/tails, GLOB.tails_list, species_list = GLOB.tails_list_species)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/tails_animated, GLOB.animated_tails_list)
@@ -28,14 +34,11 @@
 	//wings
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/wings, GLOB.wings_list, species_list = GLOB.wings_list_species)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/wings_open, GLOB.wings_open_list)
-
-	init_sprite_accessory_subtypes(/datum/sprite_accessory/horns,GLOB.horns_list, species_list = GLOB.horns_list_species)
-	init_sprite_accessory_subtypes(/datum/sprite_accessory/frills, GLOB.frills_list, species_list = GLOB.frills_list_species)
-	init_sprite_accessory_subtypes(/datum/sprite_accessory/legs, GLOB.legs_list, species_list = GLOB.legs_list_species)
-
-	
+	//markings
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/body_markings, GLOB.body_markings_list, species_list = GLOB.body_markings_list_species)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/face_markings, GLOB.face_markings_list, species_list = GLOB.face_markings_list_species)
+	//misc body features
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/legs, GLOB.legs_list, species_list = GLOB.legs_list_species)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/caps, GLOB.caps_list)
 	//Species
 	for(var/spath in subtypesof(/datum/species))

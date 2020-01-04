@@ -132,6 +132,11 @@ GENE SCANNER
 /proc/healthscan(mob/user, mob/living/M, mode = 1, advanced = FALSE)
 	if(isliving(user) && (user.incapacitated() || user.eye_blind))
 		return
+	if((M.mob_biotypes & MOB_ROBOTIC) && !advanced)
+		to_chat(user, "<span class='info'>Analyzing results for [M]:\n\tOverall status: <b>ERROR</b></span>")
+		to_chat(user, "<span class='caution'>Warning, robotic subject detected, unable to acquire health data.</span>")	
+		return
+
 	//Damage specifics
 	var/oxy_loss = M.getOxyLoss()
 	var/tox_loss = M.getToxLoss()
@@ -403,7 +408,7 @@ GENE SCANNER
 
 		var/cyberimp_detect
 		for(var/obj/item/organ/cyberimp/CI in C.internal_organs)
-			if(CI.status == ORGAN_ROBOTIC && !CI.syndicate_implant)
+			if((CI.organ_flags & ORGAN_SYNTHETIC) && !CI.syndicate_implant)
 				cyberimp_detect += "[C.name] is modified with a [CI.name].<br>"
 		if(cyberimp_detect)
 			to_chat(user, "<span class='notice'>Detected cybernetic modifications:</span>")

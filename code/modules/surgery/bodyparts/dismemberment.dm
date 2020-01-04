@@ -53,18 +53,25 @@
 		return FALSE
 	. = list()
 	var/organ_spilled = 0
+	var/organic_organs = TRUE
 	var/turf/T = get_turf(C)
 	C.add_splatter_floor(T)
-	playsound(get_turf(C), 'sound/misc/splort.ogg', 80, TRUE)
 	for(var/X in C.internal_organs)
 		var/obj/item/organ/O = X
+		if(organic_organs && (O.organ_flags & ORGAN_SILICON))
+			organic_organs = FALSE
 		var/org_zone = check_zone(O.zone)
 		if(org_zone != BODY_ZONE_CHEST)
 			continue
-		O.Remove(C)
-		O.forceMove(T)
-		organ_spilled = 1
-		. += X
+		if(istype(O, /obj/item/organ/brain) && !C.InFullCritical())
+			continue
+		else
+			O.Remove(C)
+			O.forceMove(T)
+			organ_spilled = 1
+			. += X
+	if(organic_organs)	
+		playsound(get_turf(C), 'sound/misc/splort.ogg', 80, TRUE)
 	if(cavity_item)
 		cavity_item.forceMove(T)
 		. += cavity_item
@@ -72,8 +79,11 @@
 		organ_spilled = 1
 
 	if(organ_spilled)
-		C.visible_message("<span class='danger'><B>[C]'s internal organs spill out onto the floor!</B></span>")
-
+		if(organic_organs)
+			C.visible_message("<span class='danger'><B>[C]'s internal organs spill out onto the floor!</B></span>")
+		else
+			C.visible_message("<span class='danger'><B>[C]'s internal components spill out onto the floor!</B></span>")
+		
 
 
 //limb removal. The "special" argument is used for swapping a limb with a new one without the effects of losing a limb kicking in.
@@ -143,15 +153,17 @@
 	Remove(C)
 	forceMove(LB)
 
-/obj/item/organ/brain/transfer_to_limb(obj/item/bodypart/head/LB, mob/living/carbon/human/C)
+/obj/item/organ/brain/transfer_to_limb(obj/item/bodypart/LB, mob/living/carbon/human/C)
 	Remove(C)	//Changeling brain concerns are now handled in Remove
 	forceMove(LB)
-	LB.brain = src
-	if(brainmob)
-		LB.brainmob = brainmob
-		brainmob = null
-		LB.brainmob.forceMove(LB)
-		LB.brainmob.stat = DEAD
+	if(istype(LB, /obj/item/bodypart/head))
+		var/obj/item/bodypart/head/HD = LB
+		HD.brain = src
+		if(brainmob)
+			HD.brainmob = brainmob
+			brainmob = null
+			HD.brainmob.forceMove(LB)
+			HD.brainmob.stat = DEAD
 
 /obj/item/organ/eyes/transfer_to_limb(obj/item/bodypart/head/LB, mob/living/carbon/human/C)
 	LB.eyes = src

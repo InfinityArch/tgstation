@@ -682,6 +682,9 @@
 			if(NOBLOOD in H.dna.species.species_traits)
 				to_chat(user,"<span class='warning'>Blood rites do not work on species with no blood!</span>")
 				return
+			if(H.mob_biotypes & MOB_ROBOTIC)
+				to_chat(user,"<span class='warning'>The internal fluids of this mechanical shell are not suitable for blood rites!</span>")
+				return
 			if(iscultist(H))
 				if(H.stat == DEAD)
 					to_chat(user,"<span class='warning'>Only a revive rune can bring back the dead!</span>")

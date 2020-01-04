@@ -53,6 +53,14 @@
 	only_forced_audio = TRUE
 	vary = TRUE
 
+/datum/emote/living/carbon/human/scream/can_run_emote(mob/user, status_check = TRUE, intentional = FALSE)
+	if(!ishuman(user))
+		return FALSE
+	var/mob/living/carbon/human/H = user
+	if(HAS_TRAIT(H, TRAIT_NOPAIN) && !intentional)
+		return FALSE
+	return ..()
+
 /datum/emote/living/carbon/human/scream/get_sound(mob/living/user)
 	if(!ishuman(user))
 		return
@@ -170,5 +178,65 @@
 	if(isturf(loc))
 		var/turf/T = loc
 		T.Entered(src)
+
+//////////////////
+//Robotic emotes//
+/////////////////
+
+/datum/emote/living/carbon/human/robotic/can_run_emote(mob/user, status_check = TRUE, intentional)
+	. = ..()
+	if(. && ishuman(user))
+		var/mob/living/carbon/human/H = user
+		if(H.getorganslot(ORGAN_SLOT_TONGUE) && (H.getorganslot(ORGAN_SLOT_TONGUE).organ_flags & ORGAN_SYNTHETIC))
+			return TRUE
+		else
+			return FALSE
+
+/datum/emote/carbon/human/robotic/boop
+	key = "boop"
+	key_third_person = "boops"
+	message = "boops."
+
+/datum/emote/carbon/human/robotic/buzz
+	key = "buzz"
+	key_third_person = "buzzes"
+	message = "buzzes."
+	message_param = "buzzes at %t."
+	sound = 'sound/machines/buzz-sigh.ogg'
+
+/datum/emote/carbon/human/robotic/buzz2
+	key = "buzz2"
+	message = "buzzes twice."
+	sound = 'sound/machines/buzz-two.ogg'
+
+/datum/emote/carbon/human/robotic/chime
+	key = "chime"
+	key_third_person = "chimes"
+	message = "chimes."
+	sound = 'sound/machines/chime.ogg'
+
+/datum/emote/carbon/human/robotic/honk
+	key = "honk"
+	key_third_person = "honks"
+	message = "honks."
+	vary = TRUE
+	sound = 'sound/items/bikehorn.ogg'
+
+/datum/emote/carbon/human/robotic/ping
+	key = "ping"
+	key_third_person = "pings"
+	message = "pings."
+	message_param = "pings at %t."
+	sound = 'sound/machines/ping.ogg'
+
+/datum/emote/carbon/human/robotic/sad
+	key = "sad"
+	message = "plays a sad trombone..."
+	sound = 'sound/misc/sadtrombone.ogg'
+
+/datum/emote/carbon/human/robotic/warn
+	key = "warn"
+	message = "blares an alarm!"
+	sound = 'sound/machines/warning-buzzer.ogg'
 
 //Ayy lmao

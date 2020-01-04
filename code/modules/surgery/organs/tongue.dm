@@ -214,13 +214,59 @@
 	say_mod = "states"
 	attack_verb = list("beeped", "booped")
 	modifies_speech = TRUE
+	organ_flags = ORGAN_SYNTHETIC
 	taste_sensitivity = 25 // not as good as an organic tongue
+	var/speech_state = SPAN_ROBOT 
+	var/list/allowed_spans = list(SPAN_ROBOT)
 
-/obj/item/organ/tongue/robot/can_speak_in_language(datum/language/dt)
+
+/obj/item/organ/tongue/robot/could_speak_in_language(datum/language/dt)
 	return TRUE // THE MAGIC OF ELECTRONICS
 
 /obj/item/organ/tongue/robot/handle_speech(datum/source, list/speech_args)
-	speech_args[SPEECH_SPANS] |= SPAN_ROBOT
+	if(organ_flags & ORGAN_FAILING)
+		speech_args[SPEECH_SPANS] |= SPAN_ROBOT
+		var/new_message
+		var/message = speech_args[SPEECH_MESSAGE]
+		for(var/i in 1 to length(message))
+			if(prob(65))
+				new_message += pick("%","!","0","1","/","*", "+", "...", "|", "#", "$", "_")
+			else
+				new_message += capitalize(message[i])
+		speech_args[SPEECH_MESSAGE] = new_message
+	else if(speech_state)
+		speech_args[SPEECH_SPANS] |= speech_state
+
+/obj/item/organ/tongue/robot/emp_act(severity)
+	. = ..()
+	if((organ_flags & ORGAN_FAILING) || . & EMP_PROTECT_SELF)
+		return
+	organ_flags |= ORGAN_FAILING
+	addtimer(CALLBACK(src, .proc/reboot), 90 / severity)
+
+/obj/item/organ/tongue/robot/proc/reboot()
+	organ_flags &= ~ORGAN_FAILING
+
+/obj/item/organ/tongue/robot/silicon/handle_speech(datum/source, list/speech_args)
+	. = ..()
+	if(organ_flags & ORGAN_FAILING)
+		modifies_speech = TRUE
+		var/new_message
+		var/message = speech_args[SPEECH_MESSAGE]
+		for(var/i in 1 to length(message))
+			if(prob(65))
+				new_message += pick("%","!","0","1","/","*", "+", ".", "|", "#", "$")
+			else
+				new_message += capitalize(message[i])
+
+/obj/item/organ/tongue/robot/proc/set_span_mode()
+	return TRUE
+
+/obj/item/organ/tongue/robot/silicon
+	name = "robotic audio encoder"
+	desc = "an audio synthesizer module used by machines and androids"
+	organ_flags = ORGAN_SYNTHETIC | ORGAN_SILICON
+	taste_sensitivity = 101 //shouldn't be used to taste anything
 
 /obj/item/organ/tongue/snail
 	name = "snailtongue"

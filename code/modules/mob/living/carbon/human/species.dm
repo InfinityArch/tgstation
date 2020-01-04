@@ -5,13 +5,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 /datum/species
 	var/id	// if the game needs to manually check your race to do something not included in a proc here, it will use this
 	var/limbs_id		// used by species that use a different species' normal bodyparts
-	var/features_id //what index to look under for the species' sprite accessories
-	var/hair_id
+	var/features_id 	//what index to look under for the species' sprite accessories
+	var/hair_id			//what index to look under for the species' hair choices
 	var/voice_id = "human" // what sound set to use for voiced emotes
 	var/name	// this is the fluff name. these will be left generic (such as 'Lizardperson' for the lizard race) so servers can change them to whatever
 	var/names_id // what index the species' names will be found under, defaults to limbs_id
 	var/naming_convention = HUMAN_WESTERN // what naming convention this species uses, if left null it defaults to 50:50 between eastern and western naming orders
 	var/default_color = "#FFF"	// if alien colors are disabled, this is the color that will be used by that race
+	var/species_hud // put a file name in to override the hud skin in preferences
 
 	var/sexes = 1		// whether or not the race has sexual characteristics. at the moment this is only 0 for skeletons and shadows
 	var/age_min = 17 // the minimum age for this species usable at character creation
@@ -45,7 +46,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/heatmod = 1		// multiplier for heat damage
 	var/stunmod = 1		// multiplier for stun duration
 	var/attack_type = BRUTE //Type of damage attack does
-	var/perk_points = QUIRK_POINTS_NORMAL // how many points this species gets to spend on perks
+	var/quirk_budget = QUIRK_POINTS_NORMAL // how many points this species gets to spend on perks
 	var/punchdamagelow = 1       //lowest possible punch damage. if this is set to 0, punches will always miss
 	var/punchdamagehigh = 10      //highest possible punch damage
 	var/punchstunthreshold = 10//damage at which punches from this race will stun //yes it should be to the attacked race but it's not useful that way even if it's logical
@@ -99,15 +100,15 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 
 /datum/species/New()
-	//libms_id defaults to species id, all other values default to limbs_id to make life easier for demihumans
+	//libms_id defaults to species id, all other values default to limbs_id to make life easier for subspecies
 	if(!limbs_id)
 		limbs_id = id
 	if(!features_id)
-		features_id = limbs_id
+		features_id = limbs_id //useful for demihumans like felinids where their parent species shouldn't get their mutant bodyparts
 	if(!hair_id)
-		hair_id = limbs_id
+		hair_id = limbs_id //useful if you want human hairstyles for an alien species, ie slimepeople
 	if(!names_id)
-		names_id = limbs_id
+		names_id = limbs_id //if there's no valid namelist for the species, they'll use human names by default, but please set it to human anyway to avoid unecessary checks in the namegen proc
 	..()
 
 
@@ -149,7 +150,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/obj/item/organ/tail/tail = C.getorganslot(ORGAN_SLOT_TAIL)
 
 	var/should_have_brain = TRUE
-	var/should_have_heart = !(NOBLOOD in species_traits)
+	var/should_have_heart = !((NOBLOOD in species_traits) || (NOHEART in species_traits))
 	var/should_have_lungs = !(TRAIT_NOBREATH in inherent_traits)
 	var/should_have_appendix = !(TRAIT_NOHUNGER in inherent_traits)
 	var/should_have_eyes = TRUE
@@ -263,12 +264,15 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			C.dropItemToGround(thing)
 	if(C.hud_used)
 		C.hud_used.update_locked_slots()
-	
+
 	var/mob/living/carbon/human/H = C
 	if(istype(H))
 		H.dna.update_ui_block(DNA_SKIN_TONE_BLOCK)
 		H.dna.update_ui_block(DNA_HAIRSTYLE_BLOCK)
 		H.dna.update_ui_block(DNA_FACIAL_HAIRSTYLE_BLOCK)
+		if(H.hud_used)
+			if(H.dna.species.species_hud)
+				H.hud_used.update_ui_style(ui_style2icon(H.dna.species.species_hud))
 
 	// this needs to be FIRST because qdel calls update_body which checks if we have DIGITIGRADE legs or not and if not then removes DIGITIGRADE from species_traits
 	if(("legs" in C.dna.species.mutant_bodyparts) && C.dna.features["legs"] == "Digitigrade Legs")
@@ -313,6 +317,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	if(TRAIT_NOMETABOLISM in inherent_traits)
 		C.reagents.end_metabolization(C, keep_liverless = TRUE)
+	
+	if(TRAIT_NO_RUN in inherent_traits && C.m_intent == MOVE_INTENT_RUN)
+		C.toggle_move_intent()
 
 	if(inherent_factions)
 		for(var/i in inherent_factions)
@@ -328,12 +335,16 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 
 /datum/species/proc/on_species_loss(mob/living/carbon/human/C, datum/species/new_species, pref_load)
+
 	if(C.dna.species.exotic_bloodtype)
 		C.dna.blood_type = random_blood_type()
 	if(DIGITIGRADE in species_traits)
 		C.Digitigrade_Leg_Swap(TRUE)
 	for(var/X in inherent_traits)
 		REMOVE_TRAIT(C, X, SPECIES_TRAIT)
+	if(C.hud_used)
+		if(C.client)
+			C.hud_used.update_ui_style(ui_style2icon(C.client.prefs.UI_style)) // clearing any species huds
 
 	//If their inert mutation is not the same, swap it out
 	if((inert_mutation != new_species.inert_mutation) && LAZYLEN(C.dna.mutation_index) && (inert_mutation in C.dna.mutation_index))
@@ -375,8 +386,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/dynamic_hair_suffix = "" //if this is non-null, and hair+suffix matches an iconstate, then we render that hair instead
 	var/dynamic_fhair_suffix = ""
 
-	//for augmented heads
-	if(HD.status == BODYPART_ROBOTIC)
+	//for robotic heads
+	if(!(HD.draw_organic_features))
 		return
 
 	//we check if our hat or helmet hides our facial hair.
@@ -450,7 +461,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	if(!hair_hidden || dynamic_hair_suffix)
 		var/mutable_appearance/hair_overlay = mutable_appearance(layer = -HAIR_LAYER)
-		if(!hair_hidden && !H.getorgan(/obj/item/organ/brain)) //Applies the debrained overlay if there is no brain
+		if(!hair_hidden && !(TORSO_BRAIN in HD.species_flags_list) && HD.is_organic_limb() && !H.getorgan(/obj/item/organ/brain)) //Applies the debrained overlay if there is no brain
 			if(!(NOBLOOD in species_traits))
 				hair_overlay.icon = 'icons/mob/human_face.dmi'
 				hair_overlay.icon_state = "debrained"
@@ -510,10 +521,11 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/list/cosmetics_standing = list()
 
 	var/obj/item/bodypart/head/HD = H.get_bodypart(BODY_ZONE_HEAD)
+	var/obj/item/bodypart/chest/TR = H.get_bodypart(BODY_ZONE_CHEST)
 
 	if(HD && !(HAS_TRAIT(H, TRAIT_HUSK)))
 		// lipstick
-		if(H.lip_style && (LIPS in species_traits) && !(H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) && !(H.head && (H.head.flags_inv & HIDEFACE)) && !(HD.status == BODYPART_ROBOTIC))
+		if(H.lip_style && (LIPS in species_traits) && !(H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) && !(H.head && (H.head.flags_inv & HIDEFACE)) && (HD.draw_organic_features))
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[H.dna.species.features_id]_lips_[H.lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = "#" + H.lip_color
 			lip_overlay.alpha = MAKEUP_OPACITY
@@ -526,19 +538,26 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(!(NOEYESPRITES in species_traits))
 			var/obj/item/organ/eyes/E = H.getorganslot(ORGAN_SLOT_EYES)
 			var/mutable_appearance/eye_overlay
-			if(!E)
+			if(!E && HD.is_organic_limb())
 				eye_overlay = mutable_appearance('icons/mob/human_face.dmi', "eyes_missing", -BODY_LAYER)
-			else
+			else if(HD.eye_optics)
+				eye_overlay = mutable_appearance('icons/mob/augmentation/aug_optics.dmi', "[HD.aug_id]_[HD.get_augtype()]", -BODY_LAYER)
+				if(HD.bodypart_draw_flags & BODYPART_DRAW_MONITOR)
+					eye_overlay.icon_state = HD.monitor_state ? "[eye_overlay.icon_state]_[HD.monitor_state]" : eye_overlay.icon_state
+					if(!HD.monitor_state)
+						eye_overlay.color = AUG_OPTICS_DEFAULT_COLOR
+				else
+					eye_overlay.color = H.stat < UNCONSCIOUS ? "#" + H.eye_color : AUG_OPTICS_DEFAULT_COLOR
+			else if(E)
 				eye_overlay = mutable_appearance('icons/mob/human_face.dmi', E.eye_icon_state, -BODY_LAYER)
-			if((EYECOLOR in species_traits) && E)
-				eye_overlay.color = "#" + H.eye_color
+				eye_overlay.color = E.eye_color ? "#[E.eye_color]" : "#[H.eye_color]"
 			if(OFFSET_FACE in H.dna.species.offset_features)
 				eye_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
 				eye_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
 			standing += eye_overlay
-
+			
 	//Underwear, Undershirts & Socks
-	if(!(NO_UNDERWEAR in species_traits))
+	if(!(NO_UNDERWEAR in species_traits) && (TR.draw_organic_features))
 		if(H.underwear)
 			var/datum/sprite_accessory/underwear/underwear = GLOB.underwear_list[H.underwear]
 			var/mutable_appearance/underwear_overlay
@@ -606,23 +625,23 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			bodyparts_to_add -= "waggingtail_accessory"
 
 	if("snout" in mutant_bodyparts) //Take a closer look at that snout!
-		if((!H.dna.features["snout"] || H.dna.features["snout"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || HD.status == BODYPART_ROBOTIC)
+		if((!H.dna.features["snout"] || H.dna.features["snout"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || !HD.is_organic_limb())
 			bodyparts_to_add -= "snout"
 
 	if("face_markings" in mutant_bodyparts)
-		if((!H.dna.features["face_markings"] || H.dna.features["face_markings"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || HD.status == BODYPART_ROBOTIC)
+		if((!H.dna.features["face_markings"] || H.dna.features["face_markings"] == "None" || H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) || (H.head && (H.head.flags_inv & HIDEFACE)) || !HD || !HD.is_organic_limb())
 			bodyparts_to_add -= "face_markings"
 
 	if("frills" in mutant_bodyparts)
-		if(!H.dna.features["frills"] || H.dna.features["frills"] == "None" || H.head && (H.head.flags_inv & HIDEEARS) || !HD || HD.status == BODYPART_ROBOTIC)
+		if(!H.dna.features["frills"] || H.dna.features["frills"] == "None" || H.head && (H.head.flags_inv & HIDEEARS) || !HD || !HD.is_organic_limb())
 			bodyparts_to_add -= "frills"
 
 	if("horns" in mutant_bodyparts)
-		if(!H.dna.features["horns"] || H.dna.features["horns"] == "None" || H.head && (H.head.flags_inv & HIDEHAIR) || (H.wear_mask && (H.wear_mask.flags_inv & HIDEHAIR)) || !HD || HD.status == BODYPART_ROBOTIC)
+		if(!H.dna.features["horns"] || H.dna.features["horns"] == "None" || H.head && (H.head.flags_inv & HIDEHAIR) || (H.wear_mask && (H.wear_mask.flags_inv & HIDEHAIR)) || !HD || !HD.is_organic_limb())
 			bodyparts_to_add -= "horns"
 
 	if("ears" in mutant_bodyparts)
-		if(!H.dna.features["ears"] || H.dna.features["ears"] == "None" || H.head && (H.head.flags_inv & HIDEHAIR) || (H.wear_mask && (H.wear_mask.flags_inv & HIDEHAIR)) || !HD || HD.status == BODYPART_ROBOTIC)
+		if(!H.dna.features["ears"] || H.dna.features["ears"] == "None" || H.head && (H.head.flags_inv & HIDEHAIR) || (H.wear_mask && (H.wear_mask.flags_inv & HIDEHAIR)) || !HD || !HD.is_organic_limb())
 			bodyparts_to_add -= "ears"
 
 	if("wings" in mutant_bodyparts)
@@ -855,7 +874,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_CHEST)
 
-			if(!H.w_uniform && !nojumpsuit && (!O || O.status != BODYPART_ROBOTIC))
+			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_organic_features)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -900,7 +919,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				return FALSE
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_CHEST)
-			if(!H.w_uniform && !nojumpsuit && (!O || O.status != BODYPART_ROBOTIC))
+			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_organic_features)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -915,7 +934,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_L_LEG)
 
-			if(!H.w_uniform && !nojumpsuit && (!O || O.status != BODYPART_ROBOTIC))
+			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_organic_features)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -931,7 +950,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_R_LEG)
 
-			if(!H.w_uniform && !nojumpsuit && (!O || O.status != BODYPART_ROBOTIC))
+			if(!H.w_uniform && !nojumpsuit && (!O || O.status && (O.draw_organic_features)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -1497,7 +1516,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	var/bloody = 0
 	if(((I.damtype == BRUTE) && I.force && prob(25 + (I.force * 2))))
-		if(affecting.status == BODYPART_ORGANIC)
+		if(!(NOBLOOD in affecting.species_flags_list))
 			I.add_mob_blood(H)	//Make the weapon bloody, not the person.
 			if(prob(I.force * 2))	//blood spatter!
 				bloody = 1
@@ -1509,7 +1528,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 		switch(hit_area)
 			if(BODY_ZONE_HEAD)
-				if(!I.get_sharpness() && armor_block < 50)
+				if(!I.get_sharpness() && armor_block < 50 && !(TORSO_BRAIN in affecting.species_flags_list))
 					if(prob(I.force))
 						H.adjustOrganLoss(ORGAN_SLOT_BRAIN, 20)
 						if(H.stat == CONSCIOUS)
@@ -1813,6 +1832,74 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 /datum/species/proc/ExtinguishMob(mob/living/carbon/human/H)
 	return
 
+
+/////////////////
+//  Blood Loss //
+/////////////////
+/datum/species/proc/handle_blood(mob/living/carbon/human/H)
+	if(NOBLOOD in H.dna.species.species_traits)
+		H.bleed_rate = 0
+		return
+
+	if(H.bodytemperature >= TCRYO && !(HAS_TRAIT(H, TRAIT_HUSK))) //cryosleep or husked people do not pump the blood.
+
+		//Blood regeneration if there is some space
+		if(H.blood_volume < BLOOD_VOLUME_NORMAL && !HAS_TRAIT(H, TRAIT_NOHUNGER))
+			var/nutrition_ratio = 0
+			switch(H.nutrition)
+				if(0 to NUTRITION_LEVEL_STARVING)
+					nutrition_ratio = 0.2
+				if(NUTRITION_LEVEL_STARVING to NUTRITION_LEVEL_HUNGRY)
+					nutrition_ratio = 0.4
+				if(NUTRITION_LEVEL_HUNGRY to NUTRITION_LEVEL_FED)
+					nutrition_ratio = 0.6
+				if(NUTRITION_LEVEL_FED to NUTRITION_LEVEL_WELL_FED)
+					nutrition_ratio = 0.8
+				else
+					nutrition_ratio = 1
+			if(H.satiety > 80)
+				nutrition_ratio *= 1.25
+			H.adjust_nutrition(-nutrition_ratio * HUNGER_FACTOR)
+			H.blood_volume = min(BLOOD_VOLUME_NORMAL, H.blood_volume + 0.5 * nutrition_ratio)
+
+		//Effects of bloodloss
+		var/word = pick("dizzy","woozy","faint")
+		switch(H.blood_volume)
+			if(BLOOD_VOLUME_OKAY to BLOOD_VOLUME_SAFE)
+				if(prob(5))
+					to_chat(H, "<span class='warning'>You feel [word].</span>")
+				H.adjustOxyLoss(round((BLOOD_VOLUME_NORMAL - H.blood_volume) * 0.01, 1))
+			if(BLOOD_VOLUME_BAD to BLOOD_VOLUME_OKAY)
+				H.adjustOxyLoss(round((BLOOD_VOLUME_NORMAL - H.blood_volume) * 0.02, 1))
+				if(prob(5))
+					H.blur_eyes(6)
+					to_chat(H, "<span class='warning'>You feel very [word].</span>")
+			if(BLOOD_VOLUME_SURVIVE to BLOOD_VOLUME_BAD)
+				H.adjustOxyLoss(5)
+				if(prob(15))
+					H.Unconscious(rand(20,60))
+					to_chat(H, "<span class='warning'>You feel extremely [word].</span>")
+			if(-INFINITY to BLOOD_VOLUME_SURVIVE)
+				if(!HAS_TRAIT(H, TRAIT_NODEATH))
+					H.death()
+
+		var/temp_bleed = 0
+		//Bleeding out
+		for(var/X in H.bodyparts)
+			var/obj/item/bodypart/BP = X
+			var/brutedamage = BP.brute_dam
+
+			//We want an accurate reading of .len
+			listclearnulls(BP.embedded_objects)
+			temp_bleed += 0.5*BP.embedded_objects.len
+
+			if(brutedamage >= 20)
+				temp_bleed += (brutedamage * 0.013)
+
+		H.bleed_rate = max(H.bleed_rate - 0.5, temp_bleed)//if no wounds, other bleed effects (heparin) naturally decreases
+
+		if(H.bleed_rate && !H.bleedsuppress && !(HAS_TRAIT(H, TRAIT_FAKEDEATH)))
+			H.bleed(H.bleed_rate)
 
 ////////////
 //  Stun  //

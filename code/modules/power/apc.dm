@@ -77,6 +77,7 @@
 	var/chargecount = 0
 	var/locked = TRUE
 	var/coverlocked = TRUE
+	var/free_recharging = TRUE // If true charging cables can draw power with this apc without the user having engineering access -- InfinityArch
 	var/aidisabled = 0
 	var/tdir = null
 	var/obj/machinery/power/terminal/terminal = null
@@ -534,6 +535,21 @@
 			return TRUE
 
 /obj/machinery/power/apc/attackby(obj/item/W, mob/living/user, params)
+	if(istype(W, /obj/item/apc_charger) && get_dist(src,user) <= 1)
+		if(!get_turf(src))
+			to_chat(user, "<span class='warning'>[src] must be installed in order to use [W]!</span>")
+		else if(opened)
+			to_chat(user, "<span class='warning'>You must close the cover before connecting [W] to [src]!</span>")
+		else if(panel_open)
+			to_chat(user, "<span class='warning'>You must close the panel before connecting [W] to [src]!</span>")
+		else if(!get_cell() || (stat & (BROKEN|MAINT)))
+			to_chat(user, "<span class='warning'>You connect [W] to [src] but nothing happens!</span>")
+		else if(!malfhack && (free_recharging || !locked|| (obj_flags & EMAGGED) || wires.is_cut(WIRE_IDSCAN) || allowed(user)))
+			SEND_SIGNAL(user, COMSIG_HANDLE_APC_RECHARGING, get_cell(), src)
+			message_admins("SUCCESS YES YES YES")
+		else
+			to_chat(user, "<span class='warning'>You connect [W] to [src] and the permission light flashes red!</span>")
+		return
 
 	if(issilicon(user) && get_dist(src,user)>1)
 		return attack_hand(user)

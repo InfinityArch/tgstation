@@ -501,6 +501,8 @@
 		target_zone = user.zone_selected
 	if(HAS_TRAIT(src, TRAIT_PIERCEIMMUNE))
 		. = 0
+	if(mob_biotypes & MOB_ROBOTIC)
+		. = 0
 	// If targeting the head, see if the head item is thin enough.
 	// If targeting anything else, see if the wear suit is thin enough.
 	if (!penetrate_thick)
@@ -1224,3 +1226,10 @@
 
 /mob/living/carbon/human/species/zombie/krokodil_addict
 	race = /datum/species/krokodil_addict
+
+/mob/living/carbon/human/species/tajaran
+	race = /datum/species/tajaran
+
+/mob/living/carbon/human/species/ipc
+	race = /datum/species/ipc
+
