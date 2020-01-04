@@ -485,7 +485,7 @@
 	var/is_antag
 	if(mind in GLOB.pre_setup_antags)
 		is_antag = TRUE
-	
+
 	client.prefs.copy_to(H, antagonist = is_antag)
 	H.dna.update_dna_identity()
 	if(mind)
@@ -504,7 +504,7 @@
 /mob/dead/new_player/proc/transfer_character()
 	. = new_character
 	if(.)
-		new_character.key = key		//Manually transfer the key to log them in
+		new_character.key = key		//Manually transfer the key to log them in,
 		new_character.stop_sound_channel(CHANNEL_LOBBYMUSIC)
 		new_character = null
 		qdel(src)

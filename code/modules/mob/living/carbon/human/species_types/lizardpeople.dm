@@ -24,9 +24,8 @@
 	liked_food = GROSS | MEAT | SENTIENT
 	inert_mutation = FIREBREATH
 	deathsound = 'sound/voice/lizard/deathsound.ogg'
-
-/datum/species/lizard/after_equip_job(datum/job/J, mob/living/carbon/human/H)
-	H.grant_language(/datum/language/draconic)
+	wings_icon = "Dragon"
+	species_language_holder = /datum/language_holder/lizard
 
 //I wag in death
 /datum/species/lizard/spec_death(gibbed, mob/living/carbon/human/H)
@@ -69,3 +68,4 @@
 	limbs_id = "lizard"
 	species_traits = list(MUTCOLORS,EYECOLOR,LIPS,DIGITIGRADE)
 	inherent_traits = list(TRAIT_CHUNKYFINGERS,TRAIT_NOBREATH)
+	species_language_holder = /datum/language_holder/lizard/ash

@@ -76,7 +76,7 @@
 	// try to capitalize the names please~
 	// try to spell
 	// you do not need to define _s or _l sub-states, game automatically does this for you
-	
+
 /datum/sprite_accessory/hair/bald
 	name = "Bald"
 	icon_state = "bald"
@@ -1887,7 +1887,7 @@
 
 /datum/sprite_accessory/ears
 	icon = 'icons/mob/sprite_accessories/ears.dmi'
-	
+
 /datum/sprite_accessory/ears/none
 	name = "None"
 	icon_state = "none"
@@ -2026,6 +2026,7 @@
 ////////////////////
 // Face Markings  //
 ///////////////////
+
 ////////////////////
 // Body Markings //
 ///////////////////
@@ -2198,18 +2199,18 @@
 								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE),
-								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))	
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))
 	optics_types = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR)
 
 /datum/sprite_accessory/augmentation/prosthetic
 	name = "Ward-Takahashi Robotics Prosthetics Line"
-	species = "wt-prosthetic" 
+	species = "wt-prosthetic"
 	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ANDROID),
 								BODY_ZONE_CHEST = list(AUG_TYPE_ANDROID),
 								BODY_ZONE_L_ARM = list(AUG_TYPE_ANDROID),
 								BODY_ZONE_R_ARM = list(AUG_TYPE_ANDROID),
 								BODY_ZONE_L_LEG = list(AUG_TYPE_ANDROID),
-								BODY_ZONE_R_LEG = list(AUG_TYPE_ANDROID))		
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ANDROID))
 //optics
 /datum/sprite_accessory/optics
 	name = "Standard Optics"

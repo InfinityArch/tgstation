@@ -217,7 +217,7 @@
 /obj/item/bodypart/proc/heal_damage(brute, burn, stamina, required_status, updating_health = TRUE)
 
 	if(required_status && status != required_status)
-		return	
+		return
 	brute_dam	= round(max(brute_dam - brute, 0), DAMAGE_PRECISION)
 	burn_dam	= round(max(burn_dam - burn, 0), DAMAGE_PRECISION)
 	stamina_dam = round(max(stamina_dam - stamina, 0), DAMAGE_PRECISION)
@@ -273,7 +273,7 @@
 			if(owner)
 				to_chat(owner, "<span class='warning'>The synthetic flesh on your damaged [src] sloughs off!</span>")
 
-			
+
 
 		return TRUE
 	return FALSE
@@ -285,7 +285,7 @@
 	if(new_limb_status)
 		status = new_limb_status
 
-	organic = is_organic_limb()	
+	organic = is_organic_limb()
 
 	if((NO_BONES in species_flags_list) || !organic)
 		bodypart_status_flags |= BODYPART_STATUS_NO_BONES
@@ -352,7 +352,7 @@
 		owner.update_body() //if our head becomes robotic, we remove the lizard horns and human hair.
 		owner.update_hair()
 		owner.update_damage_overlays()
-				
+
 /obj/item/bodypart/proc/is_organic_limb()
 	return status == BODYPART_ORGANIC
 
@@ -361,13 +361,14 @@
 	var/mob/living/carbon/C
 	if(source)
 		C = source
-
-	else if(original_owner && owner != original_owner) //Foreign limb
-		no_update = TRUE
-	else if(owner)
+		if(!original_owner)
+			original_owner = source
+	else
 		C = owner
-		original_owner = C
-		no_update = FALSE
+		if(original_owner && owner != original_owner) //Foreign limb
+			no_update = TRUE
+		else
+			no_update = FALSE
 
 	if(HAS_TRAIT(C, TRAIT_HUSK) && is_organic_limb())
 		should_draw_husked = TRUE
@@ -501,7 +502,7 @@
 			limb.icon = file("icons/mob/bodyparts/[species_id].dmi")
 			//message_admins("organic limb icon is [limb.icon]")
 			limb.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]" : "[body_zone]"
-			draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))	
+			draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))
 			if(aux_zone)
 				aux = image(limb.icon, "[aux_zone]", -aux_layer, image_dir)
 				. += aux
@@ -526,7 +527,7 @@
 						augmentation_aux = image(augmentation.icon, "[aux_zone]_aug", -(aux_layer - 1), image_dir)
 						augmentation_aux.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
 						. += augmentation_aux
-			
+
 		else
 			limb.icon = file("icons/mob/augmentation/[aug_id].dmi")
 			message_admins("robotic limb icon is [limb.icon]")

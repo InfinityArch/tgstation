@@ -22,6 +22,7 @@
 	liked_food = VEGETABLES
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC
 	outfit_important_for_life = /datum/outfit/plasmaman
+	species_language_holder = /datum/language_holder/skeleton
 
 /datum/species/plasmaman/spec_life(mob/living/carbon/human/H)
 	var/datum/gas_mixture/environment = H.loc.return_air()
@@ -95,6 +96,9 @@
 		if("Medical Doctor")
 			O = new /datum/outfit/plasmaman/medical
 
+		if("Paramedic")
+			O = new /datum/outfit/plasmaman/paramedic
+
 		if("Chemist")
 			O = new /datum/outfit/plasmaman/chemist
 
@@ -130,8 +134,8 @@
 /datum/species/plasmaman/handle_chemicals(datum/reagent/chem, mob/living/carbon/human/H)
 	. = ..()
 	if(chem.type == /datum/reagent/consumable/milk)
-		if(chem.volume >= 6)
-			H.reagents.remove_reagent(chem.type, chem.volume - 5)
+		if(chem.volume > 10)
+			H.reagents.remove_reagent(chem.type, chem.volume - 10)
 			to_chat(H, "<span class='warning'>The excess milk is dripping off your bones!</span>")
 		H.heal_bodypart_damage(1.5,0, 0)
 		H.reagents.remove_reagent(chem.type, chem.metabolization_rate)
@@ -161,4 +165,4 @@
 					H.emote("sigh")
 		H.reagents.remove_reagent(chem.type, chem.metabolization_rate)
 		return TRUE
-		
+
