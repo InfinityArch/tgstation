@@ -70,7 +70,7 @@ obj/item/organ/silicon/proc/get_power_state_string()
 		if(POWER_STATE_OVERDRIVE)
 			return "performance mode"
 	return "sys.power error: abnormal electrical activity detected!"
-		
+
 
 /obj/item/organ/silicon/battery
 	name = "compact microbattery assembly"
@@ -85,7 +85,7 @@ obj/item/organ/silicon/proc/get_power_state_string()
 	var/battery_rating
 	var/update_timer = 0
 	var/obj/item/stock_parts/cell/starting_cell
-	var/obj/item/stock_parts/capacitor/starting_capacitor 
+	var/obj/item/stock_parts/capacitor/starting_capacitor
 
 	var/obj/item/stock_parts/cell/cell
 	var/obj/item/stock_parts/capacitor/capacitor
@@ -264,7 +264,7 @@ obj/item/organ/silicon/coolant_pump/update_icon()
 	if(owner && owner.blood_volume < BLOOD_VOLUME_SAFE)
 		cooling_efficiency *= owner.blood_volume / BLOOD_VOLUME_NORMAL
 	return round(cooling_efficiency * power_state * heat_rejection_capacity, DAMAGE_PRECISION)
-	
+
 
 /obj/item/organ/silicon/coolant_pump/radiator
 	name = "compact radiative cooling system"
@@ -354,7 +354,8 @@ obj/item/organ/silicon/upgrade/vtec/proc/toggle(silent = FALSE)
 		if(!silent)
 			to_chat(owner, "<span class='robot danger'>ERROR: Unable to activate VTEC system, check status of on board electrical systems!</span>")
 		return
-	to_chat(owner, "<span class='robot notice'>Stand by, [name] [serial_number] warming up...</span>")
+	if(!silent)
+		to_chat(owner, "<span class='robot notice'>Stand by, [name] [serial_number] warming up...</span>")
 	if(do_after(owner, 50, target = owner, needhand= FALSE))
 		if(power_state)
 			return // prevents spamming of the button having consequences
@@ -364,11 +365,14 @@ obj/item/organ/silicon/upgrade/vtec/proc/toggle(silent = FALSE)
 					adjust_power_state(POWER_STATE_NORMAL)
 				else
 					adjust_power_state(POWER_STATE_LOW)
-			to_chat(owner, "<span class='robot notice'>[name] [serial_number] is now online and operating in [get_power_state_string()]!</span>")
+			if(!silent)
+				to_chat(owner, "<span class='robot notice'>[name] [serial_number] is now online and operating in [get_power_state_string()]!</span>")
 		else
-			to_chat(owner, "<span class='robot danger'>ERROR: charge in [B.cell.name] mounted in [B.name] [B.serial_number] is insufficient to complete operation, VTEC boot sequence aborted!</span>")
+			if(!silent)
+				to_chat(owner, "<span class='robot danger'>ERROR: charge in [B.cell.name] mounted in [B.name] [B.serial_number] is insufficient to complete operation, VTEC boot sequence aborted!</span>")
 	else
-		to_chat(owner, "<span class='robot notice'>VTEC boot sequence aborted.</span>")
+		if(!silent)
+			to_chat(owner, "<span class='robot notice'>VTEC boot sequence aborted.</span>")
 
 
 /obj/item/organ/silicon/upgrade/vtec/Insert(mob/living/carbon/M, special = 0, drop_if_replaced = TRUE)

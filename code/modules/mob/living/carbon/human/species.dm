@@ -15,14 +15,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/species_hud // put a file name in to override the hud skin in preferences
 
 	var/sexes = 1		// whether or not the race has sexual characteristics. at the moment this is only 0 for skeletons and shadows
-	var/age_min = 17 // the minimum age for this species usable at character creation
-	var/age_max = 85 // the maximum age at character creation
+	var/age_min = AGE_MIN // the minimum age for this species usable at character creation
+	var/age_max = AGE_MAX // the maximum age at character creation
 
 	var/list/offset_features = list(OFFSET_UNIFORM = list(0,0), OFFSET_ID = list(0,0), OFFSET_GLOVES = list(0,0), OFFSET_GLASSES = list(0,0), OFFSET_EARS = list(0,0), OFFSET_SHOES = list(0,0), OFFSET_S_STORE = list(0,0), OFFSET_FACEMASK = list(0,0), OFFSET_HEAD = list(0,0), OFFSET_FACE = list(0,0), OFFSET_BELT = list(0,0), OFFSET_BACK = list(0,0), OFFSET_SUIT = list(0,0), OFFSET_NECK = list(0,0))
 
 	var/hair_color	// this allows races to have specific hair colors... if null, it uses the H's hair/facial hair colors. if "mutcolor", it uses the H's mutant_color
 	var/hair_alpha = 255	// the alpha used by the hair. 255 is completely solid, 0 is transparent.
-	var/aux_color // works like hair_color, but for aux parts; if defined and species has AUXCOLORS_OVERRIDE in traits, the auxparts will be colored as such, AUXCOLORS can also be a color SRC for a 
+	var/aux_color // works like hair_color, but for aux parts; if defined and species has AUXCOLORS_OVERRIDE in traits, the auxparts will be colored as such, AUXCOLORS can also be a color SRC for a
 	var/list/feature_names = DEFAULT_FEATURES_NAMES // what the in game name of the species' features are
 	var/exotic_blood = ""	// If your race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If your race uses a non standard bloodtype (A+, O-, AB-, etc)
@@ -70,6 +70,9 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID
 	///List of factions the mob gain upon gaining this species.
 	var/list/inherent_factions
+
+	//What kind of roundstart limb customization members of this species have access to
+	var/limb_customization_type = LIMB_CUSTOMIZATION_DEFAULT
 
 	var/attack_verb = "punch"	// punch-specific attack verb
 	var/sound/attack_sound = 'sound/weapons/punch1.ogg'
@@ -318,7 +321,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	if(TRAIT_NOMETABOLISM in inherent_traits)
 		C.reagents.end_metabolization(C, keep_liverless = TRUE)
-	
+
 	if(TRAIT_NO_RUN in inherent_traits && C.m_intent == MOVE_INTENT_RUN)
 		C.toggle_move_intent()
 
@@ -562,7 +565,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				eye_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
 				eye_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
 			standing += eye_overlay
-			
+
 	//Underwear, Undershirts & Socks
 	if(!(NO_UNDERWEAR in species_traits) && (TR.draw_organic_features))
 		if(H.underwear)
@@ -588,7 +591,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				standing += mutable_appearance(socks.icon, socks.icon_state, -BODY_LAYER)
 
 	if(standing.len)
-		H.overlays_standing[BODY_LAYER] = standing 
+		H.overlays_standing[BODY_LAYER] = standing
 	if(cosmetics_standing.len)
 		H.overlays_standing[COSMETICS_LAYER] = cosmetics_standing
 
@@ -1927,7 +1930,7 @@ __Arguments__
 *gender*: the gender of the mob that needs a name generated, should be one of the gender defines
 *attempts_to_find_unique_names*: The limit on the number of times the proc should generate an unused name before automatically returning, must be a finite integer
 
-__Returns__: 
+__Returns__:
 - Improper initialization of the names lists can occur if the require files are missing or formatted wrong, leading to runtimes or name generation errors. See /proc/init_species_names_lists in \_HELPERS\mobs.dm
 - Returns "NAME_GENERATION_ERROR" if it fails to find a valid name for the supplied arguments without encountering an exception
 - Returns a valid name string after it finds an unused one or reaches the limit of *attempts_to_find_unique_name*
@@ -1939,7 +1942,7 @@ __Returns__:
 		init_species_names_lists(GLOB.first_names_male, GLOB.first_names_female, GLOB.last_names)
 	if(!naming_convention_override)
 		naming_convention_override = naming_convention ? naming_convention : pick(HUMAN_WESTERN, HUMAN_EASTERN)
-		
+
 	for(var/i in 1 to attempts_to_find_unique_name)
 		if(gender == FEMALE)
 			switch(naming_convention_override)
@@ -1954,14 +1957,14 @@ __Returns__:
 				if(APO_NAME_EXT)
 					. = capitalize(pick(GLOB.first_names_female[names_id])) + "'"
 					if(prob(65))
-						. += (pick(GLOB.first_names_female[names_id]) + "'") 
+						. += (pick(GLOB.first_names_female[names_id]) + "'")
 					. += pick(GLOB.last_names[names_id])
 				if(HYPHEN_NAME)
 					. = capitalize(pick(GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
 				if(GIVEN_ONLY)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) 
+					. = capitalize(pick(GLOB.first_names_female[names_id]))
 				if(SURNAME_ONLY)
-					. = capitalize(pick(GLOB.last_names[names_id])) 
+					. = capitalize(pick(GLOB.last_names[names_id]))
 				if(NAME_NUMERAL)
 					. = capitalize(pick(GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
 				if(NAME_NUM)
@@ -1981,16 +1984,16 @@ __Returns__:
 				if(APO_NAME_REV)
 					. = capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_male[names_id])
 				if(APO_NAME_EXT)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'" 
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'"
 					if(prob(65))
-						. += (pick(GLOB.first_names_male[names_id]) + "'") 
+						. += (pick(GLOB.first_names_male[names_id]) + "'")
 					. += pick(GLOB.last_names[names_id])
 				if(HYPHEN_NAME)
 					. = capitalize(pick(GLOB.first_names_male[names_id])) + "-" + pick(GLOB.last_names[names_id])
 				if(GIVEN_ONLY)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) 
+					. = capitalize(pick(GLOB.first_names_male[names_id]))
 				if(SURNAME_ONLY)
-					. = capitalize(pick(GLOB.last_names[names_id])) 
+					. = capitalize(pick(GLOB.last_names[names_id]))
 				if(NAME_NUMERAL)
 					. = capitalize(pick(GLOB.first_names_male[names_id])) + " \Roman[rand(1,99)]"
 				if(NAME_NUM)
@@ -2017,9 +2020,9 @@ __Returns__:
 				if(HYPHEN_NAME)
 					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
 				if(GIVEN_ONLY)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) 
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]))
 				if(SURNAME_ONLY)
-					. = capitalize(pick(GLOB.last_names[names_id])) 
+					. = capitalize(pick(GLOB.last_names[names_id]))
 				if(NAME_NUMERAL)
 					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
 				if(NAME_NUM)
@@ -2043,7 +2046,7 @@ __Returns__:
 		fly = new
 		fly.Grant(H)
 	if(H.dna.features["wings"] == "None")
-		mutant_bodyparts |= "wings"	
+		mutant_bodyparts |= "wings"
 		if(GLOB.wings_list_species[features_id])
 			H.dna.features["wings"] = pick(GLOB.wings_list_species[features_id])
 		else

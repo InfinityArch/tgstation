@@ -259,7 +259,7 @@
 	var/list/allowed_spans = list(SPAN_ROBOT)
 
 
-/obj/item/organ/tongue/robot/could_speak_in_language(datum/language/dt)
+/obj/item/organ/tongue/robot/could_speak_language(language)
 	return TRUE // THE MAGIC OF ELECTRONICS
 
 /obj/item/organ/tongue/robot/handle_speech(datum/source, list/speech_args)

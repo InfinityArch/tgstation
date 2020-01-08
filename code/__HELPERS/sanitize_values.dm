@@ -16,7 +16,7 @@
 		return value
 	if(default)
 		return default
-		
+
 /proc/sanitize_inlist(value, list/List, default)
 	if(value in List)
 		return value
@@ -42,7 +42,7 @@ __Returns__: returns the input list (features) with features found in *features_
 */
 
 /proc/sanitize_features(list/features, species_index = DEFAULT_SPECIES_INDEX, list/features_to_sanitize = list(), aug_exmpt = FALSE)
-	var/temp_index // this stores the species_index, and is checked for validity prior to sanitizing a feature, if there's nothing at species_index, then we use DEFAULT_SPECIES_INDEX instead 
+	var/temp_index // this stores the species_index, and is checked for validity prior to sanitizing a feature, if there's nothing at species_index, then we use DEFAULT_SPECIES_INDEX instead
 	if(!features_to_sanitize.len)
 		features_to_sanitize = features
 	if("mcolor" in features_to_sanitize)
@@ -73,11 +73,33 @@ __Returns__: returns the input list (features) with features found in *features_
 		features["body_markings"] = sanitize_inlist(features["body_markings"], (GLOB.body_markings_list & GLOB.body_markings_list_species[temp_index]) | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX])
 	if("legs" in features_to_sanitize)
 		temp_index = GLOB.legs_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
-		features["feature_legs"] = sanitize_inlist(features["legs"], (GLOB.legs_list && GLOB.legs_list_species[temp_index]) | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])	
+		features["feature_legs"] = sanitize_inlist(features["legs"], (GLOB.legs_list && GLOB.legs_list_species[temp_index]) | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])
 	if("wings" in features_to_sanitize)
 		temp_index = GLOB.wings_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["wings"] = sanitize_inlist(features["wings"], GLOB.wings_list & GLOB.wings_list_species[temp_index])
 	return features
+
+/*
+# sanitize_bodyparts
+
+__description__: this proc checks whether a hair or facial hair style is valid and permitted for a given character
+
+__Arguments__
+*alternate_bodyparts*: a list
+*limb customization type*: which types of limbs customization is allowed
+__Returns__: returns the input list modified according to the limb customization type allowed
+*/
+
+/proc/sanitize_bodyparts(list/alternate_bodyparts, limb_customization_type = LIMB_CUSTOMIZATION_DEFAULT)
+	if(!limb_customization_type || !alternate_bodyparts)
+		return list()
+	if(limb_customization_type == LIMB_CUSTOMIZATION_DEFAULT)
+		if(BODY_ZONE_CHEST in alternate_bodyparts)
+			alternate_bodyparts -= BODY_ZONE_CHEST
+		if(BODY_ZONE_HEAD in alternate_bodyparts)
+			alternate_bodyparts -= BODY_ZONE_HEAD
+	return alternate_bodyparts
+
 
 /*
 # sanitize_hairstyle
@@ -179,3 +201,4 @@ __Returns__: returns the original skin_tone if it's valid, or a random valid ski
 	HSL[3] = min(HSL[3],0.4)
 	var/list/RGB = hsl2rgb(arglist(HSL))
 	return "#[num2hex(RGB[1],2)][num2hex(RGB[2],2)][num2hex(RGB[3],2)]"
+

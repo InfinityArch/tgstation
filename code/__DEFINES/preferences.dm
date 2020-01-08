@@ -78,6 +78,13 @@
 
 #define DEFAULT_CYBORG_NAME "Default Cyborg Name"
 
+//Flags for roundstart limb customization typers
+#define LIMB_CUSTOMIZATION_NONE    0
+#define LIMB_CUSTOMIZATION_DEFAULT 1 // allows switching out of limbs, but not the head or chest for cybernetic parts
+#define LIMB_CUSTOMIZATION_FULL	   2 // allows all bodyparts to be customized during roundstart customization
+
+#define LIMB_CUSTOMIZATION_DEFAULT_NAMELIST		list("left arm" = BODY_ZONE_L_ARM, "right arm" = BODY_ZONE_R_ARM, "left leg" = BODY_ZONE_L_LEG, "right leg" = BODY_ZONE_R_LEG)
+#define LIMB_CUSTOMIZATION_FULL_NAMELIST		list("chest" = BODY_ZONE_CHEST, "head" = BODY_ZONE_HEAD)
 
 //Job preferences levels
 #define JP_LOW 1
@@ -106,3 +113,4 @@
 #define RANDOM_FACIAL_HAIRSTYLE "random_facial_hairstyle"
 #define RANDOM_SKIN_TONE "random_skin_tone"
 #define RANDOM_EYE_COLOR "random_eye_color"
+#define RANDOM_AUG_COLOR "random_aug_color"

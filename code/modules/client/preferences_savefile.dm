@@ -5,7 +5,7 @@
 //	You do not need to raise this if you are adding new values that have sane defaults.
 //	Only raise this value when changing the meaning/format/name/layout of an existing value
 //	where you would want the updater procs below to run
-#define SAVEFILE_VERSION_MAX	30
+#define SAVEFILE_VERSION_MAX	31
 
 /*
 SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Carn
@@ -133,6 +133,15 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 			S["hairstyle_name"]	>> hairstyle
 		if(S["facial_style_name"])
 			S["facial_style_name"]	>> facial_hairstyle
+
+	if(current_version < 31)
+		alternate_bodyparts = list()
+		alternate_organs = list()
+		aug_color = AUG_COLOR_DEFAULT
+		lip_style = null
+		lip_color = "FFFFFF"
+
+
 
 /datum/preferences/proc/load_path(ckey,filename="preferences.sav")
 	if(!ckey)
@@ -322,6 +331,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["socks"]				>> socks
 	S["backpack"]			>> backpack
 	S["jumpsuit_style"]		>> jumpsuit_style
+	S["lip_color"]			>> lip_color
+	S["lip_style"]			>> lip_style
 	S["uplink_loc"]			>> uplink_spawn_loc
 	S["randomise"]	>>  randomise
 	S["feature_mcolor"]					>> features["mcolor"]
@@ -335,6 +346,11 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["feature_body_markings"]			>> features["body_markings"]
 	S["feature_legs"]					>> features["legs"]
 	S["feature_wings"]					>> features["wings"]
+
+	//alternate bodyparts and organs
+	S["alternate_bodyparts"]			>> alternate_bodyparts
+	S["alternate_organs"]				>> alternate_organs
+	S["aug_color"]						>> aug_color
 
 	//Custom names
 	for(var/custom_name_id in GLOB.preferences_custom_names)
@@ -397,10 +413,18 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	underwear_color			= sanitize_hexcolor(underwear_color, 3, 0)
 	eye_color		= sanitize_hexcolor(eye_color, 3, 0)
 	skin_tone		= sanitize_skin_tone(skin_tone, pref_species.limbs_id)
+
+	lip_color = sanitize_hexcolor(lip_color, 3, 0)
+	if(lip_style && lip_style != "lipstick")
+		lip_style = null
+
 	backpack			= sanitize_inlist(backpack, GLOB.backpacklist, initial(backpack))
 	jumpsuit_style	= sanitize_inlist(jumpsuit_style, GLOB.jumpsuitlist, initial(jumpsuit_style))
 	uplink_spawn_loc = sanitize_inlist(uplink_spawn_loc, GLOB.uplink_spawn_loc_list, initial(uplink_spawn_loc))
 	features = sanitize_features(features, pref_species.features_id)
+	alternate_bodyparts = sanitize_bodyparts(alternate_bodyparts, pref_species.limb_customization_type)
+	aug_color = sanitize_inlist(aug_color, GLOB.aug_colors_list)
+
 
 
 	joblessrole	= sanitize_integer(joblessrole, 1, 3, initial(joblessrole))
@@ -442,6 +466,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["uplink_loc"]			, uplink_spawn_loc)
 	WRITE_FILE(S["randomise"]		, randomise)
 	WRITE_FILE(S["species"]			, pref_species.id)
+	WRITE_FILE(S["lip_style"]		, lip_style)
+	WRITE_FILE(S["lip_color"]		, lip_color)
 	WRITE_FILE(S["feature_mcolor"]					, features["mcolor"])
 	WRITE_FILE(S["feature_tail"]					, features["tail"])
 	WRITE_FILE(S["feature_snout"]					, features["snout"])
@@ -454,6 +480,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["feature_legs"]					, features["legs"])
 	WRITE_FILE(S["feature_wings"]					, features["wings"])
 	WRITE_FILE(S["feature_moth_markings"]		, features["moth_markings"])
+	WRITE_FILE(S["alternate_bodyparts"], alternate_bodyparts)
+	WRITE_FILE(S["alternate_organs"], alternate_bodyparts)
+	WRITE_FILE(S["aug_color"], aug_color)
 
 
 	//Custom names

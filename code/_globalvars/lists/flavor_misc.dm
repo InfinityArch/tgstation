@@ -2,12 +2,12 @@
 	//Hairstyles
 GLOBAL_LIST_EMPTY(hairstyles_list)			//stores /datum/sprite_accessory/hair indexed by name
 GLOBAL_LIST_EMPTY(hairstyles_male_list)
-GLOBAL_LIST_EMPTY(hairstyles_female_list)	
-GLOBAL_LIST_EMPTY(hairstyles_list_species) 
+GLOBAL_LIST_EMPTY(hairstyles_female_list)
+GLOBAL_LIST_EMPTY(hairstyles_list_species)
 
 GLOBAL_LIST_EMPTY(facial_hairstyles_list)	//stores /datum/sprite_accessory/facial_hair indexed by name
 GLOBAL_LIST_EMPTY(facial_hairstyles_male_list)
-GLOBAL_LIST_EMPTY(facial_hairstyles_female_list) 
+GLOBAL_LIST_EMPTY(facial_hairstyles_female_list)
 GLOBAL_LIST_EMPTY(facial_hairstyles_list_species)
 
 	//Underwear
@@ -26,13 +26,13 @@ GLOBAL_LIST_EMPTY(skin_tones_list_species) // stores skin_tone indexed by specie
 	//Socks
 GLOBAL_LIST_EMPTY(socks_list)		//stores /datum/sprite_accessory/socks indexed by name
 //Lizard Bits (all datum lists indexed by name)
-	
+
 	//Head features
 GLOBAL_LIST_EMPTY(ears_list)
 GLOBAL_LIST_EMPTY(ears_list_species)
 GLOBAL_LIST_EMPTY(snouts_list)
 GLOBAL_LIST_EMPTY(snouts_list_species)
-	
+
 	//Lizard features
 GLOBAL_LIST_EMPTY(horns_list)
 GLOBAL_LIST_EMPTY(horns_list_species)
@@ -41,7 +41,7 @@ GLOBAL_LIST_EMPTY(frills_list_species)
 GLOBAL_LIST_EMPTY(legs_list)
 GLOBAL_LIST_EMPTY(legs_list_species)
 
-	//Tails 
+	//Tails
 GLOBAL_LIST_EMPTY(tails_list)
 GLOBAL_LIST_EMPTY(tails_list_species)
 GLOBAL_LIST_EMPTY(animated_tails_list)

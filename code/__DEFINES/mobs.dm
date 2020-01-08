@@ -75,14 +75,15 @@
 #define BODYPART_DRAW_ANDROID_SKELETAL	1 << 4 // causes android parts to render in their flesh stripped state
 
 //augmentation customization defaults
-#define AUG_COLOR_DEFAULT			"Matte"
+#define AUG_COLOR_DEFAULT			"Gunmetal"
 #define AUG_STYLE_DEFAULT			"Nanotrasen Robotics Division"
 #define AUG_OPTICS_DEFAULT_COLOR	"#013220" //color hex for optics that are currently off
 
-// augmentation types
+// bodypart customization
+#define BODYPART_AMPUTATED		"amputated"
 #define AUG_TYPE_ROBOTIC		"robotic"
 #define AUG_TYPE_ROBOTIC_ALT	"robotic_alt"
-#define AUG_TYPE_DIGITIGRADE	"robotic_digitigrade"
+#define AUG_TYPE_DIGITIGRADE	"robotic digitigrade"
 #define AUG_TYPE_ANDROID		"android"
 #define AUG_TYPE_MONITOR		"monitor"
 
@@ -340,7 +341,7 @@
 #define MAX_QUIRKS 6 //The maximum amount of quirks one character can have at roundstart
 #define QUIRK_POINTS_NORMAL 3 //how many points a normal race gets to spend
 #define QUIRK_POINTS_HUMAN  6 // how many points humans get to spend
-#define MAX_NEGATIVE_QUIRKS 1 // how many negative quirks you can have 
+#define MAX_NEGATIVE_QUIRKS 1 // how many negative quirks you can have
 
 // AI Toggles
 #define AI_CAMERA_LUMINOSITY	5
@@ -380,7 +381,7 @@
 //Flags for naming conventions
 #define HUMAN_WESTERN   0 // Given_name Surname
 #define HUMAN_EASTERN   1 // Surname Given_name
-#define APO_NAME  	    2 // Given_name'surname 
+#define APO_NAME  	    2 // Given_name'surname
 #define APO_NAME_REV    3 // Surname'given_name
 #define APO_NAME_EXT	4 // Given_name'given_name'surname
 #define HYPHEN_NAME	    5 // Given_name-surname

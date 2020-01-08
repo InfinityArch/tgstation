@@ -288,14 +288,14 @@
 	organic = is_organic_limb()
 
 	if((NO_BONES in species_flags_list) || !organic)
-		bodypart_status_flags |= BODYPART_STATUS_NO_BONES
 		bodypart_status_flags &= ~BODYPART_STATUS_BROKEN_BONES
 		bodypart_status_flags &= ~BODYPART_STATUS_SPLINTED_BONES
+		bodypart_status_flags |= BODYPART_STATUS_NO_BONES
 	else
 		bodypart_status_flags &= ~BODYPART_STATUS_NO_BONES
 	if(organic)
-		aug_id = null
-		aug_color = null
+		aug_id = ""
+		aug_color = ""
 		bodypart_draw_flags &= ~BODYPART_DRAW_MONITOR
 		bodypart_status_flags &= ~BODYPART_STATUS_EMAGGED
 		bodypart_draw_flags &= ~BODYPART_DRAW_ANDROID_SKELETAL
@@ -316,6 +316,7 @@
 		heavy_burn_msg = "smoldering"
 		if(aug_color_target)
 			aug_color = aug_color_target
+			message_admins("aug color is [aug_color]")
 		else if(!aug_color)
 			aug_color = AUG_COLOR_DEFAULT
 		var/datum/sprite_accessory/augmentation/augstyle
@@ -500,7 +501,6 @@
 	if(should_draw_greyscale)
 		if(draw_organic_features)
 			limb.icon = file("icons/mob/bodyparts/[species_id].dmi")
-			//message_admins("organic limb icon is [limb.icon]")
 			limb.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]" : "[body_zone]"
 			draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))
 			if(aux_zone)
@@ -517,9 +517,7 @@
 						aux_color = null
 				else
 					augmentation = image(layer = -AUGMENTATION_LAYER, dir = image_dir)
-					message_admins("aug_id is [aug_id]")
 					augmentation.icon = file("icons/mob/augmentation/[aug_id].dmi")
-					message_admins("android limb icon is [augmentation.icon]")
 					augmentation.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]_aug" : "[body_zone]_aug"
 					augmentation.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
 					. += augmentation
@@ -530,7 +528,6 @@
 
 		else
 			limb.icon = file("icons/mob/augmentation/[aug_id].dmi")
-			message_admins("robotic limb icon is [limb.icon]")
 			limb.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]" : "[body_zone]"
 			draw_color = sprite_color2hex(aug_color, GLOB.aug_colors_list)
 			if(bodypart_draw_flags & BODYPART_DRAW_MONITOR)

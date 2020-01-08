@@ -229,6 +229,13 @@
 	message_param = "pings at %t."
 	sound = 'sound/machines/ping.ogg'
 
+/datum/emote/carbon/human/robotic/beep
+	key = "beep"
+	key_third_person = "beeps"
+	message = "beeps."
+	message_param = "beeps at %t."
+	sound = 'sound/machines/twobeep.ogg'
+
 /datum/emote/carbon/human/robotic/sad
 	key = "sad"
 	message = "plays a sad trombone..."

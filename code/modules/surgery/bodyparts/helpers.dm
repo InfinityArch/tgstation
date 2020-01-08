@@ -159,7 +159,7 @@
 
 
 //Helper for quickly creating a new limb - used by augment code in species.dm spec_attacked_by
-/mob/living/carbon/proc/newBodyPart(zone, robotic, fixed_icon)
+/mob/living/carbon/proc/newBodyPart(zone, robotic, fixed_icon, aug_style_target = AUG_STYLE_DEFAULT, aug_type = AUG_TYPE_ROBOTIC, aug_color_target = AUG_COLOR_DEFAULT)
 	var/obj/item/bodypart/L
 	switch(zone)
 		if(BODY_ZONE_L_ARM)
@@ -177,10 +177,10 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
+			L.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE, aug_style_target, aug_type, aug_color_target)
 	. = L
 
-/mob/living/carbon/monkey/newBodyPart(zone, robotic, fixed_icon)
+/mob/living/carbon/monkey/newBodyPart(zone, robotic, fixed_icon, aug_style_target = AUG_STYLE_DEFAULT, aug_type = AUG_TYPE_ROBOTIC, aug_color_target = AUG_COLOR_DEFAULT)
 	var/obj/item/bodypart/L
 	switch(zone)
 		if(BODY_ZONE_L_ARM)
@@ -198,10 +198,10 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
+			L.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE)
 	. = L
 
-/mob/living/carbon/alien/larva/newBodyPart(zone, robotic, fixed_icon)
+/mob/living/carbon/alien/larva/newBodyPart(zone, robotic, fixed_icon, aug_style_target = AUG_STYLE_DEFAULT, aug_type = AUG_TYPE_ROBOTIC, aug_color_target = AUG_COLOR_DEFAULT)
 	var/obj/item/bodypart/L
 	switch(zone)
 		if(BODY_ZONE_HEAD)
@@ -211,10 +211,10 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
+			L.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE)
 	. = L
 
-/mob/living/carbon/alien/humanoid/newBodyPart(zone, robotic, fixed_icon)
+/mob/living/carbon/alien/humanoid/newBodyPart(zone, robotic, fixed_icon, aug_style_target = AUG_STYLE_DEFAULT, aug_type = AUG_TYPE_ROBOTIC, aug_color_target = AUG_COLOR_DEFAULT)
 	var/obj/item/bodypart/L
 	switch(zone)
 		if(BODY_ZONE_L_ARM)
@@ -232,7 +232,7 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE)
+			L.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE)
 	. = L
 
 

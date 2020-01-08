@@ -24,7 +24,6 @@
 	liked_food = GROSS | MEAT | SENTIENT
 	inert_mutation = FIREBREATH
 	deathsound = 'sound/voice/lizard/deathsound.ogg'
-	wings_icon = "Dragon"
 	species_language_holder = /datum/language_holder/lizard
 
 //I wag in death

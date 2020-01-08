@@ -203,17 +203,8 @@
 	var/datum/sprite_accessory/augmentation/augmentation_style = GLOB.augmentation_styles_list[aug_id2augstyle(aug_id)]
 	if(LAZYLEN(augmentation_style.optics_types) && augmentation_type in augmentation_style.optics_types)
 		eye_optics = "[aug_id]_[augmentation_type]"
-		return
-	if(eye_optics)
-		var/datum/sprite_accessory/optics/S = GLOB.augmentation_optics_list[eye_optics]
-		if(S.species && S.species != aug_id)
-			eye_optics = ""
-			return
-		if(S.augtype && S.augtype != augmentation_type)
-			eye_optics = ""
-		
-	
-
+	else
+		eye_optics = ""
 
 /obj/item/bodypart/head/update_icon_dropped()
 	var/list/standing = get_limb_icon(1)
@@ -271,10 +262,12 @@
 		// eyes
 		var/image/eyes_overlay
 		if(eye_optics)
+			message_admins("here's why this shit is triggering: [eye_optics]")
 			var/datum/sprite_accessory/optics/O = GLOB.augmentation_optics_list[eye_optics]
-			eyes_overlay = image('icons/mob/augmentation/aug_optics.dmi', O.icon_state, -BODY_LAYER, SOUTH)
-			eyes_overlay.color = AUG_OPTICS_DEFAULT_COLOR
-			. += eyes_overlay
+			if(O)//InfinityArch: TODO- actually make optics datums for the various robotic heads with alternate eye styles
+				eyes_overlay = image('icons/mob/augmentation/aug_optics.dmi', O.icon_state, -BODY_LAYER, SOUTH)
+				eyes_overlay.color = AUG_OPTICS_DEFAULT_COLOR
+				. += eyes_overlay
 		else if(eyes)
 			eyes_overlay = image('icons/mob/human_face.dmi', eyes.eye_icon_state, -BODY_LAYER, SOUTH)
 			if(eyes.eye_color)

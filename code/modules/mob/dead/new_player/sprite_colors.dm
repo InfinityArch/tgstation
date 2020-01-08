@@ -1,9 +1,9 @@
 /*
 
-	Hello and welcome to sprite_colors: this is used for situations where you want to give players 
+	Hello and welcome to sprite_colors: this is used for situations where you want to give players
 	access to a limited range of customization colors. This is currently used for skin tones and
-	ethereal colors (which are now depreciated and handled as skin tones), 
-	but could essentially be adapted to any situation where 
+	ethereal colors (which are now depreciated and handled as skin tones),
+	but could essentially be adapted to any situation where
 
 	As with sprite_accessories this all gets automatically compiled in a list in dna.dm, so you do not
 	have to define any UI values manually for new skin tones. You will have to do some more work
@@ -13,9 +13,9 @@
 
 How it works
 	the proc init_sprite_color_subtypes accepts a prototype path and two lists as an argument.
-	The first list (L) is the overall list of all subtypes of prototype, indexed by name. 
+	The first list (L) is the overall list of all subtypes of prototype, indexed by name.
 	the second list (S) is a 2D array, indexed first by species.id and secondly by the name
-	Both lists contain the actual datums, which are necessary for sprite_color2hex to 
+	Both lists contain the actual datums, which are necessary for sprite_color2hex to
 	retrieve the corresponding hex values. The point of having two lists is so one (S) can
 	be used for changing skintones at round start and when evaluating whether skin_tone
 	should be changed upon species gain/loss/other events that modify skin_tone dna. The
@@ -209,18 +209,20 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 /////////////////////////
 
 /datum/sprite_color/aug_color
+
+/datum/sprite_color/aug_color/steel
 	name = "Steel"
 	color_hex = "c6c8c9"
 
 /datum/sprite_color/aug_color/matte
 	name = "Matte"
-	color_hex = "414a53"
+	color_hex = "252a2f"
 
-/datum/sprite_color/aug_color
+/datum/sprite_color/aug_color/gunmetal
 	name = "Gunmetal"
-	color_hex = "414a53"
+	color_hex = "4d5461"
 
-/datum/sprite_color/aug_color
+/datum/sprite_color/aug_color/rust
 	name = "Rust"
 	color_hex = "414a53"
 
@@ -242,7 +244,7 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 
 /datum/sprite_color/aug_color/malachite
 	name = "Malachite"
-	color_hex = "ffdead"
+	color_hex = "0bda51"
 
 /datum/sprite_color/aug_color/electrum
 	name = "Electrum"

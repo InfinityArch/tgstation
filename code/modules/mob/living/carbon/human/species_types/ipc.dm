@@ -3,10 +3,10 @@
 	id = "ipc"
 	say_mod = "states"
 	naming_convention = NAME_NUM
-	names_id = "human"	
+	names_id = "human"
 	species_traits = list(NOHEART,NOZOMBIE,NOTRANSSTING, NO_DNA_COPY, NOSTOMACH, TORSO_BRAIN, EYECOLOR, HAIR, FACEHAIR, MUTCOLORS, LIPS)
 	inherent_traits = list(TRAIT_VIRUSIMMUNE, TRAIT_NOMETABOLISM,TRAIT_TOXIMMUNE,TRAIT_NOBREATH,
-							TRAIT_RESISTHIGHPRESSURE,TRAIT_RESISTLOWPRESSURE,TRAIT_RADIMMUNE, 
+							TRAIT_RESISTHIGHPRESSURE,TRAIT_RESISTLOWPRESSURE,TRAIT_RADIMMUNE,
 							TRAIT_NOHUNGER, TRAIT_EASYDISMEMBER, TRAIT_NOHARDCRIT,
 							TRAIT_SLEEPIMMUNE, TRAIT_EASYLIMBDISABLE, TRAIT_RESISTHEATHANDS,
 							TRAIT_XENO_IMMUNE, TRAIT_NOPAIN, TRAIT_NOSOFTCRIT, TRAIT_RESISTCOLD)
@@ -21,11 +21,15 @@
 	species_hud = "ipc"
 	armor = 20 //ipcs don't have crit, and go straight to dead, so they have 120 effective HP
 	speedmod = 2 // as slow as golems
+	age_min = 0
+	age_max = 394
 	mutant_organs = list(/obj/item/organ/silicon/battery/ipc, /obj/item/organ/silicon/coolant_pump, /obj/item/organ/silicon/module/arm/apc_charger)
 	quirk_budget = 0 //ipcs don't get quirk points
 	limbs_id = "human" // ipcs with android parts will use human cosmetics
 	changesource_flags = MIRROR_BADMIN | MIRROR_PRIDE | RACE_SWAP | ERT_SPAWN
-	var/power_load = 0 
+	species_language_holder = /datum/language_holder/synthetic
+	limb_customization_type = LIMB_CUSTOMIZATION_FULL
+	var/power_load = 0
 	var/heat_load = 0
 	var/list/power_consumers = list()
 	var/safe_start = FALSE // set to true when vital internal organs are removed; note that the posibrain/mmi is not actually vital.
@@ -44,7 +48,6 @@
 	if(C.loc && ishuman(C))
 		var/mob/living/carbon/human/H = C
 		handle_heat_load(H.calculate_affecting_pressure(H.loc.return_air()), H, FALSE)
-	C.grant_language(/datum/language/machine)
 	for(var/X in C.bodyparts)
 		var/obj/item/bodypart/BP = X
 		if(BP.is_organic_limb())
@@ -52,7 +55,7 @@
 				BP.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE, AUG_STYLE_DEFAULT, AUG_TYPE_MONITOR)
 			else
 				BP.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE, AUG_STYLE_DEFAULT)
-			
+
 
 /datum/species/ipc/on_species_loss(mob/living/carbon/C)
 	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_ADDED)
@@ -68,7 +71,6 @@
 	var/datum/status_effect/cyborg_power_regen/RC = C.has_status_effect(STATUS_EFFECT_POWERREGEN)
 	if(RC)
 		qdel(RC)
-	C.remove_language(/datum/language/machine)
 	for(var/X in C.bodyparts)
 		var/obj/item/bodypart/BP = X
 		BP.change_bodypart_status(BODYPART_ORGANIC, FALSE, TRUE)
@@ -124,7 +126,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 /datum/species/ipc/apply_damage(damage, damagetype = BRUTE, def_zone = null, blocked, mob/living/carbon/human/H, forced = FALSE, spread_damage = FALSE)
 	. = ..()
-	if(. && H.stat != DEAD && && damagetype == BRUTE && prob(damage))
+	if(. && H.stat != DEAD && damagetype == BRUTE && prob(damage))
 		do_sparks(5, FALSE, H)
 
 /datum/species/ipc/handle_environment(datum/gas_mixture/environment, mob/living/carbon/human/H)
@@ -165,7 +167,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 			H.adjust_bodytemperature((thermal_protection+1)*natural + max(thermal_protection * (loc_temp - H.bodytemperature) / BODYTEMP_COLD_DIVISOR, BODYTEMP_COOLING_MAX))
 		else //we're sweating, insulation hinders out ability to reduce heat - but will reduce the amount of heat we get from the environment
 			H.adjust_bodytemperature(natural*(1/(thermal_protection+1)) + min(thermal_protection * (loc_temp - H.bodytemperature) / BODYTEMP_HEAT_DIVISOR, BODYTEMP_HEATING_MAX))
-	
+
 	// +/- 50 degrees from 310K is the 'safe' zone, where no damage is dealt.
 	if(H.bodytemperature > BODYTEMP_HEAT_DAMAGE_LIMIT && !HAS_TRAIT(H, TRAIT_RESISTHEAT))
 		//Body temperature is too hot.
@@ -304,7 +306,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 //called when battery rating is changed, for ipcs this will only occur if a cell or removed or via badminnery
 /datum/species/ipc/proc/update_battery(mob/living/carbon/C)
-	
+
 	var/obj/item/organ/silicon/battery/B = C.getorganslot(ORGAN_SLOT_BATTERY)
 
 	if(B.cell && B.cell.charge && !voluntary_sleepmode)
@@ -330,7 +332,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 			to_chat(C, "<span class='robot danger'>WARNING: [S.name] [S.serial_number] has \
 [S.power_state ? "switched to [S.get_power_state_string()]" : "shut down automatically"] due to a reduction in the capacity of [B.name] [B.serial_number]!</span>")
 
-//called whenever an organ 
+//called whenever an organ
 /datum/species/ipc/proc/update_power(mob/living/carbon/C)
 	power_load = 0
 	heat_load = 0
@@ -357,7 +359,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 			if(B.cell.use(power_load))
 				return TRUE
 	B.cell.use(B.cell.charge) //reduce the cell's charge to exactly zero
-		
+
 /datum/species/ipc/proc/update_power_icons(mob/living/carbon/human/H)
 	if(charging)
 		charging = FALSE
@@ -394,7 +396,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	var/datum/status_effect/incapacitating/sleep_mode/S = H.has_status_effect(STATUS_EFFECT_SLEEPMODE)
 	var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
 	var/obj/item/organ/silicon/coolant_pump/CP = H.getorganslot(ORGAN_SLOT_COOLANT_PUMP)
-	
+
 	if(S)
 		if(B && B.cell && B.cell.charge && CP)
 			B.adjust_power_state(POWER_STATE_NORMAL)
@@ -409,9 +411,9 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 					return
 			else
 				S.end_sleepmode(H)
-				
+
 			voluntary_sleepmode = FALSE
-			
+
 	else
 		H.apply_status_effect(STATUS_EFFECT_SLEEPMODE)
 		for(var/obj/item/organ/silicon/R in H.internal_organs)
@@ -440,7 +442,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 /datum/species/ipc/proc/charge(mob/living/carbon/human/H, amount, repairs) // check if we need to have the right number of arguments
 	var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
-	
+
 	if(B && B.cell && amount)
 		charging = B.cell.give(amount) // causes update power_icons to use recharge icon_states
 		if(B.cell.charge)

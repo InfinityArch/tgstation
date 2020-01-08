@@ -254,6 +254,7 @@
 	Called from update_body_parts() these procs handle the limb icon cache.
 	the limb icon cache adds an icon_render_key to a human mob, it represents:
 	- skin_tone (if applicable)
+	- aug_color (if applicable)
 	- gender
 	- limbs (stores as the limb name and whether it is removed/fine, organic/robotic)
 	These procs only store limbs as to increase the number of matching icon_render_keys
@@ -274,7 +275,7 @@
 		if(BP.is_organic_limb())
 			. += "-organic"
 		else
-			. += "-robotic"
+			. += "-robotic-[BP.aug_color]-"
 
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "-husk"

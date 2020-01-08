@@ -595,7 +595,7 @@ generate/load female uniform sprites matching all previously decided variables
 		if(BP.is_organic_limb())
 			. += "-organic"
 		else
-			. += "-robotic"
+			. += "-robotic-[BP.aug_color]-"
 		if(BP.use_digitigrade)
 			. += "-digitigrade[BP.use_digitigrade]"
 		if(BP.dmg_overlay_type)

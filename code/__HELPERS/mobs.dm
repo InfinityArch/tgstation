@@ -57,14 +57,14 @@
 __description__
 - this proc generates random features for use in dna, either de novo or from an input list.
 - because its (allegedly) possible for this proc to be fired before datum/sprite_accessories has been loaded,
-- this proc checks for initialization of the relevant global lists and runs their initializaiton proc as needed 
+- this proc checks for initialization of the relevant global lists and runs their initializaiton proc as needed
 
 __Arguments__
 *features*: typically a list of sprite features found in datum/dna, if not given one will be generated de novo
 *species*: the species datum that should be used to deermine feature eligability, defaults to human (all features set to none) if not supplied
 *features_to_randomize*: a list of features that should be sanitized, defaults to everything in *features* if not given. See DEFAULT_FEATURES_LIST in the mobs.dm define for what the full list entails
 
-__Returns__: 
+__Returns__:
 - if supplied with an input list, returns *features* with indices found in *features_to_randomize* randomized according to the species' permitted features
 - returns a de novo list of features if not supplied with an input list, with inidices in *features_to_randomize* being randomized and all others benig left as defaults, typically "None"
 */
@@ -154,7 +154,7 @@ __Returns__:
 
 
 /*
-# Random skin tone
+# Random_skin_tone
 
 __description__
 - this proc generates a valid skintone value for a supplied species index
@@ -162,7 +162,7 @@ __description__
 __Arguments__
 *species_index*: the index value to search under for this species, should normally be the *limbs_id* found in datum/species
 
-__Returns__: 
+__Returns__:
 - If *species_index* is located in the species indexed skin_tones list, returns a random value from the list at that index
 - Otherwise it will return the value found at the default index, a grayscale skintone
 - Would theoretically runtimes if *species_index* is in the global list but has no contents, this outcome shouldn't be possible with the checks for bad arguments in proc/init_sprite_accessory_subtypes
@@ -173,6 +173,23 @@ __Returns__:
 		return pick(GLOB.skin_tones_list_species[species_index])
 	else
 		return pick(GLOB.skin_tones_list_species[DEFAULT_SPECIES_INDEX])
+
+/*
+# Random_aug_color
+
+__description__
+- this proc picks a random aug color
+
+__Arguments__
+
+
+__Returns__:
+-
+*/
+proc/random_aug_color()
+	if(!GLOB.aug_colors_list.len)
+		init_sprite_color_subtypes(/datum/sprite_color/aug_color, GLOB.aug_colors_list)
+	return pick(GLOB.aug_colors_list)
 
 GLOBAL_LIST_EMPTY(species_list)
 
