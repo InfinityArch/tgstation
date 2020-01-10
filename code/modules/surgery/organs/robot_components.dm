@@ -112,7 +112,6 @@ obj/item/organ/silicon/proc/get_power_state_string()
 /obj/item/organ/silicon/battery/on_life()
 	if(update_timer < world.time)
 		update_timer = world.time + 200
-		message_admins("AAAAYYYYY")
 		update_icon()
 	. = ..()
 
@@ -126,7 +125,6 @@ obj/item/organ/silicon/battery/update_icon()
 	if(cell)
 		icon_state += "-cell"
 		if(cell.charge && cell.maxcharge)
-			message_admins("[cell.charge / cell.maxcharge]")
 			switch(cell.charge/cell.maxcharge)
 				if(0.95 to INFINITY)
 					icon_state  += "_100"

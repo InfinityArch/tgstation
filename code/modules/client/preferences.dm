@@ -323,7 +323,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				mutant_colors = TRUE
 
-			message_admins("bodyzone head status: [limb_status[BODY_ZONE_HEAD]]")
 			if((EYECOLOR in pref_species.species_traits) && !(NOEYESPRITES in pref_species.species_traits) && !(limb_status[BODY_ZONE_HEAD] in list(BODYPART_AMPUTATED, AUG_TYPE_MONITOR)))
 
 				if(!use_skintones && !mutant_colors)
@@ -1245,7 +1244,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				if("age")
 					var/new_age = input(user, "Choose your character's age:\n([pref_species.age_min]-[pref_species.age_max])", "Character Preference") as num|null
-					message_admins("new age: [new_age]")
 					if(!new_age)
 						new_age = age
 					age = CLAMP(age, pref_species.age_min, pref_species.age_max)
@@ -1458,7 +1456,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					var/new_a_color = input(user, "Choose the color of your character's augmentations:", "Character Preference")  as null|anything in GLOB.aug_colors_list
 					if(new_a_color)
 						aug_color = new_a_color
-						message_admins("aug_color is [aug_color]")
 
 				if("customize_bodyparts")
 					var/list/selection = LIMB_CUSTOMIZATION_DEFAULT_NAMELIST

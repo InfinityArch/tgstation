@@ -193,7 +193,6 @@
 /obj/item/bodypart/head/change_bodypart_status(new_limb_status, heal_limb, change_icon_to_default, aug_style_target, aug_type = AUG_TYPE_ROBOTIC, aug_color_target)
 	. = ..()
 	var/augmentation_type = get_augtype()
-	message_admins("[augmentation_type]")
 	if(!augmentation_type) //if its an organic limb
 		eye_optics = ""
 		monitor_state = ""

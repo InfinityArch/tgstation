@@ -316,7 +316,6 @@
 		heavy_burn_msg = "smoldering"
 		if(aug_color_target)
 			aug_color = aug_color_target
-			message_admins("aug color is [aug_color]")
 		else if(!aug_color)
 			aug_color = AUG_COLOR_DEFAULT
 		var/datum/sprite_accessory/augmentation/augstyle

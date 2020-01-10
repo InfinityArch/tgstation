@@ -90,7 +90,6 @@
 			static_power_update_delay = world.time + 20
 			var/datum/status_effect/incapacitating/sleep_mode/S = H.has_status_effect(STATUS_EFFECT_SLEEPMODE)
 			if(handle_power(H))
-				message_admins("handle_power has passed")
 				update_power_icons(H)
 				if(S)
 					toggle_sleep_mode(H)
@@ -469,27 +468,52 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		H.throw_alert("charge", /obj/screen/alert/nocell)
 	return charging
 
-/datum/species/ipc/proc/handle_apc_charging(mob/living/carbon/C, charging_source)
-	if(istype(charging_source, /obj/machinery/power/smes))
-		var/obj/machinery/power/smes/S = charging_source
-		message_admins("[S] is source")
+/datum/species/ipc/proc/handle_apc_charging(mob/living/carbon/C, charging_source, first_time = TRUE)
+	var/obj/item/apc_charger/CR = C.is_holding_item_of_type(/obj/item/apc_charger)
+	if(!CR)
+		return
+	var/obj/item/organ/silicon/battery/B = C.getorganslot(ORGAN_SLOT_BATTERY)
+	if(!B || !B.get_cell())
 		return
 
-	var/obj/item/stock_parts/cell/cell
+	if(istype(charging_source, /obj/machinery/power/smes))
+		return
+
+	var/obj/item/stock_parts/cell/source_cell
 	if(istype(charging_source, /obj/machinery/power/apc))
 		var/obj/machinery/power/apc/AP = charging_source
-		cell = AP.get_cell()
+		source_cell = AP.get_cell()
+		if(!source_cell)
+			to_chat(C, "<span class='robot danger'>ERROR: No cell detected in [charging_source]!</span>")
+			return
 	else if(istype(charging_source, /obj/item/stock_parts/cell))
-		cell = charging_source
+		source_cell = charging_source
 	else
 		CRASH("[C] attempted to charge with an invalid charing source [charging_source]!")
 		return
-	if(!cell)
+	if(!source_cell)
 		CRASH("Non-SMES source [charging_source] attempted to recharge [src] without passing a power cell")
 		return
-	if(cell.charge < 100)
-		to_chat(C, "<span class='robot danger'>ERROR: [charging_source == cell ? "[cell]" : "[cell] mounted in [charging_source]"] has insufficient power, unable to draw power!</span>")
+	if(source_cell.charge < source_cell.chargerate)
+		to_chat(C, "<span class='robot danger'>ERROR: [charging_source == source_cell ? "[source_cell]" : "[source_cell] mounted in [charging_source]"] has insufficient power to charge internal cell!</span>")
 		return
+	if((B.cell.charge / B.cell.maxcharge) >= 1)
+		if(first_time)
+			to_chat(C, "<span class='robot notice'>NOTICE: Internal power cell [B.cell.name] is at capacity, charging aborted!</span>")
+		else
+			to_chat(C, "<span class='robot notice'>Charge complete!</span>")
+		return
+	if(first_time)
+		to_chat(C, "<span class='notice'>You begin connecting your [CR.name] to [charging_source]...</span>")
+	if(do_after(C, 30, target = charging_source, needhand= TRUE))
+		if(first_time)
+			to_chat(C, "<span class='notice'>You connect your [CR.name] to [charging_source] and begin recharging your internal power cell...</span>")
+		var/amount = min(B.cell.maxcharge - B.cell.charge, source_cell.chargerate * 0.1)
+		if(source_cell.use(amount) && charge(C, amount))
+			handle_apc_charging(C, charging_source, FALSE) // recursion!
+
+
+
 
 /datum/species/ipc/proc/check_safe_start(mob/living/carbon/C) //whether the ipc will come back to life if critical components are replaced
 	if(C.health <=  C.crit_threshold)

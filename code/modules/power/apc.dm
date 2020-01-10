@@ -545,8 +545,7 @@
 		else if(!get_cell() || (stat & (BROKEN|MAINT)))
 			to_chat(user, "<span class='warning'>You connect [W] to [src] but nothing happens!</span>")
 		else if(!malfhack && (free_recharging || !locked|| (obj_flags & EMAGGED) || wires.is_cut(WIRE_IDSCAN) || allowed(user)))
-			SEND_SIGNAL(user, COMSIG_HANDLE_APC_RECHARGING, get_cell(), src)
-			message_admins("SUCCESS YES YES YES")
+			SEND_SIGNAL(user, COMSIG_HANDLE_APC_RECHARGING, src)
 		else
 			to_chat(user, "<span class='warning'>You connect [W] to [src] and the permission light flashes red!</span>")
 		return
