@@ -2270,4 +2270,6 @@
 	name = "Ward-Takahashi Shellguard Legs (Digitigrade)"
 	species = "wt-shellguard"
 
-//augmented tails
+
+//monitors
+/datum/sprite_accessory/monitor_state

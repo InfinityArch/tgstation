@@ -749,3 +749,27 @@
 	target.layer = old_layer
 	target.plane = old_plane
 	current_button.appearance_cache = target.appearance
+
+/datum/action/item_action/adjust_monitor_state
+	name = "Adjust monitor state"
+	desc = "Changes the face displayed on your monitor"
+	button_icon_state = "change_monitor_state"
+	check_flags = AB_CHECK_CONSCIOUS
+
+/datum/action/item_action/adjust_monitor_state/Trigger()
+	if(!IsAvailable())
+		return FALSE
+	if(SEND_SIGNAL(src, COMSIG_ACTION_TRIGGER, src) & COMPONENT_ACTION_BLOCK_TRIGGER)
+		return FALSE
+	var/obj/item/bodypart/head/HD
+	if(iscarbon(owner))
+		var/mob/living/carbon/C = owner
+		HD = C.get_bodypart(BODY_ZONE_HEAD)
+	if(!HD)
+		return
+	var/new_monitor_state = input(owner, "Choose a face for your monitor display")  as null|anything in GLOB.monitor_styles_list
+	if(new_monitor_state)
+		var/datum/sprite_accessory/monitor_state/M = GLOB.monitor_styles_list[new_monitor_state]
+		HD.monitor_state = M.icon_state
+
+

@@ -397,7 +397,8 @@
 #define COMSIG_SILICON_COMPONENT_BATTERY_UPDATE "silicon_component_battery_update"	// () sent to a carbon owner when a silicon battery assembly's cell rating changes
 #define COMSIG_SILICON_COMPONENT_POWER_UPDATE "silicon_component_power_update"		// () sent to a carbon owner whenever a silicon component (organ/silicon) successfully changes power state
 #define COMSIG_HANDLE_APC_RECHARGING "handle_apc_recharging"						// (obj/item/stock_parts/cell) sent upon attacking an installed APC, a SMES, or a power cell with a charging cable
-
+#define COMSIG_SILICON_BRAIN_INSERTED "silicon_brain_inserted"
+#define COMSIG_SILICON_BRAIN_REMOVED "silicon_brain_removed"
 
 // /datum/component/storage signals
 #define COMSIG_CONTAINS_STORAGE "is_storage"							//() - returns bool.

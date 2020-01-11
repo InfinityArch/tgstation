@@ -226,24 +226,36 @@
 	laws = new /datum/ai_laws/syndicate_override()
 	radio.on = FALSE
 
+/obj/item/law_module
+	name = "AI law module"
+	desc = "A small, nondescript chip installed in a robotic brain that carries the core operating directives of a silicon."
+	var/datum/ai_laws/laws = new()
+	var/mob/living/silicon/ai/connected_ai
+	var/antag_overrive = FALSE
 
+/obj/item/organ/brain/silicon
+	name = "positronic brain"
+	desc = "A cube of shining metal, four inches to a side and covered in shallow grooves."
+	icon = 'icons/obj/assemblies.dmi'
+	icon_state = "posibrain"
+	w_class = WEIGHT_CLASS_NORMAL
+	zone = BODY_ZONE_CHEST
+	organ_flags = ORGAN_SYNTHETIC|ORGAN_SILICON // they'll go into standby instead of dying upon brain removal
+	var/braintype = "Android"
+	var/obj/item/radio/radio = null
+	var/obj/item/law_module/law_module
+	var/speakers_enabled = TRUE
 
+/obj/item/organ/brain/silicon/Insert(mob/living/carbon/C, special = 0,no_id_transfer = FALSE)
+	. = ..()
+	SEND_SIGNAL(C, COMSIG_SILICON_BRAIN_INSERTED, src)
 
+/obj/item/organ/brain/silicon/proc/get_laws()
+	if(law_module)
+		return law_module.laws
 
-/obj/item/organ/brain/mmi
+/obj/item/organ/brain/silicon/mmi
 	name = "\improper Man-Machine Interface"
 	desc = "The Warrior's bland acronym, MMI, obscures the true horror of this monstrosity, that nevertheless has become standard-issue on Federation stations."
-	icon = 'icons/obj/assemblies.dmi'
-	icon_state = "mmi_off"
-	zone = BODY_ZONE_CHEST
-	organ_flags = ORGAN_VITAL|ORGAN_SYNTHETIC|ORGAN_SILICON
-	w_class = WEIGHT_CLASS_NORMAL
-	var/braintype = "Cyborg"
-	var/obj/item/radio/radio = null //Let's give it a radio.
-	var/mob/living/silicon/robot = null //Appears unused.
-	var/obj/mecha = null //This does not appear to be used outside of reference in mecha.dm.
-	var/obj/item/organ/brain/brain = null //The actual brain
-	//var/obj/item/organ/silicon/law_module/law_module = null //the law module
-	var/datum/ai_laws/laws = new()
-	var/force_replace_ai_name = FALSE
-	var/overrides_aicore_laws = FALSE // Whether the laws on the MMI, if any, override possible pre-existing laws loaded on the AI core.
+	braintype = "Cyborg"
+	var/obj/item/organ/brain/stored_brain

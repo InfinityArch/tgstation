@@ -71,7 +71,7 @@
 			O.forceMove(T)
 			organ_spilled = 1
 			. += X
-	if(organic_organs)	
+	if(organic_organs)
 		playsound(get_turf(C), 'sound/misc/splort.ogg', 80, TRUE)
 	if(cavity_item)
 		cavity_item.forceMove(T)
@@ -84,7 +84,7 @@
 			C.visible_message("<span class='danger'><B>[C]'s internal organs spill out onto the floor!</B></span>")
 		else
 			C.visible_message("<span class='danger'><B>[C]'s internal components spill out onto the floor!</B></span>")
-		
+
 
 
 //limb removal. The "special" argument is used for swapping a limb with a new one without the effects of losing a limb kicking in.
@@ -108,6 +108,9 @@
 			C.surgeries -= S
 			qdel(S)
 			break
+
+	for(var/datum/action/A in actions)
+		A.Remove(C)
 
 	for(var/obj/item/I in embedded_objects)
 		embedded_objects -= I
@@ -311,6 +314,9 @@
 
 	for(var/obj/item/organ/O in contents)
 		O.Insert(C)
+
+	for(var/datum/action/A in actions)
+		A.Grant(A)
 
 	update_bodypart_damage_state()
 

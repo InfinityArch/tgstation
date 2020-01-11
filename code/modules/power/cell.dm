@@ -367,3 +367,9 @@
 	var/area/A = get_area(src)
 	if(!A.lightswitch || !A.light_power)
 		charge = 0 //For naturally depowered areas, we start with no power
+
+/obj/item/stock_parts/cell/attackby(obj/item/W, mob/living/user, params)
+	if(istype(W, /obj/item/apc_charger))
+		SEND_SIGNAL(user, COMSIG_HANDLE_APC_RECHARGING, src)
+	else
+		. = ..()

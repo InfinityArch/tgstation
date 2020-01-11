@@ -81,7 +81,7 @@
 	name = "cyborg suit"
 	desc = "Suit for a cyborg costume."
 	icon_state = "death"
-	item_state = "death" 
+	item_state = "death"
 	flags_1 = CONDUCT_1
 	fire_resist = T0C+5200
 	flags_inv = HIDEGLOVES|HIDESHOES|HIDEJUMPSUIT
@@ -168,13 +168,13 @@
 	item_state = "monkeysuit"
 	body_parts_covered = CHEST|ARMS|GROIN|LEGS|FEET|HANDS
 	flags_inv = HIDEGLOVES|HIDESHOES|HIDEJUMPSUIT
-	
+
 
 /obj/item/clothing/suit/toggle/costume/owlwings
 	name = "owl cloak"
 	desc = "A soft brown cloak made of synthetic feathers. Soft to the touch, stylish, and a 2 meter wing span that will drive the ladies mad."
 	icon_state = "owl_wings"
-	item_state = "owl_wings" 
+	item_state = "owl_wings"
 	togglename = "wings"
 	body_parts_covered = ARMS|CHEST
 	actions_types = list(/datum/action/item_action/toggle_wings)
@@ -366,6 +366,8 @@
 	desc = "Makes you want to exterminate some troublesome youkai."
 	icon_state = "shrine_maiden"
 	item_state = "shrine_maiden"
+	mob_overlay_icon = 'icons/obj/clothing/suit/costume.dmi'
+	icon = 'icons/obj/clothing/suit/costume.dmi'
 	body_parts_covered = CHEST|GROIN|LEGS|ARMS
 	flags_inv = HIDEJUMPSUIT
 
@@ -698,6 +700,8 @@
 	desc = "Experimental trenchcoat specially crafted to reflect and absorb laser and disabler shots. Don't expect it to do all that much against an axe or a shotgun, however."
 	icon_state = "ablativecoat"
 	item_state = "ablativecoat"
+	icon = 'icons/obj/clothing/suit/armor.dmi'
+	mob_overlay_icon = 'icons/mob/clothing/suit/armor.dmi'
 	body_parts_covered = CHEST|GROIN|LEGS|ARMS
 	armor = list("melee" = 10, "bullet" = 10, "laser" = 60, "energy" = 60, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 100, "acid" = 100)
 	hoodtype = /obj/item/clothing/head/hooded/ablative

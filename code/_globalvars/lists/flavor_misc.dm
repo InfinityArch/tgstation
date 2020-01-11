@@ -65,6 +65,7 @@ GLOBAL_LIST_EMPTY(caps_list)
 GLOBAL_LIST_EMPTY(aug_colors_list)
 GLOBAL_LIST_EMPTY(augmentation_styles_list)
 GLOBAL_LIST_EMPTY(augmentation_optics_list)
+GLOBAL_LIST_EMPTY(monitor_styles_list)
 
 GLOBAL_LIST_INIT(ghost_forms_with_directions_list, list(
 	"ghost",

@@ -1,8 +1,4 @@
-//the innate traits that all "silicons" possess
-#define SILICON_INNATE_TRAITS list(TRAIT_SLEEPIMMUNE, TRAIT_VIRUSIMMUNE, TRAIT_NOBREATH, TRAIT_NOMETABOLISM, TRAIT_NOHUNGER, TRAIT_TOXIMMUNE)
-#define SILICON_BODYPLAN_SIMPLE "simple"
-
-//power draw for different power consumption modules 
+//power draw for different power consumption modules
 #define POWER_MODE_SLEEP  0
 #define POWER_MODE_LOW	  0.5
 #define POWER_MODE_NORMAL 1
@@ -35,31 +31,38 @@
 	verb_exclaim = "declares"
 	verb_yell = "alarms"
 	initial_language_holder = /datum/language_holder/synthetic
-	bubble_icon = "machine"
+	bubble_icon = "robot"
 	mob_biotypes = MOB_ROBOTIC
 	rad_flags = RAD_PROTECT_CONTENTS | RAD_NO_CONTAMINATE
 	hud_possible = list(ANTAG_HUD, DIAG_STAT_HUD, DIAG_HUD, DIAG_TRACK_HUD)
 	deathsound = 'sound/voice/borg_deathsound.ogg'
 	speech_span = SPAN_ROBOT
 	gib_type = /obj/effect/decal/remains/robot
-	var/power_draw = 5 //how much power this mob uses when moving in normal power mode
-	var/power_mode = NORMAL_POWER_MODE //what power mode this mob is currently in
+	var/power_load = 0
+	var/heat_load = 0
+	var/list/power_consumers = list()
+	var/safe_start = FALSE // set to true when vital internal organs are removed; note that the posibrain/mmi is not actually vital.
+	var/static_power_update_delay = 20
+	var/voluntary_sleepmode // if they're in in sleep mode of its own volition, skips power handling procs
+	var/charging // if we've recieved any recharging this update
+
+
 	var/datum/chassis/chassis = new() //the specific type of silicon, analogous to species
-	var/datum/physiology/physiology 
-	
-	var/safe_start // set to true for a newly built robot chassis, and for a bot whose MMI was properly ejected 
+	var/datum/physiology/physiology
+
+	var/safe_start // set to true for a newly built robot chassis, and for a bot whose MMI was properly ejected
 	var/maintainence_state = MAINTENANCE_STATE_LOCKED
 
-/datum/chassis 
+/datum/chassis
 	var/id //the id used in code to denote this chassis
 	var/name // in-game name of this chassis type
 	var/list/chassis_traits = list() // equivelant to species traits
 	var/list/inherent_traits = list() // mob traits associated with this chassis
 	var/body_plan = SILICON_BODYPLAN_SIMPLE // determines component/bodypart compatibility
-	
+
 	// brain and laws
 	var/obj/item/mmi = /obj/item/mmi/robobrain
-	
+
 	// charger and battery assembly
 	var/obj/item/organ/silicon/apc_power_adaptor/charger
 	var/obj/item/organ/silicon/battery_assembly/battery
@@ -68,7 +71,7 @@
 	// communications
 	var/obj/item/organ/silicon/integrated_radio/radio
 	var/obj/item/organ/tongue/vocal_processor = /obj/item/organ/tongue/robot
-	
+
 	// senses
 	var/obj/item/organ/ears/auditory_processor = /obj/item/organ/ears/silicon
 	var/obj/item/organ/eyes/sensory_package = /obj/item/organ/eyes/silicon
@@ -146,7 +149,7 @@
 				to_chat(src, "<span class='warning'>Caution: Power levels are low, automatic power conservation engaged.</span>")
 				power_mode = POWER_MODE_LOW
 	battery.cell.use(power_draw * power_mode)
-	diag_hud_set_borgcell()		
+	diag_hud_set_borgcell()
 
 /mob/living/carbon/robot/med_hud_set_health()
 	return //we use a different hud

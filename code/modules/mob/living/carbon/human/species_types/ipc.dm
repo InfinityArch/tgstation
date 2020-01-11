@@ -17,7 +17,7 @@
 	mutanttongue = /obj/item/organ/tongue/robot/silicon
 	mutanteyes = /obj/item/organ/eyes/silicon
 	mutantears = /obj/item/organ/ears/silicon
-	mutant_brain = /obj/item/organ/brain/mmi
+	mutant_brain = /obj/item/organ/brain/silicon
 	species_hud = "ipc"
 	armor = 20 //ipcs don't have crit, and go straight to dead, so they have 120 effective HP
 	speedmod = 2 // as slow as golems
@@ -45,6 +45,7 @@
 	RegisterSignal(C, COMSIG_PROCESS_BORGCHARGER_OCCUPANT, .proc/charge)
 	RegisterSignal(C, COMSIG_HANDLE_APC_RECHARGING, .proc/handle_apc_charging)
 	. = ..()
+	C.bubble_icon = "robot"
 	if(C.loc && ishuman(C))
 		var/mob/living/carbon/human/H = C
 		handle_heat_load(H.calculate_affecting_pressure(H.loc.return_air()), H, FALSE)
@@ -64,6 +65,7 @@
 	UnregisterSignal(C, COMSIG_PROCESS_BORGCHARGER_OCCUPANT)
 	C.clear_alert("overheating")
 	C.clear_alert("charge")
+	C.bubble_icon = initial(C.bubble_icon)
 	. = ..()
 	var/datum/status_effect/incapacitating/sleep_mode/S = C.has_status_effect(STATUS_EFFECT_SLEEPMODE)
 	if(S)
@@ -340,12 +342,15 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		heat_load += S.power_state * S.base_heat_load
 
 /datum/species/ipc/proc/handle_power(mob/living/carbon/C)
+	if(!C.getorganslot(ORGAN_SLOT_BRAIN)) //the brain isn't a vital organ for silicons, they just go into standby mode
+		return
 	var/obj/item/organ/silicon/battery/B = C.getorganslot(ORGAN_SLOT_BATTERY)
 	var/obj/item/organ/silicon/coolant_pump/CP = C.getorganslot(ORGAN_SLOT_COOLANT_PUMP)
-
-	if(!(B && B.cell && B.cell.charge && CP) || ((B.organ_flags|CP.organ_flags) & ORGAN_FAILING) || (min(CP.power_state, POWER_STATE_LOW) * CP.base_power_load > B.battery_rating * B.power_state))
+	if(!(B && B.cell && B.cell.charge && CP))
 		return
 	if(!B.power_state && !B.adjust_power_state(POWER_STATE_NORMAL))
+		return
+	if(((B.organ_flags|CP.organ_flags) & ORGAN_FAILING) || (min(CP.power_state, POWER_STATE_LOW) * CP.base_power_load > B.battery_rating * B.power_state))
 		return
 	if(B.cell.use(power_load))
 		return TRUE
@@ -360,36 +365,38 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	B.cell.use(B.cell.charge) //reduce the cell's charge to exactly zero
 
 /datum/species/ipc/proc/update_power_icons(mob/living/carbon/human/H)
-	if(charging)
-		charging = FALSE
-		return
 	var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
-
-	if(H.has_status_effect(STATUS_EFFECT_POWERREGEN))
+	if(!B)
+		H.clear_alert("charge")
 		return
-	if(B && B.cell)
+	if(B.cell)
+		var/charge_value = 0
 		if(B.cell.charge)
-			switch((B.cell.charge/B.cell.maxcharge))
+			switch(B.cell.charge/B.cell.maxcharge)
 				if(0.875 to INFINITY)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 8)
+					charge_value = 8
 				if(0.75 to 0.875)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 7)
+					charge_value = 7
 				if(0.625 to 0.75)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 6)
+					charge_value = 6
 				if(0.5 to 0.625)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 5)
+					charge_value = 5
 				if(0.375 to 0.5)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 4)
+					charge_value = 4
 				if(0.25 to 0.375)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 3)
+					charge_value = 3
 				if(0.125 to 0.25)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 2)
+					charge_value = 2
 				else
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 1)
+					charge_value = 1
+			if(charging > world.time)
+				charge_value += 8
+			H.throw_alert("charge", /obj/screen/alert/cell_status, charge_value)
 		else
 			H.throw_alert("charge", /obj/screen/alert/emptycell)
-	else if(B)
+	else
 		H.throw_alert("charge", /obj/screen/alert/nocell)
+
 
 /datum/species/ipc/proc/toggle_sleep_mode(mob/living/carbon/human/H, voluntary = FALSE)
 	var/datum/status_effect/incapacitating/sleep_mode/S = H.has_status_effect(STATUS_EFFECT_SLEEPMODE)
@@ -441,34 +448,15 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 /datum/species/ipc/proc/charge(mob/living/carbon/human/H, amount, repairs) // check if we need to have the right number of arguments
 	var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
+	var/power_recieved
 
 	if(B && B.cell && amount)
-		charging = B.cell.give(amount) // causes update power_icons to use recharge icon_states
-		if(B.cell.charge)
-			switch((B.cell.charge/B.cell.maxcharge))
-				if(0.875 to INFINITY)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 16)
-				if(0.75 to 0.875)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 15)
-				if(0.625 to 0.75)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 14)
-				if(0.5 to 0.625)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 13)
-				if(0.375 to 0.5)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 12)
-				if(0.25 to 0.375)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 11)
-				if(0.125 to 0.25)
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 10)
-				else
-					H.throw_alert("charge", /obj/screen/alert/cell_status, 9)
-		else
-			H.throw_alert("charge", /obj/screen/alert/emptycell)
-	else if(B)
-		H.throw_alert("charge", /obj/screen/alert/nocell)
-	return charging
+		power_recieved = B.cell.give(amount)
+		if(power_recieved)
+			charging = world.time + 30
+	return power_recieved
 
-/datum/species/ipc/proc/handle_apc_charging(mob/living/carbon/C, charging_source, first_time = TRUE)
+/datum/species/ipc/proc/handle_apc_charging(mob/living/carbon/C, charging_source, first_run = TRUE)
 	var/obj/item/apc_charger/CR = C.is_holding_item_of_type(/obj/item/apc_charger)
 	if(!CR)
 		return
@@ -498,15 +486,15 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		to_chat(C, "<span class='robot danger'>ERROR: [charging_source == source_cell ? "[source_cell]" : "[source_cell] mounted in [charging_source]"] has insufficient power to charge internal cell!</span>")
 		return
 	if((B.cell.charge / B.cell.maxcharge) >= 1)
-		if(first_time)
+		if(first_run)
 			to_chat(C, "<span class='robot notice'>NOTICE: Internal power cell [B.cell.name] is at capacity, charging aborted!</span>")
 		else
 			to_chat(C, "<span class='robot notice'>Charge complete!</span>")
 		return
-	if(first_time)
+	if(first_run)
 		to_chat(C, "<span class='notice'>You begin connecting your [CR.name] to [charging_source]...</span>")
 	if(do_after(C, 30, target = charging_source, needhand= TRUE))
-		if(first_time)
+		if(first_run)
 			to_chat(C, "<span class='notice'>You connect your [CR.name] to [charging_source] and begin recharging your internal power cell...</span>")
 		var/amount = min(B.cell.maxcharge - B.cell.charge, source_cell.chargerate * 0.1)
 		if(source_cell.use(amount) && charge(C, amount))

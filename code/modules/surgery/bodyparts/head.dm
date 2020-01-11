@@ -192,13 +192,26 @@
 
 /obj/item/bodypart/head/change_bodypart_status(new_limb_status, heal_limb, change_icon_to_default, aug_style_target, aug_type = AUG_TYPE_ROBOTIC, aug_color_target)
 	. = ..()
+	var/datum/action/item_action/adjust_monitor_state/MS
+	if(actions && actions.len)
+		MS = actions.Find(/datum/action/item_action/adjust_monitor_state)
 	var/augmentation_type = get_augtype()
 	if(!augmentation_type) //if its an organic limb
 		eye_optics = ""
 		monitor_state = ""
+		if(MS)
+			qdel(MS)
 		return
-	if(augmentation_type !=  AUG_TYPE_MONITOR)
+	else if(augmentation_type !=  AUG_TYPE_MONITOR)
 		monitor_state = ""
+		if(MS)
+			qdel(MS)
+	else
+		if(!MS)
+			MS = new /datum/action/item_action/adjust_monitor_state(src)
+		if(owner)
+			MS.Grant(owner)
+
 	var/datum/sprite_accessory/augmentation/augmentation_style = GLOB.augmentation_styles_list[aug_id2augstyle(aug_id)]
 	if(LAZYLEN(augmentation_style.optics_types) && augmentation_type in augmentation_style.optics_types)
 		eye_optics = "[aug_id]_[augmentation_type]"
@@ -265,7 +278,7 @@
 			var/datum/sprite_accessory/optics/O = GLOB.augmentation_optics_list[eye_optics]
 			if(O)//InfinityArch: TODO- actually make optics datums for the various robotic heads with alternate eye styles
 				eyes_overlay = image('icons/mob/augmentation/aug_optics.dmi', O.icon_state, -BODY_LAYER, SOUTH)
-				eyes_overlay.color = AUG_OPTICS_DEFAULT_COLOR
+				eyes_overlay.color = get_augtype() == AUG_TYPE_MONITOR ? AUG_OPTICS_DEFAULT_COLOR : eyes.eye_color
 				. += eyes_overlay
 		else if(eyes)
 			eyes_overlay = image('icons/mob/human_face.dmi', eyes.eye_icon_state, -BODY_LAYER, SOUTH)
@@ -274,6 +287,9 @@
 			. += eyes_overlay
 		else if(is_organic_limb())
 			eyes_overlay = image('icons/mob/human_face.dmi', "eyes_missing", -BODY_LAYER, SOUTH)
+			. += eyes_overlay
+		else
+			eyes_overlay = image('icons/mob/human_face.dmi', "eyes_missing_robotic", -BODY_LAYER, SOUTH)
 			. += eyes_overlay
 
 /obj/item/bodypart/head/monkey
