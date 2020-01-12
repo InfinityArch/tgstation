@@ -2272,4 +2272,15 @@
 
 
 //monitors
-/datum/sprite_accessory/monitor_state
+/datum/sprite_accessory/monitor_state/off
+	name = "Off"
+	icon_state = ""
+	icon = 'icons/mob/augmentation/aug_monitor_faces.dmi'
+
+/datum/sprite_accessory/monitor_state/lumi_eyes
+	name = "Luminescent eyes"
+	icon_state = "lumi_eyes"
+
+/datum/sprite_accessory/monitor_state/lumi_waiting
+	name = "waiting"
+	icon_state = "lumi_waiting"

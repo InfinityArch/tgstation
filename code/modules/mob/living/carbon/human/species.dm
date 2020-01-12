@@ -553,7 +553,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			else if(HD.eye_optics)
 				eye_overlay = mutable_appearance('icons/mob/augmentation/aug_optics.dmi', "[HD.aug_id]_[HD.get_augtype()]", -BODY_LAYER)
 				if(HD.bodypart_draw_flags & BODYPART_DRAW_MONITOR)
-					eye_overlay.icon_state = HD.monitor_state ? "[eye_overlay.icon_state]_[HD.monitor_state]" : eye_overlay.icon_state
+					eye_overlay.icon_state = HD.monitor_state ? "[HD.aug_id]_[HD.monitor_state]" : eye_overlay.icon_state
 					if(!HD.monitor_state)
 						eye_overlay.color = AUG_OPTICS_DEFAULT_COLOR
 				else

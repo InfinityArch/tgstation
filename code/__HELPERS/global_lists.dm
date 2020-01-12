@@ -14,6 +14,7 @@
 	//augmentation
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/augmentation, GLOB.augmentation_styles_list)
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/optics, GLOB.augmentation_optics_list)
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/monitor_state, GLOB.monitor_styles_list)
 	init_sprite_color_subtypes(/datum/sprite_color/aug_color, GLOB.aug_colors_list)
 	//underwear
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/underwear, GLOB.underwear_list, GLOB.underwear_m, GLOB.underwear_f)
@@ -59,7 +60,7 @@
 
 	// Keybindings
 	init_keybindings()
-		
+
 	GLOB.emote_list = init_emote_list()
 
 	init_subtypes(/datum/crafting_recipe, GLOB.crafting_recipes)

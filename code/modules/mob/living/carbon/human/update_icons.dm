@@ -595,11 +595,19 @@ generate/load female uniform sprites matching all previously decided variables
 		if(BP.is_organic_limb())
 			. += "-organic"
 		else
-			. += "-robotic-[BP.aug_color]-"
+			. += "-robotic-[BP.aug_id]-[BP.aug_color]-"
+			if(BP.body_zone == BODY_ZONE_HEAD)
+				var/obj/item/bodypart/head/HD = X
+				if(HD.eye_optics)
+					. += "-[HD.eye_optics]-"
+				if(HD.monitor_state)
+					. += "-[HD.monitor_state]-"
+
 		if(BP.use_digitigrade)
 			. += "-digitigrade[BP.use_digitigrade]"
 		if(BP.dmg_overlay_type)
 			. += "-[BP.dmg_overlay_type]"
+
 
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "-husk"

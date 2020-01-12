@@ -275,7 +275,7 @@
 		if(BP.is_organic_limb())
 			. += "-organic"
 		else
-			. += "-robotic-[BP.aug_color]-"
+			. += "-robotic-[BP.aug_color]-[BP.aug_id]-"
 
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "-husk"

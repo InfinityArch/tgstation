@@ -762,14 +762,17 @@
 	if(SEND_SIGNAL(src, COMSIG_ACTION_TRIGGER, src) & COMPONENT_ACTION_BLOCK_TRIGGER)
 		return FALSE
 	var/obj/item/bodypart/head/HD
+	message_admins("owner is [owner]")
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		HD = C.get_bodypart(BODY_ZONE_HEAD)
 	if(!HD)
 		return
-	var/new_monitor_state = input(owner, "Choose a face for your monitor display")  as null|anything in GLOB.monitor_styles_list
-	if(new_monitor_state)
+	var/new_monitor_state
+	new_monitor_state = input(owner, "Choose a face for your monitor display")  as null|anything in GLOB.monitor_styles_list
+	if(new_monitor_state && HD && HD.owner)
 		var/datum/sprite_accessory/monitor_state/M = GLOB.monitor_styles_list[new_monitor_state]
-		HD.monitor_state = M.icon_state
+		HD.monitor_state = M ? M.icon_state : ""
+		HD.owner.update_body()
 
 
