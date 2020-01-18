@@ -9,6 +9,7 @@
 	var/message_alien = "" //Message displayed if the user is a grown alien
 	var/message_larva = "" //Message displayed if the user is an alien larva
 	var/message_robot = "" //Message displayed if the user is a robot
+	var/message_robot_humanoid = "" // Message displayed for human mobs with the MOB_ROBOTIC biotype
 	var/message_AI = "" //Message displayed if the user is an AI
 	var/message_monkey = "" //Message displayed if the user is a monkey
 	var/message_simple = "" //Message to display if the user is a simple_animal
@@ -111,6 +112,10 @@
 		. = message_larva
 	else if(iscyborg(user) && message_robot)
 		. = message_robot
+	else if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		if((H.mob_biotypes & MOB_ROBOTIC) && message_robot_humanoid)
+			. = message_robot_humanoid
 	else if(isAI(user) && message_AI)
 		. = message_AI
 	else if(ismonkey(user) && message_monkey)

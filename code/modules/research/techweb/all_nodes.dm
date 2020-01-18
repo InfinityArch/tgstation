@@ -28,6 +28,13 @@
 	design_ids = list("robocontrol", "sflash", "borg_suit", "borg_head", "borg_chest", "borg_r_arm", "borg_l_arm", "borg_r_leg", "borg_l_leg", "borgupload",
 	"cyborgrecharger", "borg_upgrade_restart", "borg_upgrade_rename")
 
+/datum/techweb_node/ipc
+	id = "ipc"
+	starting_node = TRUE
+	display_name = "Integrated Robotics Chassis Construction"
+	description = "Sapient humanoid robots. Tools and programmable laws not included."
+	design_ids = list("ipc_microbattery", "ipc_coolant_pump", "borg_eyes", "borg_ears", "borg_tongue", "apc_charger")
+
 /datum/techweb_node/mech
 	id = "mecha"
 	starting_node = TRUE
@@ -307,9 +314,9 @@
 /datum/techweb_node/cyborg_upg_util
 	id = "cyborg_upg_util"
 	display_name = "Cyborg Upgrades: Utility"
-	description = "Utility upgrades for cyborgs."
+	description = "Utility upgrades for cyborgs and IRCs."
 	prereq_ids = list("engineering")
-	design_ids = list("borg_upgrade_holding", "borg_upgrade_lavaproof", "borg_upgrade_thrusters", "borg_upgrade_selfrepair", "borg_upgrade_expand")
+	design_ids = list("borg_upgrade_holding", "borg_upgrade_lavaproof", "borg_upgrade_thrusters", "borg_upgrade_selfrepair", "borg_upgrade_expand", "borg_upgrade_vtec", "ipc_coolant_pump_radiative")
 	research_costs = list(TECHWEB_POINT_TYPE_GENERIC = 2000)
 	export_price = 5000
 

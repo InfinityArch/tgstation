@@ -141,19 +141,22 @@ obj/item/organ/silicon/battery/update_icon()
 	else
 		icon_state = icon_base
 
-/obj/item/organ/silicon/battery/proc/insert_cell(obj/item/stock_parts/cell/C, mob/living/carbon/user)
+/obj/item/organ/silicon/battery/proc/insert_cell(obj/item/stock_parts/cell/C, mob/living/carbon/user, silent = FALSE)
+	if(user)
+		user.temporarilyRemoveItemFromInventory(C, TRUE)
 	C.forceMove(src)
 	cell = C
-	if(user)
+	if(user && !silent)
 		to_chat(user, "<span class='notice'>You insert the [C] into the [src].</span>")
 	update_icon()
 	update_battery_rating()
 
-/obj/item/organ/silicon/battery/proc/remove_cell(mob/living/carbon/user)
+/obj/item/organ/silicon/battery/proc/remove_cell(mob/living/carbon/user, silent = FALSE)
 	var/obj/item/stock_parts/cell/C = cell
 	if(user)
 		user.put_in_hands(C)
-		to_chat(user, "<span class='notice'>You remove [C] from [src].</span>")
+		if(!silent)
+			to_chat(user, "<span class='notice'>You remove [C] from [src].</span>")
 	else if(owner)
 		C.forceMove(owner.drop_location())
 	else
@@ -162,23 +165,26 @@ obj/item/organ/silicon/battery/update_icon()
 	update_icon()
 	update_battery_rating()
 
-/obj/item/organ/silicon/battery/proc/insert_capacitor(obj/item/stock_parts/capacitor/C, mob/living/carbon/user)
+/obj/item/organ/silicon/battery/proc/insert_capacitor(obj/item/stock_parts/capacitor/C, mob/living/carbon/user, silent = FALSE)
 	if(compact)
-		if(user)
+		if(user && !silent)
 			to_chat(user, "<span class='caution'>[C] won't fit into [src]!</span>")
 		return
+	if(user)
+		user.temporarilyRemoveItemFromInventory(C, TRUE)
 	C.forceMove(src)
 	capacitor = C
-	if(user)
+	if(user && !silent)
 		to_chat(user, "<span class='notice'>You insert [C] into [src].</span>")
 	update_icon()
 	update_battery_rating()
 
-/obj/item/organ/silicon/battery/proc/remove_capacitor(mob/living/carbon/user)
+/obj/item/organ/silicon/battery/proc/remove_capacitor(mob/living/carbon/user, silent = FALSE)
 	var/obj/item/stock_parts/capacitor/C = capacitor
 	if(user)
 		user.put_in_hands(C)
-		to_chat(user, "<span class='notice'>You remove [C] from [src].</span>")
+		if(!silent)
+			to_chat(user, "<span class='notice'>You remove [C] from [src].</span>")
 	else if(owner)
 		C.forceMove(owner.drop_location())
 	else
@@ -219,7 +225,7 @@ obj/item/organ/silicon/battery/update_icon()
 /obj/item/organ/silicon/battery/get_cell()
 	return cell
 
-/obj/item/organ/silicon/battery/ipc
+/obj/item/organ/silicon/battery/ipc //only used to give ipcs a starting cell
 	starting_cell = /obj/item/stock_parts/cell/upgraded
 
 
@@ -313,7 +319,7 @@ This radiative cooler is inefficient and consumes a lot of power but will contin
 	base_heat_load = 15
 	base_power_load = 15
 	damage_failure_probability = 0.01 // mean time to failure of 100 ticks, or 20 ticks if heavily damaged
-	actions_types = list(/datum/action/item_action/organ_action/toggle)
+	actions_types = list(/datum/action/item_action/organ_action/silicon/toggle)
 
 /obj/item/organ/silicon/upgrade/vtec/adjust_power_state(new_power_state = POWER_STATE_OFF)
 	. = ..()
@@ -324,7 +330,7 @@ This radiative cooler is inefficient and consumes a lot of power but will contin
 			owner.remove_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC)
 			owner.clear_alert("vtec")
 		if(POWER_STATE_LOW)
-			owner.add_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC, override = TRUE, multiplicative_slowdown = -1.5)
+			owner.add_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC, override = TRUE, multiplicative_slowdown = -1)
 			owner.throw_alert("vtec", /obj/screen/alert/vtec, 1)
 		if(POWER_STATE_NORMAL)
 			owner.add_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC, override = TRUE, multiplicative_slowdown = -2)
@@ -399,7 +405,7 @@ obj/item/organ/silicon/upgrade/vtec/proc/toggle(silent = FALSE)
 	name = "cyborg arm module"
 	desc = "A cyborg arm module."
 	var/obj/item/holder = null
-	actions_types = list(/datum/action/item_action/organ_action/toggle)
+	actions_types = list(/datum/action/item_action/organ_action/silicon/toggle)
 	var/list/items_list = list()
 
 /obj/item/organ/silicon/module/arm/Initialize()
@@ -539,7 +545,7 @@ obj/item/organ/silicon/upgrade/vtec/proc/toggle(silent = FALSE)
 	name = "APC-compliant recharge port"
 	icon_state = "resupply_port"
 	serial_number = "MR-C-APC"
-	desc = "An arm mounted port with a retractable cable to enable recharges on the go"
+	desc = "An arm mounted port with a retractable cable for recharges on the go"
 	compact = TRUE
 	w_class = WEIGHT_CLASS_SMALL
 	contents = newlist(/obj/item/apc_charger/cyborg)

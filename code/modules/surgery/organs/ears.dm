@@ -176,9 +176,9 @@
 	damage += 40/severity
 
 /obj/item/organ/ears/silicon
-	name = "auditory reciever module"
+	name = "auditory receiver module"
 	icon_state = "ears-silicon"
-	desc = "An audio reciever module used in machines and androids"
+	desc = "An audio receiver module used in machines and androids"
 	status = ORGAN_ROBOTIC
 	organ_flags = ORGAN_SYNTHETIC | ORGAN_SILICON
 

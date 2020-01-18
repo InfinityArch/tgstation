@@ -33,15 +33,17 @@
 	//Eye Colouring
 	var/eye_optics = ""
 	var/monitor_state = ""
+	var/datum/action/item_action/adjust_monitor_state/monitor_action
 
 	var/lip_style = null
 	var/lip_color = "white"
 
 	//mutant bodyparts
-	var/horns = ""
-	var/facial_markings = ""
-	var/snout = ""
-	var/frills = ""
+	var/datum/sprite_accessory/horns/horns = ""
+	var/datum/sprite_accessory/facial_markings/facial_markings = ""
+	var/datum/sprite_accessory/snout = ""
+	var/datum/sprite_accessory/frills = ""
+	var/datum/sprite_accessory/ears = ""
 
 /obj/item/bodypart/head/Destroy()
 	QDEL_NULL(brainmob) //order is sensitive, see warning in handle_atom_del() below
@@ -192,25 +194,22 @@
 
 /obj/item/bodypart/head/change_bodypart_status(new_limb_status, heal_limb, change_icon_to_default, aug_style_target, aug_type = AUG_TYPE_ROBOTIC, aug_color_target)
 	. = ..()
-	var/datum/action/item_action/adjust_monitor_state/MS
-	if(actions && actions.len)
-		MS = actions.Find(/datum/action/item_action/adjust_monitor_state)
 	var/augmentation_type = get_augtype()
 	if(!augmentation_type) //if its an organic limb
 		eye_optics = ""
 		monitor_state = ""
-		if(MS)
-			qdel(MS)
+		if(monitor_action)
+			QDEL_NULL(monitor_action)
 		return
 	else if(augmentation_type !=  AUG_TYPE_MONITOR)
 		monitor_state = ""
-		if(MS)
-			qdel(MS)
+		if(monitor_action)
+			QDEL_NULL(monitor_action)
 	else
-		if(!MS)
-			MS = new /datum/action/item_action/adjust_monitor_state(src)
+		if(!monitor_action)
+			monitor_action = new(src)
 		if(owner)
-			MS.Grant(owner)
+			monitor_action.Grant(owner)
 
 	var/datum/sprite_accessory/augmentation/augmentation_style = GLOB.augmentation_styles_list[aug_id2augstyle(aug_id)]
 	if(LAZYLEN(augmentation_style.optics_types) && augmentation_type in augmentation_style.optics_types)

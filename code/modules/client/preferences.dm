@@ -367,14 +367,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					dat += "<br><span style='border: 1px solid #161616; background-color: #[facial_hair_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=facial;task=input'>Change</a>"
 					dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_FACIAL_HAIR_COLOR]'>[(randomise[RANDOM_FACIAL_HAIR_COLOR]) ? "Lock" : "Unlock"]</A>"
 
-			if(LIPS in pref_species.species_traits)
-				if(limb_status[BODY_ZONE_HEAD] in list(BODYPART_ORGANIC, AUG_TYPE_ANDROID))
-					dat += "<h3>lip color</h3>"
-
-					dat += "<span style='border: 1px solid #161616; background-color: #[lip_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=lip_color;task=input'>Change</a><BR>"
-					if(lip_style)
-						dat += "<a href='?_src_=prefs;preference=remove_lipstick;task=input'>remove lipstick</a><BR>"
-
+			if((LIPS in pref_species.species_traits) && (limb_status[BODY_ZONE_HEAD] in list(BODYPART_ORGANIC, AUG_TYPE_ANDROID)))
+				dat += "<h3>lip color</h3>"
+				dat += "<span style='border: 1px solid #161616; background-color: #[lip_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=lip_color;task=input'>Change</a><BR>"
+				if(lip_style)
+					dat += "<a href='?_src_=prefs;preference=remove_lipstick;task=input'>remove lipstick</a><BR>"
 			else
 				lip_style = null
 				lip_color = "FFFFFF"

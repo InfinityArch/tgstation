@@ -770,6 +770,8 @@
 	desc = "Wearing this makes you feel more attuned with the nature of the universe... as well as a bit more irresponsible. "
 	icon_state = "mysticrobe"
 	item_state = "mysticrobe"
+	icon = 'icons/obj/clothing/suit/miscellaneous.dmi'
+	mob_overlay_icon = 'icons/mob/clothing/suit/miscellaneous.dmi'
 	body_parts_covered = CHEST|GROIN|LEGS|ARMS
 	allowed = list(/obj/item/spellbook, /obj/item/storage/book/bible)
 	flags_inv = HIDEJUMPSUIT

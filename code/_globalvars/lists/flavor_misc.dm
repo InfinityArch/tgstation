@@ -67,6 +67,14 @@ GLOBAL_LIST_EMPTY(augmentation_styles_list)
 GLOBAL_LIST_EMPTY(augmentation_optics_list)
 GLOBAL_LIST_EMPTY(monitor_styles_list)
 
+GLOBAL_LIST_INIT(head_mut_parts_typecache, typecacheof(list(
+	/datum/sprite_accessory/snouts,
+	/datum/sprite_accessory/horns,
+	/datum/sprite_accessory/frills,
+	/datum/sprite_accessory/ears,
+	/datum/sprite_accessory/facial_markings
+)))
+
 GLOBAL_LIST_INIT(ghost_forms_with_directions_list, list(
 	"ghost",
 	"ghostian",

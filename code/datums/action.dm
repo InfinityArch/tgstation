@@ -1,6 +1,7 @@
 #define AB_CHECK_RESTRAINED 1
 #define AB_CHECK_STUN 2
 #define AB_CHECK_LYING 4
+#define AB_CHECK_SLEEPMODE 6 // used for certain silicon actions
 #define AB_CHECK_CONSCIOUS 8
 
 /datum/action
@@ -108,6 +109,10 @@
 				return FALSE
 	if(check_flags & AB_CHECK_CONSCIOUS)
 		if(owner.stat)
+			return FALSE
+	if(check_flags & AB_CHECK_SLEEPMODE)
+		var/mob/living/L = owner
+		if(L.has_status_effect(STATUS_EFFECT_SLEEPMODE))
 			return FALSE
 	return TRUE
 
@@ -439,6 +444,13 @@
 
 /datum/action/item_action/organ_action
 	check_flags = AB_CHECK_CONSCIOUS
+
+/datum/action/item_action/organ_action/silicon
+	check_flags = AB_CHECK_SLEEPMODE|AB_CHECK_CONSCIOUS
+
+/datum/action/item_action/organ_action/silicon/toggle/New(Target)
+	..()
+	name = "Toggle [target.name]"
 
 /datum/action/item_action/organ_action/IsAvailable()
 	var/obj/item/organ/I = target
@@ -776,3 +788,19 @@
 		HD.owner.update_body()
 
 
+/datum/action/innate/toggle_sleep_mode
+	name = "Toggle Sleep Mode"
+	icon_icon = 'icons/obj/meteor.dmi'
+	button_icon_state = "flaming"
+	background_icon_state = ACTION_BUTTON_DEFAULT_BACKGROUND
+
+/datum/action/innate/toggle_sleep_mode/Trigger()
+	if(!IsAvailable())
+		return
+	if(SEND_SIGNAL(src, COMSIG_ACTION_TRIGGER, src) & COMPONENT_ACTION_BLOCK_TRIGGER)
+		return
+	if(owner)
+		SEND_SIGNAL(owner, COMSIG_SILICON_TOGGLE_SLEEP_MODE, owner, TRUE)
+		if(iscarbon(owner))
+			var/mob/living/carbon/C = owner
+			C.update_mobility()

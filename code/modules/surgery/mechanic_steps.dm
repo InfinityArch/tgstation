@@ -89,3 +89,23 @@
 	display_results(user, target, "<span class='notice'>You begin to open the hatch holders in [target]'s [parse_zone(target_zone)]...</span>",
 		"<span class='notice'>[user] begins to open the hatch holders in [target]'s [parse_zone(target_zone)].</span>",
 		"<span class='notice'>[user] begins to open the hatch holders in [target]'s [parse_zone(target_zone)].</span>")
+
+/datum/surgery_step/open_hatch/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, default_display_results)
+	//if(target_zone == BODY_ZONE_CHEST)
+		//SEND_SIGNAL(target, COMSIG_SILICON_OPEN_HATCH)
+	display_results(user, target, "<span class='notice'>You open the maintenance hatch in [target]'s [parse_zone(target_zone)]...</span>",
+		"<span class='notice'>[user] opens the maintenance hatch in [target]'s [parse_zone(target_zone)].</span>",
+		"<span class='notice'>[user] opens the maintenance hatch in [target]'s [parse_zone(target_zone)].</span>")
+	user?.mind.adjust_experience(/datum/skill/medical, round(experience_given))
+	return TRUE
+
+//disconnect electronics
+/datum/surgery_step/disconnect_electronics
+	name = "disconnect electronics"
+	implements = list(TOOL_WIRECUTTER = 100, TOOL_MULTITOOL = 70, TOOL_SCALPEL = 10)
+	time = 24
+
+/datum/surgery_step/disconnect_electronics/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	display_results(user, target, "<span class='notice'>You begin to disconnect wires in [target]'s [parse_zone(target_zone)]...</span>",
+			"<span class='notice'>[user] begins to disconnect wires in [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] begins to disconnect wires in [target]'s [parse_zone(target_zone)].</span>")

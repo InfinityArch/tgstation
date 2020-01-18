@@ -8,6 +8,11 @@
 	construction_time = 500
 	category = list("Cyborg")
 
+//datum/design/borg_suit/ipc
+	//name = "Integrated Robotic Chassis"
+	//id = "borg_irc"
+	//build_path = /obj/item/robot_suit/ipc
+
 /datum/design/borg_chest
 	name = "Cyborg Torso"
 	id = "borg_chest"
@@ -60,6 +65,69 @@
 	build_path = /obj/item/bodypart/r_leg/robot
 	materials = list(/datum/material/iron=10000)
 	construction_time = 200
+	category = list("Cyborg")
+
+/datum/design/compact_microbattery
+	name = "Microbattery Assembly (Compact)"
+	id = "ipc_microbattery"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/silicon/battery
+	materials = list(/datum/material/iron = 800, /datum/material/glass = 600)
+	construction_time = 120
+	category = list("Cyborg")
+
+/datum/design/compact_cooling_pump
+	name = "Convective Cooling System (Compact)"
+	id = "ipc_coolant_pump"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/silicon/coolant_pump
+	materials = list(/datum/material/iron = 800, /datum/material/glass = 600)
+	construction_time = 120
+	category = list("Cyborg")
+
+/datum/design/compact_radiative_cooling_pump
+	name = "Radiative Cooling System (Compact)"
+	id = "ipc_coolant_pump_radiative"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/silicon/coolant_pump/radiator
+	materials = list(/datum/material/iron = 800, /datum/material/titanium = 600, /datum/material/silver = 400, /datum/material/gold = 400)
+	construction_time = 120
+	category = list("Cyborg")
+
+/datum/design/robot_optics
+	name = "Optical Sensory Package"
+	id = "borg_eyes"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/eyes/silicon
+	materials = list(/datum/material/iron = 400, /datum/material/glass = 600)
+	construction_time = 120
+	category = list("Cyborg")
+
+/datum/design/robot_ears
+	name = "Auditory Receiver Unit"
+	id = "borg_ears"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/ears/silicon
+	materials = list(/datum/material/iron = 600, /datum/material/glass = 400)
+	construction_time = 120
+	category = list("Cyborg")
+
+/datum/design/robot_tongue
+	name = "Robotic Audio Encoder"
+	id = "borg_tongue"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/tongue/robot/silicon
+	materials = list(/datum/material/iron = 500, /datum/material/glass = 500)
+	construction_time = 120
+	category = list("Cyborg")
+
+/datum/design/apc_charger
+	name = "APC Compliant Charging Cable"
+	id = "apc_charger"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/silicon/module/arm/apc_charger
+	materials = list(/datum/material/iron = 500, /datum/material/glass = 500)
+	construction_time = 120
 	category = list("Cyborg")
 
 //Ripley
@@ -570,6 +638,8 @@
 //////////////Borg Upgrades//////////////
 /////////////////////////////////////////
 
+
+
 /datum/design/borg_upgrade_rename
 	name = "Cyborg Upgrade (Rename Board)"
 	id = "borg_upgrade_rename"
@@ -768,6 +838,15 @@
 	construction_time = 120
 	category = list("Cyborg Upgrade Modules")
 
+/datum/design/borg_upgrade_vtec
+	name = "V.T.E.C. Enhanced Mobility System"
+	id = "borg_upgrade_vtec"
+	build_type = MECHFAB
+	build_path = /obj/item/organ/silicon/upgrade/vtec
+	materials = list(/datum/material/iron = 4000, /datum/material/titanium = 2000, /datum/material/gold = 1000, /datum/material/diamond = 1000)
+	construction_time = 120
+	category = list("Cyborg Upgrade Modules")
+
 //Misc
 /datum/design/mecha_tracking
 	name = "Exosuit Tracking Beacon"
@@ -796,3 +875,5 @@
 	construction_time = 100
 	build_path = /obj/item/assembly/flash/handheld
 	category = list("Misc")
+
+

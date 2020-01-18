@@ -75,6 +75,8 @@
 #define BODYPART_DRAW_ANDROID_SKELETAL	1 << 4 // causes android parts to render in their flesh stripped state
 
 //augmentation customization defaults
+#define AUGMENTATION_INDEX			"augmentation"
+#define AUG_COLOR					"aug_color"
 #define AUG_COLOR_DEFAULT			"Gunmetal"
 #define AUG_STYLE_DEFAULT			"Nanotrasen Robotics Division"
 #define AUG_OPTICS_DEFAULT_COLOR	"#013220" //color hex for optics that are currently off

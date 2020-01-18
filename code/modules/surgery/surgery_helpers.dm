@@ -9,6 +9,7 @@
 	if(iscarbon(M))
 		C = M
 		affecting = C.get_bodypart(check_zone(selected_zone))
+		message_admins("affecting is [affecting]")
 
 	var/datum/surgery/current_surgery
 
@@ -26,15 +27,15 @@
 			if(affecting)
 				if(!S.requires_bodypart)
 					continue
-				if(S.requires_bodypart_type && !affecting.status == S.requires_bodypart_type)
-					continue
-				if(S.required_biotypes && !(S.required_biotypes & C.mob_biotypes))
+				if(S.requires_bodypart_type && !(affecting.status == S.requires_bodypart_type))
 					continue
 				if(S.requires_real_bodypart && affecting.is_pseudopart)
 					continue
 			else if(C && S.requires_bodypart) //mob with no limb in surgery zone when we need a limb
 				continue
 			if(S.lying_required && (M.mobility_flags & MOBILITY_STAND))
+				continue
+			if(S.required_biotypes && !(S.required_biotypes & C.mob_biotypes))
 				continue
 			if(!S.can_start(user, M))
 				continue

@@ -48,6 +48,7 @@
 						new_facial_hairstyle = input(user, "Select a facial hairstyle", "Grooming")  as null|anything in GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_list_species[H.dna.species.hair_id])
 			if(new_facial_hairstyle)
 				H.facial_hairstyle = new_facial_hairstyle
+				H.regenerate_icons()
 
 		//handle normal hair
 		if(HAIR in H.dna.species.species_traits)
@@ -68,6 +69,7 @@
 						new_hairstyle = input(user, "Select a hairstyle", "Grooming")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_list_species[H.dna.species.hair_id])
 			if(new_hairstyle)
 				H.hairstyle = new_hairstyle
+				H.regenerate_icons()
 
 
 /obj/structure/mirror/examine_status(mob/user)
@@ -169,7 +171,7 @@
 		choose_from += "tail"
 	if(("snout" in H.dna.species.mutant_bodyparts) && (length(GLOB.snouts_list_species[H.dna.species.features_id]) > 1))
 		choose_from += "snout"
-	if(("horns" in H.dna.species.mutant_bodyparts) && (length(GLOB.horns_list_species[H.dna.species.features_id] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX]) > 1))	
+	if(("horns" in H.dna.species.mutant_bodyparts) && (length(GLOB.horns_list_species[H.dna.species.features_id] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX]) > 1))
 		choose_from += "horns"
 	if(("frills" in H.dna.species.mutant_bodyparts) && (length(GLOB.frills_list_species[H.dna.species.features_id] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX]) > 1))
 		choose_from += "frills"
@@ -258,7 +260,7 @@
 					H.dna.update_ui_block(DNA_FACIAL_HAIRSTYLE_BLOCK)
 				H.dna.update_ui_block(DNA_GENDER_BLOCK)
 
-				
+
 				H.update_body()
 				H.update_mutations_overlay() //(hulk male/female)
 
@@ -337,7 +339,7 @@
 			var/new_body_markings
 			new_body_markings = input(user, "Choose your body markings:", "Character Preference") as null|anything in GLOB.body_markings_list_species[H.dna.species.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX]
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-				return			
+				return
 			if(new_body_markings)
 				H.dna.features["body_markings"] = new_body_markings
 
@@ -345,7 +347,7 @@
 			var/new_ears
 			new_ears = input(user, "Choose your ears:", "Character Preference") as null|anything in GLOB.ears_list_species[H.dna.species.features_id]
 			if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
-				return		
+				return
 			if(new_ears)
 				H.dna.features["ears"] = new_ears
 

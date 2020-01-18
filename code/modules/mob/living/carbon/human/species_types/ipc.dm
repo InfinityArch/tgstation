@@ -34,6 +34,7 @@
 	var/list/power_consumers = list()
 	var/safe_start = FALSE // set to true when vital internal organs are removed; note that the posibrain/mmi is not actually vital.
 	var/static_power_update_delay = 20
+	var/datum/action/innate/toggle_sleep_mode/sleep_mode_toggle
 	var/voluntary_sleepmode // if they're in in sleep mode of its own volition, skips power handling procs
 	var/charging // if we've recieved any recharging this update
 
@@ -44,8 +45,15 @@
 	RegisterSignal(C, COMSIG_SILICON_COMPONENT_POWER_UPDATE, .proc/update_power)
 	RegisterSignal(C, COMSIG_PROCESS_BORGCHARGER_OCCUPANT, .proc/charge)
 	RegisterSignal(C, COMSIG_HANDLE_APC_RECHARGING, .proc/handle_apc_charging)
+	RegisterSignal(C, COMSIG_SILICON_TOGGLE_SLEEP_MODE, .proc/toggle_sleep_mode)
 	. = ..()
 	C.bubble_icon = "robot"
+	sleep_mode_toggle = new
+	sleep_mode_toggle.Grant(C)
+	//for(var/datum/atom_hud/data/human/medical/medi_hud in GLOB.huds)
+		//hud.remove_from_hud(C)
+	//for(var/datum/atom_hud/data/diagnostic/diag_hud in GLOB.huds)
+		//hud.add_to_hud(C)
 	if(C.loc && ishuman(C))
 		var/mob/living/carbon/human/H = C
 		handle_heat_load(H.calculate_affecting_pressure(H.loc.return_air()), H, FALSE)
@@ -62,10 +70,14 @@
 	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_ADDED)
 	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_REMOVED)
 	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_POWER_UPDATE)
+	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_BATTERY_UPDATE)
 	UnregisterSignal(C, COMSIG_PROCESS_BORGCHARGER_OCCUPANT)
+	UnregisterSignal(C, COMSIG_HANDLE_APC_RECHARGING)
+	UnregisterSignal(C, COMSIG_SILICON_TOGGLE_SLEEP_MODE)
 	C.clear_alert("overheating")
 	C.clear_alert("charge")
 	C.bubble_icon = initial(C.bubble_icon)
+	sleep_mode_toggle.Remove(C)
 	. = ..()
 	var/datum/status_effect/incapacitating/sleep_mode/S = C.has_status_effect(STATUS_EFFECT_SLEEPMODE)
 	if(S)
@@ -82,7 +94,10 @@
 			continue
 		if(O.organ_flags & ORGAN_SILICON)
 			O.Remove(C, TRUE)
-			qdel(O)
+			if(C.drop_location())
+				O.forceMove(C.drop_location())
+			else
+				qdel(O)
 
 /datum/species/ipc/spec_life(mob/living/carbon/human/H)
 	if(H.stat != DEAD)
@@ -108,8 +123,9 @@
 	H.clear_alert("charge")
 	H.clear_alert("overheating")
 	var/datum/status_effect/incapacitating/sleep_mode/S = H.has_status_effect(STATUS_EFFECT_SLEEPMODE)
-	if(S)
-		S.end_sleepmode(H)
+	if(S && !S.gc_destroyed)
+		message_admins("[S] from [H] is being deleted...")
+		qdel(S)
 
 datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	. = ..()
@@ -127,7 +143,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 /datum/species/ipc/apply_damage(damage, damagetype = BRUTE, def_zone = null, blocked, mob/living/carbon/human/H, forced = FALSE, spread_damage = FALSE)
 	. = ..()
-	if(. && H.stat != DEAD && damagetype == BRUTE && prob(damage))
+	if(. && H.stat != DEAD && (H.health < 0.5 * H.getMaxHealth()) && damagetype == BRUTE && prob(CLAMP(damage, 10, 60)))
 		do_sparks(5, FALSE, H)
 
 /datum/species/ipc/handle_environment(datum/gas_mixture/environment, mob/living/carbon/human/H)
@@ -307,11 +323,12 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 //called when battery rating is changed, for ipcs this will only occur if a cell or removed or via badminnery
 /datum/species/ipc/proc/update_battery(mob/living/carbon/C)
-
+	if(voluntary_sleepmode)
+		return
 	var/obj/item/organ/silicon/battery/B = C.getorganslot(ORGAN_SLOT_BATTERY)
-
-	if(B.cell && B.cell.charge && !voluntary_sleepmode)
-		if(C.has_status_effect(STATUS_EFFECT_SLEEPMODE))
+	if(B.cell && B.cell.charge && C.getorganslot(ORGAN_SLOT_COOLANT_PUMP))
+		var/datum/status_effect/incapacitating/sleep_mode/S = C.has_status_effect(STATUS_EFFECT_SLEEPMODE)
+		if(S && S.duration > world.time)
 			toggle_sleep_mode(C)
 		else
 			B.adjust_power_state(POWER_STATE_NORMAL)
@@ -329,7 +346,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 				S.adjust_power_state(POWER_STATE_OFF)
 				report = TRUE
 				break
-		if(report && B.cell)
+		if(report)
 			to_chat(C, "<span class='robot danger'>WARNING: [S.name] [S.serial_number] has \
 [S.power_state ? "switched to [S.get_power_state_string()]" : "shut down automatically"] due to a reduction in the capacity of [B.name] [B.serial_number]!</span>")
 
@@ -342,6 +359,8 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		heat_load += S.power_state * S.base_heat_load
 
 /datum/species/ipc/proc/handle_power(mob/living/carbon/C)
+	if(C.key && !C.client)
+		return
 	if(!C.getorganslot(ORGAN_SLOT_BRAIN)) //the brain isn't a vital organ for silicons, they just go into standby mode
 		return
 	var/obj/item/organ/silicon/battery/B = C.getorganslot(ORGAN_SLOT_BATTERY)
@@ -405,20 +424,24 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 	if(S)
 		if(B && B.cell && B.cell.charge && CP)
-			B.adjust_power_state(POWER_STATE_NORMAL)
-			if(H.loc)
-				handle_heat_load(H.loc.return_air(), H, FALSE)
 			if(voluntary)
 				to_chat(H, "<span class='robot notice'>Boot sequence engaged, preparing to exit sleep mode.</span>")
-				if(do_after(H, 30, target = H, FALSE))
+				if(do_after(H, needhand = FALSE, delay = 30, target = H))
+					voluntary_sleepmode = FALSE
 					S.end_sleepmode(H, voluntary)
+					update_battery(H)
 				else
 					to_chat(H, "<span class='robot notice'>Boot sequence aborted.</span>")
 					return
 			else
+				voluntary_sleepmode = FALSE
 				S.end_sleepmode(H)
+				update_battery(H)
+			if(H.loc)
+				handle_heat_load(H.loc.return_air(), H, FALSE)
 
-			voluntary_sleepmode = FALSE
+
+
 
 	else
 		H.apply_status_effect(STATUS_EFFECT_SLEEPMODE)
@@ -499,9 +522,6 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		var/amount = min(B.cell.maxcharge - B.cell.charge, source_cell.chargerate * 0.1)
 		if(source_cell.use(amount) && charge(C, amount))
 			handle_apc_charging(C, charging_source, FALSE) // recursion!
-
-
-
 
 /datum/species/ipc/proc/check_safe_start(mob/living/carbon/C) //whether the ipc will come back to life if critical components are replaced
 	if(C.health <=  C.crit_threshold)
