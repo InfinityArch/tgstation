@@ -39,11 +39,11 @@
 	var/lip_color = "white"
 
 	//mutant bodyparts
-	var/datum/sprite_accessory/horns/horns = ""
-	var/datum/sprite_accessory/facial_markings/facial_markings = ""
-	var/datum/sprite_accessory/snout = ""
-	var/datum/sprite_accessory/frills = ""
-	var/datum/sprite_accessory/ears = ""
+	var/datum/sprite_accessory/horns/horns_sprite = ""
+	var/datum/sprite_accessory/face_markings/face_markings_sprite = ""
+	var/datum/sprite_accessory/snout_sprite = ""
+	var/datum/sprite_accessory/frills_sprite = ""
+	var/datum/sprite_accessory/ears_sprite = ""
 
 /obj/item/bodypart/head/Destroy()
 	QDEL_NULL(brainmob) //order is sensitive, see warning in handle_atom_del() below

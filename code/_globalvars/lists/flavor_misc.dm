@@ -72,7 +72,7 @@ GLOBAL_LIST_INIT(head_mut_parts_typecache, typecacheof(list(
 	/datum/sprite_accessory/horns,
 	/datum/sprite_accessory/frills,
 	/datum/sprite_accessory/ears,
-	/datum/sprite_accessory/facial_markings
+	/datum/sprite_accessory/face_markings
 )))
 
 GLOBAL_LIST_INIT(ghost_forms_with_directions_list, list(

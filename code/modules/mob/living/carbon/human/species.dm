@@ -764,12 +764,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 						if(AUG_COLOR)
 							var/obj/item/bodypart/BP
 							if(is_type_in_typecache(S, GLOB.head_mut_parts_typecache))
-								message_admins("PING PING PING PING PING INFINITY ARCH")
+								message_admins("PING PING PING PING PING INFINITY ARCHs")
 								BP = H.get_bodypart(BODY_ZONE_HEAD)
 							else
 								BP = H.get_bodypart(BODY_ZONE_CHEST)
 							var/aug_color = BP && BP.aug_color ? BP.aug_color : AUG_COLOR_DEFAULT
-							accessory.overlay.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
+							accessory_overlay.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
 
 				else
 					accessory_overlay.color = forced_colour
