@@ -513,7 +513,7 @@ generate/load female uniform sprites matching all previously decided variables
 	if(!isinhands)
 		file2use = mob_overlay_icon ? mob_overlay_icon : default_icon_file
 		var/mob/living/carbon/human/H = loc
-		if(istype(H) && ALTERNATE_WORN_ICONS in H.dna.species.species_traits)
+		if(istype(H) && (ALTERNATE_WORN_ICONS in H.dna.species.species_traits))
 			file2use = H.dna.species.alternate_worn_icons[file2use] ? H.dna.species.alternate_worn_icons[file2use] : file2use
 			t_state = H.dna.species.alternate_worn_icons[t_state] ? H.dna.species.alternate_worn_icons[t_state] : t_state
 	else
@@ -647,7 +647,7 @@ generate/load female uniform sprites matching all previously decided variables
 
 	if(HD && !(HAS_TRAIT(src, TRAIT_HUSK)))
 		// lipstick
-		if(lip_style && (LIPS in dna.species.species_traits) && !(HIDEFACE in head.flags_inv || HIDEFACE in wear_mask.flags_inv || !(HD.draw_organic_features)))
+		if(lip_style && (LIPS in dna.species.species_traits) && !((HIDEFACE in head.flags_inv) || (HIDEFACE in wear_mask.flags_inv)) && HD.draw_organic_features)
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[dna.species.limbs_id]_lips_[lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = "#" + lip_color
 			lip_overlay.alpha = MAKEUP_OPACITY

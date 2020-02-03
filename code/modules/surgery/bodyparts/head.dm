@@ -64,7 +64,7 @@
 
 /obj/item/bodypart/head/examine(mob/user)
 	. = ..()
-	if(is_organic_limb() && !TORSO_BRAIN in species_flags_list)
+	if(is_organic_limb() && !(TORSO_BRAIN in species_flags_list))
 		if(!brain)
 			. += "<span class='info'>The brain has been removed from [src].</span>"
 		else if(brain.suicided || brainmob?.suiciding)
@@ -92,7 +92,7 @@
 
 
 /obj/item/bodypart/head/can_dismember(obj/item/I)
-	if(!((owner.stat == DEAD) || TORSO_BRAIN in species_flags_list || owner.InFullCritical()))
+	if(!((owner.stat == DEAD) || (TORSO_BRAIN in species_flags_list) || owner.InFullCritical()))
 		return FALSE
 	return ..()
 
@@ -220,7 +220,7 @@
 					. += facial_overlay
 
 			//Applies the debrained overlay if there is no brain
-			if(!brain && !TORSO_BRAIN in species_flags_list && is_organic_limb())
+			if(!brain && !(TORSO_BRAIN in species_flags_list) && is_organic_limb())
 				var/image/debrain_overlay = image(layer = -HAIR_LAYER, dir = SOUTH)
 				if(animal_origin == ALIEN_BODYPART)
 					debrain_overlay.icon = 'icons/mob/animal_parts.dmi'

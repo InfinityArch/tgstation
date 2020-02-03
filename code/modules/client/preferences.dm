@@ -1464,13 +1464,13 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						return
 					target_zone = selection[target_zone]
 
-					clearlist(selection)
+					LAZYCLEARLIST(selection)
 					selection += (pref_species.inherent_biotypes & MOB_ROBOTIC) ? "default" : "normal"
 					selection += (pref_species.inherent_biotypes & MOB_ROBOTIC) ? "custom" : "augmented"
 
 					if(target_zone != BODY_ZONE_HEAD && target_zone != BODY_ZONE_CHEST)
 						selection += "amputated"
-					else if(target_zone == BODY_ZONE_HEAD && TORSO_BRAIN in pref_species.species_traits)
+					else if(target_zone == BODY_ZONE_HEAD && (TORSO_BRAIN in pref_species.species_traits))
 						selection += "amputated"
 					var/modification_type = input(user, "Choose a type of [target_zone]:", "Bodypart Modification")  as null|anything in selection
 					if(!modification_type)

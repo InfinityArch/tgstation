@@ -542,7 +542,7 @@
 			to_chat(user, "<span class='warning'>You must close the cover before connecting [W] to [src]!</span>")
 		else if(panel_open)
 			to_chat(user, "<span class='warning'>You must close the panel before connecting [W] to [src]!</span>")
-		else if(!get_cell() || (stat & (BROKEN|MAINT)))
+		else if(!get_cell() || (machine_stat & (BROKEN|MAINT)))
 			to_chat(user, "<span class='warning'>You connect [W] to [src] but nothing happens!</span>")
 		else if(!malfhack && (free_recharging || !locked|| (obj_flags & EMAGGED) || wires.is_cut(WIRE_IDSCAN) || allowed(user)))
 			SEND_SIGNAL(user, COMSIG_HANDLE_APC_RECHARGING, src)

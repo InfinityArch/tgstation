@@ -155,7 +155,7 @@
 
 	var/mob/living/carbon/human/H = user
 	var/list/choose_from = list("name", "species")
-	if(!AGENDER in H.dna.species.species_traits)
+	if(!(AGENDER in H.dna.species.species_traits))
 		choose_from += "gender"
 	if(HAIR in H.dna.species.species_traits)
 		choose_from += "hair"
@@ -165,7 +165,7 @@
 		choose_from += "body color"
 	if((SKIN_TONE in H.dna.species.species_traits) || (DYNCOLORS in H.dna.species.species_traits))
 		choose_from += "skin tone"
-	if(!NOEYESPRITES in H.dna.species.species_traits)
+	if(!(NOEYESPRITES in H.dna.species.species_traits))
 		choose_from += "eye color"
 
 	for(var/feature in H.dna.features)

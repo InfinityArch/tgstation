@@ -101,37 +101,37 @@ __Returns__:
 	if("mcolor" in features_to_randomize)
 		features["mcolor"] = pick("FFFFFF","7F7F7F", "7FFF7F", "7F7FFF", "FF7F7F", "7FFFFF", "FF7FFF", "FFFF7F")
 	if("tail" in features_to_randomize)
-		temp_index = "tail" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("tail" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["tail"] = pick(GLOB.tails_list_species[temp_index])
 	if("wings" in features_to_randomize)
-		temp_index = "wings" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("wings" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["wings"] = pick(GLOB.wings_list_species[temp_index])
 	if("snout" in features_to_randomize)
-		temp_index = "tail" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("tail" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["snout"] = pick(GLOB.snouts_list_species[temp_index])
 	if("horns" in features_to_randomize)
-		temp_index = "horns" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("horns" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["horns"] = pick(GLOB.horns_list_species[temp_index] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX])
 	if("ears" in features_to_randomize)
-		temp_index = "ears" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("ears" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["ears"] = pick(GLOB.ears_list_species[temp_index])
 	if("frills" in features_to_randomize)
-		temp_index = "frills" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("frills" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["frills"] = pick(GLOB.frills_list_species[temp_index] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX])
 	if("tail_accessory" in features_to_randomize)
-		temp_index = "tail_accessory" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("tail_accessory" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["tail_accessory"] = pick(GLOB.tail_accessory_list_species[S.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX])
 	if("face_markings" in features_to_randomize)
-		temp_index = "face_markings" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("face_markings" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["face_markings"] = pick(GLOB.face_markings_list_species[S.features_id] | GLOB.face_markings_list_species[DEFAULT_SPECIES_INDEX])
 	if("body_markings" in features_to_randomize)
-		temp_index = "body_markings" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("body_markings" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["body_markings"] = pick(GLOB.body_markings_list_species[S.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX])
 	if("legs" in S.mutant_bodyparts)
-		temp_index = "legs" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
+		temp_index = ("legs" in S.mutant_bodyparts) ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["legs"] = pick(GLOB.legs_list | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])
 	if("caps" in S.mutant_bodyparts)
-		features["caps"] = pick(GLOB.caps_list | GLOB.caps_list_species[DEFAULT_SPECIES_INDEX])
+		features["caps"] = pick(GLOB.caps_list)
 	return features
 
 

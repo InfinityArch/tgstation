@@ -446,7 +446,9 @@
 		var/new_monitor_state = input(owner, "Choose a face for your monitor display", "Display Customization")  as null|anything in GLOB.monitor_styles_list
 		if(!new_monitor_state)
 			return
-		monitor_state = GLOB.monitor_styles_list[new_monitor_state].icon_state
+		var/datum/sprite_accessory/monitor_state/MS = GLOB.monitor_styles_list[new_monitor_state]
+		if(MS)
+			monitor_state = MS.icon_state
 	else
 		if(!optics_color)
 			optics_color = "7F7F7F"

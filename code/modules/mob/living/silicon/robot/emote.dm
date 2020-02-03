@@ -8,7 +8,8 @@
 	if(issilicon(user))
 		return TRUE
 	var/mob/living/carbon/human/H = user
-	if(H.getorganslot(ORGAN_SLOT_TONGUE) && (H.getorganslot(ORGAN_SLOT_TONGUE).organ_flags & ORGAN_SYNTHETIC))
+	var/obj/item/organ/tongue/T = H.getorganslot(ORGAN_SLOT_TONGUE)
+	if(T && (T.organ_flags & ORGAN_SYNTHETIC))
 		return TRUE
 
 /datum/emote/silicon/boop

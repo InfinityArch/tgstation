@@ -101,7 +101,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/obj/item/organ/external/ears/mutantears = /obj/item/organ/external/ears
 	var/obj/item/organ/external/tail/mutanttail = null
 	var/obj/item/organ/external/wings/mutantwings = null
-	var/obj/item/organ/optics/mutantoptics = /obj/item/organ/optics
 
 	var/obj/item/organ/liver/mutantliver
 	var/obj/item/organ/stomach/mutantstomach
@@ -169,7 +168,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/obj/item/organ/external/tail/tail = C.getorganslot(ORGAN_SLOT_TAIL)
 	var/obj/item/organ/external/ears/ears = C.getorganslot(ORGAN_SLOT_EARS)
 	var/obj/item/organ/external/wings/wings = C.getorganslot(ORGAN_SLOT_WINGS)
-	var/obj/item/organ/optics/optics = C.getorganslot(ORGAN_SLOT_OPTICS)
 
 	var/should_have_brain = C.get_bodypart(BODY_ZONE_HEAD) || (TORSO_BRAIN in species_traits)
 	var/should_have_heart = !((NOBLOOD in species_traits) || (NOHEART in species_traits))
@@ -182,8 +180,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/should_have_stomach = !(NOSTOMACH in species_traits)
 	var/should_have_tail = mutanttail
 	var/should_have_wings = mutantwings
-	var/should_have_optics = (C.get_bodypart(BODY_ZONE_HEAD).status == BODYPART_ROBOTIC) || (inherent_biotypes & MOB_ROBOTIC)
-
 
 	if(heart && (!should_have_heart || replace_current))
 		heart.Remove(C,1)
@@ -282,13 +278,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(should_have_tongue && !tongue)
 			tongue = new mutanttongue
 			tongue.Insert(C)
-
-		if(optics && (replace_current || !should_have_optics))
-			optics.Remove(C, TRUE)
-			QDEL_NULL(optics)
-		if(should_have_optics && !optics)
-			optics = new mutantoptics
-			optics.Insert(C)
 
 	if(old_species)
 		for(var/mutantorgan in old_species.mutant_organs)

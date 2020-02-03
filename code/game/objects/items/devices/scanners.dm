@@ -242,7 +242,7 @@ GENE SCANNER
 		var/mob/living/carbon/C = M
 
 		// Ear status
-		var/obj/item/organ/ears/ears = C.getorganslot(ORGAN_SLOT_EARS)
+		var/obj/item/organ/external/ears/ears = C.getorganslot(ORGAN_SLOT_EARS)
 		var/message = "\n<span class='alert ml-2'>Subject does not have ears.</span>"
 		if(istype(ears))
 			message = ""

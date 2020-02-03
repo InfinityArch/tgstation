@@ -104,34 +104,36 @@ proc/check_feature_by_index(feature, species_index, feature_type, sanitize = FAL
 	switch(feature_type)
 		if("tail")
 			if(GLOB.tails_list_species[species_index])
-				. = feature in GLOB.tails_list & GLOB.tails_list_species[species_index]
+				. = (feature in GLOB.tails_list & GLOB.tails_list_species[species_index])
 		if("tail_accessory")
 			if(GLOB.tail_accessory_list[species_index])
-				. = feature in GLOB.tail_accessory_list & GLOB.tail_accessory_list[species_index]
+				. = (feature in GLOB.tail_accessory_list & GLOB.tail_accessory_list[species_index])
 		if("snout")
 			if(GLOB.snouts_list_species[species_index])
-				. = feature in GLOB.snouts_list & GLOB.snouts_list_species[species_index]
+				. = (feature in GLOB.snouts_list & GLOB.snouts_list_species[species_index])
 		if("ears")
 			if(GLOB.ears_list_species[species_index])
-				. = feature in GLOB.ears_list & GLOB.ears_list_species[species_index]
+				. = (feature in GLOB.ears_list & GLOB.ears_list_species[species_index])
 		if("frills")
 			if(GLOB.frills_list_species[species_index])
-				. = feature in GLOB.frills_list & GLOB.frills_list_species[species_index]
+				. = (feature in GLOB.frills_list & GLOB.frills_list_species[species_index])
 		if("horns")
 			if(GLOB.horns_list_species[species_index])
-				if(feature in GLOB.horns_list & GLOB.horns_list_species[species_index])
-					return TRUE
+				.= (feature in GLOB.horns_list & GLOB.horns_list_species[species_index])
 		if("wings")
 			if(GLOB.wings_list_species[species_index])
-				. = feature in GLOB.wings_list & GLOB.wings_list_species[species_index]
+				. = (feature in GLOB.wings_list & GLOB.wings_list_species[species_index])
 		if("body_markings")
 			if(GLOB.body_markings_list[species_index])
-				. = feature in GLOB.body_markings_list & GLOB.body_markings_list[species_index]
+				. = (feature in GLOB.body_markings_list & GLOB.body_markings_list[species_index])
 		if("face_markings")
 			if(GLOB.face_markings_list[species_index])
-				. = feature in GLOB.face_markings_list & GLOB.body_markings_list[species_index]
+				. = (feature in GLOB.face_markings_list & GLOB.body_markings_list[species_index])
 		if("legs")
-			. = TRUE
+			. = (feature in GLOB.legs_list)
+		if("caps")
+			if(GLOB.caps_list_species[species_index])
+				. = (feature in GLOB.caps_list & GLOB.caps_list_species[species_index])
 
 /*
 # sanitize_bodyparts

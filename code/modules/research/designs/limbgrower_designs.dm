@@ -97,7 +97,7 @@
 	id = "ears"
 	build_type = LIMBGROWER
 	reagents_list = list(/datum/reagent/medicine/C2/instabitaluri = 10)
-	build_path = /obj/item/organ/ears
+	build_path = /obj/item/organ/external/ears
 	category = list("other")
 
 /datum/design/tongue

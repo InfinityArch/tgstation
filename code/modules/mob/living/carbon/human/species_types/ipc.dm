@@ -300,7 +300,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 				else if(!(C.has_status_effect(STATUS_EFFECT_SLEEPMODE)))
 					toggle_sleep_mode(C)
 
-	clearlist(power_consumers)
+	LAZYCLEARLIST(power_consumers)
 	for(var/obj/item/organ/silicon/R in C.internal_organs)
 		if(!istype(R))
 			continue
@@ -317,7 +317,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	if(S.organ_flags & ORGAN_VITAL)
 		voluntary_sleepmode = FALSE
 		update_vitals = TRUE
-	clearlist(power_consumers)
+	LAZYCLEARLIST(power_consumers)
 	for(var/obj/item/organ/silicon/R in C.internal_organs)
 		if(!istype(R))
 			continue

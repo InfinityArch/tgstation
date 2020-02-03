@@ -164,7 +164,7 @@
 	var/brain_zone = BODY_ZONE_HEAD
 	if(ishuman(C))
 		var/mob/living/carbon/human/H = C
-		brain_zone = TORSO_BRAIN in H.dna.species.species_traits ? BODY_ZONE_CHEST : BODY_ZONE_HEAD
+		brain_zone = (TORSO_BRAIN in H.dna.species.species_traits) ? BODY_ZONE_CHEST : BODY_ZONE_HEAD
 	if(user.zone_selected != brain_zone || brain_zone != zone)
 		return ..()
 
