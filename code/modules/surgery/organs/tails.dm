@@ -52,6 +52,19 @@
 	desc = "A severed lizard tail. Somewhere, no doubt, a lizard hater is very pleased with themselves."
 	color = "#116611"
 	tail_type = "Smooth"
+	var/spines = "None"
+
+/obj/item/organ/tail/lizard/Initialize()
+	..()
+	color = "#"+ random_color()
+
+/obj/item/organ/tail/lizard/Insert(mob/living/carbon/human/H, special = 0, drop_if_replaced = TRUE)
+	..()
+	if(istype(H))
+		// Checks here are necessary so it wouldn't overwrite the tail of a lizard it spawned in
+		if(!("tail_lizard" in H.dna.species.mutant_bodyparts))
+			H.dna.features["tail_lizard"] = tail_type
+			H.dna.species.mutant_bodyparts |= "tail_lizard"
 
 /obj/item/organ/tail/tajaran
 	name = "tajaran tail"

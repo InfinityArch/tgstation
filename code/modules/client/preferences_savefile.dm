@@ -51,6 +51,10 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		if(clientfps == 0)
 			clientfps = 60
 
+	if(current_version < 31)
+		if(clientfps == 60)
+			clientfps = 0
+
 /datum/preferences/proc/update_character(current_version, savefile/S)
 	if(current_version < 19)
 		pda_style = "mono"
@@ -146,7 +150,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 /datum/preferences/proc/load_path(ckey,filename="preferences.sav")
 	if(!ckey)
 		return
-	path = "data/player_saves/[copytext(ckey,1,2)]/[ckey]/[filename]"
+	path = "data/player_saves/[ckey[1]]/[ckey]/[filename]"
 
 /datum/preferences/proc/load_preferences()
 	if(!path)
@@ -334,6 +338,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["lip_color"]			>> lip_color
 	S["lip_style"]			>> lip_style
 	S["uplink_loc"]			>> uplink_spawn_loc
+	S["phobia"] >> phobia
 	S["randomise"]	>>  randomise
 	S["feature_mcolor"]					>> features["mcolor"]
 	S["feature_tail"]					>> features["tail"]
@@ -428,7 +433,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if((features["legs"] != "None") && !("legs" in pref_species.mutant_bodyparts))
 		features["legs"] = "None"
 	aug_features = sanitize_features(aug_features, FEATURE_ROBOTIC, aug_features)
-	alternate_bodyparts = sanitize_bodyparts(alternate_bodyparts, pref_species.limb_customization_type)
 	aug_color = sanitize_inlist(aug_color, GLOB.aug_colors_list)
 
 
@@ -474,6 +478,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["species"]			, pref_species.id)
 	WRITE_FILE(S["lip_style"]		, lip_style)
 	WRITE_FILE(S["lip_color"]		, lip_color)
+	WRITE_FILE(S["phobia"], phobia)
 	WRITE_FILE(S["feature_mcolor"]					, features["mcolor"])
 	WRITE_FILE(S["feature_tail"]					, features["tail"])
 	WRITE_FILE(S["feature_snout"]					, features["snout"])

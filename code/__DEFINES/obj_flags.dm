@@ -49,6 +49,8 @@
 #define ORGAN_SYNTHETIC			(1<<0)	//Synthetic organs, or cybernetic organs. Reacts to EMPs and don't deteriorate or heal
 #define ORGAN_FROZEN			(1<<1)	//Frozen organs, don't deteriorate
 #define ORGAN_FAILING			(1<<2)	//Failing organs perform damaging effects until replaced or fixed
-#define ORGAN_VITAL				(1<<3)	//Currently only the brain
-#define ORGAN_SILICON			(1<<4)	// Silicon "organs" (components). cannot be inserted into organics, and IPCs/borgs can only use these organs
-#define ORGAN_ABSTRACT			(1<<5)	// Abstract organs, immune to damage, will not show up on scanners, and can't be dismembered or removed normally
+#define ORGAN_EXTERNAL			(1<<3)	//Was this organ implanted/inserted/etc, if true will not be removed during species change.
+#define ORGAN_VITAL				(1<<4)	//Currently only the brain
+#define ORGAN_SILICON			(1<<5)  // Silicon "organs" (components). cannot be inserted into organics, and IPCs/borgs can only use these organs
+#define ORGAN_ABSTRACT			(1<<6)  // Abstract pseudo organs, they're immune to damage, won'tshow up on scanners, and can't be dismembered normally
+#define ORGAN_SYNTHETIC_EMP		(1<<5)	//Synthetic organ affected by an EMP. Deteriorates over time.

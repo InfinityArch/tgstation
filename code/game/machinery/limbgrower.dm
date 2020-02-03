@@ -26,10 +26,10 @@
 	var/list/categories = list(
 							"human",
 							"lizard",
-							"fly",
 							"moth",
 							"tajaran",
 							"plasmaman",
+							"ethereal",
 							"other"
 							)
 
@@ -140,10 +140,10 @@
 		limb.should_draw_greyscale = TRUE
 	else
 		limb.icon = 'icons/mob/human_parts.dmi'
-	// Set this limb up using the specias name and body zone
+	// Set this limb up using the species name and body zone
 	limb.icon_state = "[selected_category]_[limb.body_zone]"
-	limb.name = "\improper synthetic [selected_category] [parse_zone(limb.body_zone)]"
-	limb.desc = "A synthetic [selected_category] limb that will morph on its first use in surgery. This one is for the [parse_zone(limb.body_zone)]."
+	limb.name = "\improper biosynthetic [selected_category] [parse_zone(limb.body_zone)]"
+	limb.desc = "A synthetically produced [selected_category] limb, grown in a tube. This one is for the [parse_zone(limb.body_zone)]."
 	limb.species_id = selected_category
 	limb.update_icon_dropped()
 	limb.original_owner = "limb grower"	 //prevents updating the icon, so a lizard arm on a human stays a lizard arm etc.
@@ -218,7 +218,7 @@
 /obj/machinery/limbgrower/proc/get_design_cost(datum/design/D)
 	var/dat
 	if(D.reagents_list[/datum/reagent/medicine/C2/instabitaluri])
-		dat += "[D.reagents_list[/datum/reagent/medicine/C2/instabitaluri] * prod_coeff] Synthetic flesh "
+		dat += "[D.reagents_list[/datum/reagent/medicine/C2/instabitaluri] * prod_coeff] SynthFlesh (instabitaluri)"
 	return dat
 
 /obj/machinery/limbgrower/emag_act(mob/user)
