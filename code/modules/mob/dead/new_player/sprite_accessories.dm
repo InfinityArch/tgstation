@@ -1739,6 +1739,11 @@
 	icon = 'icons/mob/sprite_accessories/snout.dmi'
 	species = "lizard"
 
+/datum/sprite_accessory/snouts/none
+	name = "None"
+	icon_state = "none"
+	species = DEFAULT_SPECIES_INDEX
+
 /datum/sprite_accessory/snouts/sharp
 	name = "Sharp"
 	icon_state = "sharp"
@@ -1795,6 +1800,18 @@
 /datum/sprite_accessory/horns/angler
 	name = "Angeler"
 	icon_state = "angler"
+
+datum/sprite_accessory/horns/antennae
+	name = "Antennae"
+	icon_state = "antennae"
+	color_src = AUG_COLOR
+	species = "robotic"
+
+datum/sprite_accessory/horns/antlers
+	name = "Antlers"
+	icon_state = "antlers"
+	color_src = AUG_COLOR
+	species = "robotic"
 
 ////////////
 // Frills //
@@ -1924,7 +1941,7 @@
 /datum/sprite_accessory/wings/angel
 	name = "Angel"
 	icon_state = "angel"
-	species = DEFAULT_SPECIES_INDEX
+	species = "angel"
 	color_src = 0
 	dimension_x = 46
 	center = TRUE
@@ -1941,7 +1958,7 @@
 /datum/sprite_accessory/wings/dragon
 	name = "Dragon"
 	icon_state = "dragon"
-	species = "lizard"
+	species = "dragon"
 	dimension_x = 96
 	center = TRUE
 	dimension_y = 32
@@ -2121,7 +2138,7 @@
 	icon = null					//These datums exist for selecting legs on preference, and little else
 
 /datum/sprite_accessory/legs/none
-	name = "Normal Legs"
+	name = "None"
 	species = DEFAULT_SPECIES_INDEX
 
 /datum/sprite_accessory/legs/digitigrade_lizard

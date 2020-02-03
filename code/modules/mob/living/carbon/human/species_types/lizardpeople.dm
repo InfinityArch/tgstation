@@ -9,10 +9,10 @@
 	inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID|MOB_REPTILE
 	mutant_bodyparts = list("tail", "snout", "tail_accessory", "horns", "frills", "body_markings", "legs")
 	mutanttongue = /obj/item/organ/tongue/lizard
-	mutanttail = /obj/item/organ/tail/lizard
+	mutanttail = /obj/item/organ/external/tail/lizard
 	coldmod = 1.5
 	heatmod = 0.67
-	default_features = list("mcolor" = "0F0", "tail" = "Smooth", "snout" = "Round", "horns" = "None", "frills" = "None", "tail_accessory" = "None", "body_markings" = "None", "legs" = "Normal Legs")
+	default_features = list("mcolor" = "0F0", "tail" = "Smooth", "snout" = "Round", "horns" = "None", "frills" = "None", "tail_accessory" = "None", "body_markings" = "None", "legs" = "None")
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC | RACE_SWAP | ERT_SPAWN | SLIME_EXTRACT
 	attack_verb = "slash"
 	attack_sound = 'sound/weapons/slash.ogg'
@@ -27,36 +27,36 @@
 	species_language_holder = /datum/language_holder/lizard
 
 //I wag in death
-/datum/species/lizard/spec_death(gibbed, mob/living/carbon/human/H)
-	if(H)
-		stop_wagging_tail(H)
+//datum/species/lizard/spec_death(gibbed, mob/living/carbon/human/H)
+	//if(H)
+		//stop_wagging_tail(H)
 
-/datum/species/lizard/spec_stun(mob/living/carbon/human/H,amount)
-	if(H)
-		stop_wagging_tail(H)
-	. = ..()
+//datum/species/lizard/spec_stun(mob/living/carbon/human/H,amount)
+	//if(H)
+		//stop_wagging_tail(H)
+	//. = ..()
 
-/datum/species/lizard/can_wag_tail(mob/living/carbon/human/H)
-	return ("tail" in mutant_bodyparts) || ("waggingtail" in mutant_bodyparts)
+//datum/species/lizard/can_wag_tail(mob/living/carbon/human/H)
+	//return ("tail" in mutant_bodyparts) || ("waggingtail" in mutant_bodyparts)
 
-/datum/species/lizard/is_wagging_tail(mob/living/carbon/human/H)
-	return ("waggingtail" in mutant_bodyparts)
+//datum/species/lizard/is_wagging_tail(mob/living/carbon/human/H)
+	//return ("waggingtail" in mutant_bodyparts)
 
-/datum/species/lizard/start_wagging_tail(mob/living/carbon/human/H)
-	if("tail" in mutant_bodyparts)
-		mutant_bodyparts -= "tail"
-		mutant_bodyparts -= "tail_accessory"
-		mutant_bodyparts |= "waggingtail"
-		mutant_bodyparts |= "waggingtail_accessory"
-	H.update_body()
+//datum/species/lizard/start_wagging_tail(mob/living/carbon/human/H)
+	//if("tail" in mutant_bodyparts)
+		//mutant_bodyparts -= "tail"
+		//mutant_bodyparts -= "tail_accessory"
+		//mutant_bodyparts |= "waggingtail"
+		//mutant_bodyparts |= "waggingtail_accessory"
+	//H.update_body()
 
-/datum/species/lizard/stop_wagging_tail(mob/living/carbon/human/H)
-	if("waggingtail" in mutant_bodyparts)
-		mutant_bodyparts -= "waggingtail"
-		mutant_bodyparts -= "waggingtail_accessory"
-		mutant_bodyparts |= "tail"
-		mutant_bodyparts |= "tail_accessory"
-	H.update_body()
+//datum/species/lizard/stop_wagging_tail(mob/living/carbon/human/H)
+	//if("waggingtail" in mutant_bodyparts)
+		//mutant_bodyparts -= "waggingtail"
+		//mutant_bodyparts -= "waggingtail_accessory"
+		//mutant_bodyparts |= "tail"
+		//mutant_bodyparts |= "tail_accessory"
+	//H.update_body()
 
 /*
  Lizard subspecies: ASHWALKERS
@@ -65,6 +65,7 @@
 	name = "Ash Walker"
 	id = "ashlizard"
 	limbs_id = "lizard"
+	force_digitigrade = TRUE
 	species_traits = list(MUTCOLORS,EYECOLOR,LIPS,DIGITIGRADE)
 	inherent_traits = list(TRAIT_CHUNKYFINGERS,TRAIT_NOBREATH)
 	species_language_holder = /datum/language_holder/lizard/ash

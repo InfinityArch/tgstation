@@ -41,13 +41,13 @@
 		H.update_body()
 
 
-/obj/item/organ/tail/cat
+/obj/item/organ/external/tail/cat
 	name = "cat tail"
 	desc = "A severed cat tail. Who's wagging now?"
 	tail_type = "Cat"
 	color_src = HAIR
 
-/obj/item/organ/tail/lizard
+/obj/item/organ/external/tail/lizard
 	name = "lizard tail"
 	desc = "A severed lizard tail. Somewhere, no doubt, a lizard hater is very pleased with themselves."
 	color = "#116611"

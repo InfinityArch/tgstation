@@ -389,20 +389,23 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		features["mcolor"] = pick("FFFFFF","7F7F7F", "7FFF7F", "7F7FFF", "FF7F7F", "7FFFFF", "FF7FFF", "FFFF7F")
 
 	randomise = SANITIZE_LIST(randomise)
+	hairstyle = sanitize_hairstyle(hairstyle, pref_species.hair_id, gender)
+	facial_hairstyle = sanitize_hairstyle(facial_hairstyle, pref_species.hair_id, gender, TRUE)
+
 
 	if(gender == MALE)
-		hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_male_list & (GLOB.hairstyles_list_species[pref_species.hair_id] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]))
-		facial_hairstyle = sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_male_list & (GLOB.facial_hairstyles_list_species[pref_species.hair_id] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]))
+		//hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_male_list & (GLOB.hairstyles_list_species[pref_species.hair_id] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]))
+		//facial_hairstyle = sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_male_list & (GLOB.facial_hairstyles_list_species[pref_species.hair_id] | GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX]))
 		underwear = sanitize_inlist(underwear, GLOB.underwear_m)
 		undershirt = sanitize_inlist(undershirt, GLOB.undershirt_m)
 	else if(gender == FEMALE)
-		hairstyle			= sanitize_inlist(hairstyle, GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.features_id], "Bald")
-		facial_hairstyle	= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.features_id], "Shaved")
+		//hairstyle			= sanitize_inlist(hairstyle, GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[pref_species.features_id], "Bald")
+		//facial_hairstyle	= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[pref_species.features_id], "Shaved")
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_f)
 		undershirt		= sanitize_inlist(undershirt, GLOB.undershirt_f)
 	else
-		hairstyle			= sanitize_inlist(hairstyle, GLOB.hairstyles_list)
-		facial_hairstyle			= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_list)
+		//hairstyle			= sanitize_inlist(hairstyle, GLOB.hairstyles_list)
+		//facial_hairstyle			= sanitize_inlist(facial_hairstyle, GLOB.facial_hairstyles_list)
 		underwear		= sanitize_inlist(underwear, GLOB.underwear_list)
 		undershirt 		= sanitize_inlist(undershirt, GLOB.undershirt_list)
 
@@ -422,6 +425,9 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	jumpsuit_style	= sanitize_inlist(jumpsuit_style, GLOB.jumpsuitlist, initial(jumpsuit_style))
 	uplink_spawn_loc = sanitize_inlist(uplink_spawn_loc, GLOB.uplink_spawn_loc_list, initial(uplink_spawn_loc))
 	features = sanitize_features(features, pref_species.features_id)
+	if((features["legs"] != "None") && !("legs" in pref_species.mutant_bodyparts))
+		features["legs"] = "None"
+	aug_features = sanitize_features(aug_features, FEATURE_ROBOTIC, aug_features)
 	alternate_bodyparts = sanitize_bodyparts(alternate_bodyparts, pref_species.limb_customization_type)
 	aug_color = sanitize_inlist(aug_color, GLOB.aug_colors_list)
 

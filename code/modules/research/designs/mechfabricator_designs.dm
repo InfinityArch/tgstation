@@ -107,7 +107,7 @@
 	name = "Auditory Receiver Unit"
 	id = "borg_ears"
 	build_type = MECHFAB
-	build_path = /obj/item/organ/ears/silicon
+	build_path = /obj/item/organ/external/ears/silicon
 	materials = list(/datum/material/iron = 600, /datum/material/glass = 400)
 	construction_time = 120
 	category = list("Cyborg")

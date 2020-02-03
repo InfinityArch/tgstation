@@ -4,6 +4,7 @@
 	var/mob/living/carbon/owner = null
 	var/mob/living/carbon/original_owner = null
 	var/status = ORGAN_ORGANIC
+	var/required_bodypart_status = FALSE // if this organ requires a bodypart to be organic/robotic to be inserted.
 	w_class = WEIGHT_CLASS_SMALL
 	throwforce = 0
 	var/zone = BODY_ZONE_CHEST
@@ -221,5 +222,5 @@
 			E.Insert(src)
 
 		if(!getorganslot(ORGAN_SLOT_EARS))
-			var/obj/item/organ/ears/ears = new()
+			var/obj/item/organ/external/ears/ears = new()
 			ears.Insert(src)

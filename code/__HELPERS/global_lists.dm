@@ -40,7 +40,7 @@
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/face_markings, GLOB.face_markings_list, species_list = GLOB.face_markings_list_species)
 	//misc body features
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/legs, GLOB.legs_list, species_list = GLOB.legs_list_species)
-	init_sprite_accessory_subtypes(/datum/sprite_accessory/caps, GLOB.caps_list)
+	init_sprite_accessory_subtypes(/datum/sprite_accessory/caps, GLOB.caps_list, species_list = GLOB.caps_list_species)
 	//Species
 	for(var/spath in subtypesof(/datum/species))
 		var/datum/species/S = new spath()

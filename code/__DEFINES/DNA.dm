@@ -132,7 +132,7 @@
 #define AUXCOLORS			 21
 #define AUXCOLORS_PARTSONLY  22
 //ensures the headpart of a species gets the correct flag for having a brain in the torso
-#define TORSO_BRAIN			 23 
+#define TORSO_BRAIN			 23
 #define NOHEART				 24 //for a species that uses blood but doesn't have a heart
 #define NO_BONES			 25 //species doesn't have bones
 
@@ -145,7 +145,6 @@
 #define ORGAN_SLOT_STOMACH "stomach"
 #define ORGAN_SLOT_STOMACH_AID "stomach_aid"
 #define ORGAN_SLOT_BREATHING_TUBE "breathing_tube"
-#define ORGAN_SLOT_EARS "ears"
 #define ORGAN_SLOT_EYES "eye_sight"
 #define ORGAN_SLOT_LUNGS "lungs"
 #define ORGAN_SLOT_HEART "heart"
@@ -159,16 +158,21 @@
 #define ORGAN_SLOT_HEART_AID "heartdrive"
 #define ORGAN_SLOT_BRAIN_ANTIDROP "brain_antidrop"
 #define ORGAN_SLOT_BRAIN_ANTISTUN "brain_antistun"
-#define ORGAN_SLOT_TAIL "tail"
+
+//external organ slots: the define for these MUST match the index of the feature in dna.features
+#define ORGAN_SLOT_TAIL 			"tail"
+#define ORGAN_SLOT_WINGS			"wings"
+#define ORGAN_SLOT_EARS 			"ears"
+
 #define ORGAN_SLOT_PARASITE_EGG "parasite_egg"
 #define ORGAN_SLOT_REGENERATIVE_CORE "hivecore"
 
 //robotic organs
 #define ORGAN_SLOT_BATTERY			"battery_assembly"
+#define ORGAN_SLOT_OPTICS			"optics"
 #define ORGAN_SLOT_COOLANT_PUMP		"coolant_pump"
 #define ORGAN_SLOT_TORSO_MODULE		"torso_module"
 #define ORGAN_SLOT_TORSO_UPGRADE	"torso_upgrade"
-#define ORGAN_SLOT_OPTICS_UPGRADE	"optics_upgrade"
 #define ORGAN_SLOT_SERVO_ARM		"servo_arm"
 
 //organ defines

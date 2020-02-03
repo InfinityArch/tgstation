@@ -8,7 +8,7 @@
 	mutant_brain = /obj/item/organ/brain/dullahan
 	mutanteyes = /obj/item/organ/eyes/dullahan
 	mutanttongue = /obj/item/organ/tongue/dullahan
-	mutantears = /obj/item/organ/ears/dullahan
+	mutantears = /obj/item/organ/external/ears/dullahan
 	limbs_id = "human"
 	skinned_type = /obj/item/stack/sheet/animalhide/human
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC | ERT_SPAWN
@@ -79,7 +79,7 @@
 				O.say(speech_args[SPEECH_MESSAGE])
 	speech_args[SPEECH_MESSAGE] = ""
 
-/obj/item/organ/ears/dullahan
+/obj/item/organ/external/ears/dullahan
 	zone = "abstract"
 
 /obj/item/organ/eyes/dullahan

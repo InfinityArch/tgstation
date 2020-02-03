@@ -8,10 +8,10 @@
 	species_traits = list(SKIN_TONE, HAIR, FACEHAIR,EYECOLOR,LIPS)
 	inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID
 	mutant_bodyparts = list("ears", "snout", "tail")
-	mutantears = /obj/item/organ/ears/cat/tajaran
+	mutantears = /obj/item/organ/external/ears/tajaran
+	mutanttail = /obj/item/organ/external/tail
 	hair_color = "skin_tone"
 	feature_names = list("skin_tone" = "fur color", "snout" = "muzzle")
-	mutanttail = /obj/item/organ/tail/tajaran
 	mutanteyes = /obj/item/organ/eyes/tajaran
 	default_features = list("mcolor" = "0F0", "snout" = "Light", "ears" = "Pointed", "tail" = "Wingler")
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_PRIDE | MIRROR_MAGIC | RACE_SWAP | ERT_SPAWN | SLIME_EXTRACT
@@ -33,31 +33,31 @@ datum/species/lizard/after_equip_job(datum/job/J, mob/living/carbon/human/H)
 	if(H)
 		stop_wagging_tail(H)
 
-datum/species/tajaran/spec_stun(mob/living/carbon/human/H,amount)
-	if(H)
-		stop_wagging_tail(H)
-	. = ..()
+//datum/species/tajaran/spec_stun(mob/living/carbon/human/H,amount)
+	//if(H)
+	//	stop_wagging_tail(H)
+	//. = ..()
 
-datum/species/tajaran/can_wag_tail(mob/living/carbon/human/H)
-	return ("tail" in mutant_bodyparts) || ("waggingtail" in mutant_bodyparts)
+//datum/species/tajaran/can_wag_tail(mob/living/carbon/human/H)
+	//return ("tail" in mutant_bodyparts) || ("waggingtail" in mutant_bodyparts)
 
-datum/species/tajaran/is_wagging_tail(mob/living/carbon/human/H)
-	return ("waggingtail" in mutant_bodyparts)
+//datum/species/tajaran/is_wagging_tail(mob/living/carbon/human/H)
+	//return ("waggingtail" in mutant_bodyparts)
 
-datum/species/tajaran/start_wagging_tail(mob/living/carbon/human/H)
-	if("tail" in mutant_bodyparts)
-		mutant_bodyparts -= "tail"
-		mutant_bodyparts -= "tail_accessory"
-	if("tail_accessory" in mutant_bodyparts)
-		mutant_bodyparts |= "waggingtail"
-		mutant_bodyparts |= "waggingtail_accessory"
-	H.update_body()
+//datum/species/tajaran/start_wagging_tail(mob/living/carbon/human/H)
+	//if("tail" in mutant_bodyparts)
+		//mutant_bodyparts -= "tail"
+		//mutant_bodyparts -= "tail_accessory"
+	//if("tail_accessory" in mutant_bodyparts)
+		//mutant_bodyparts |= "waggingtail"
+		//mutant_bodyparts |= "waggingtail_accessory"
+	//H.update_body()
 
-datum/species/tajaran/stop_wagging_tail(mob/living/carbon/human/H)
-	if("waggingtail" in mutant_bodyparts)
-		mutant_bodyparts -= "waggingtail"
-		mutant_bodyparts -= "waggingtail_accessory"
-	if("waggingtail_accessory" in mutant_bodyparts)
-		mutant_bodyparts |= "tail"
-		mutant_bodyparts |= "tail_accessory"
-	H.update_body()
+//datum/species/tajaran/stop_wagging_tail(mob/living/carbon/human/H)
+	//if("waggingtail" in mutant_bodyparts)
+		//mutant_bodyparts -= "waggingtail"
+		//mutant_bodyparts -= "waggingtail_accessory"
+	//if("waggingtail_accessory" in mutant_bodyparts)
+		//mutant_bodyparts |= "tail"
+		//mutant_bodyparts |= "tail_accessory"
+	//H.update_body()

@@ -167,22 +167,10 @@
 		choose_from += "skin tone"
 	if(!NOEYESPRITES in H.dna.species.species_traits)
 		choose_from += "eye color"
-	if((H.dna.features["tail"] != "None") && (length(GLOB.tails_list_species[H.dna.species.features_id]) > 1))
-		choose_from += "tail"
-	if(("snout" in H.dna.species.mutant_bodyparts) && (length(GLOB.snouts_list_species[H.dna.species.features_id]) > 1))
-		choose_from += "snout"
-	if(("horns" in H.dna.species.mutant_bodyparts) && (length(GLOB.horns_list_species[H.dna.species.features_id] | GLOB.horns_list_species[DEFAULT_SPECIES_INDEX]) > 1))
-		choose_from += "horns"
-	if(("frills" in H.dna.species.mutant_bodyparts) && (length(GLOB.frills_list_species[H.dna.species.features_id] | GLOB.frills_list_species[DEFAULT_SPECIES_INDEX]) > 1))
-		choose_from += "frills"
-	if(("tail_accessory" in H.dna.species.mutant_bodyparts) && (length(GLOB.tail_accessory_list_species[H.dna.species.features_id] | GLOB.tail_accessory_list_species[DEFAULT_SPECIES_INDEX]) > 1))
-		choose_from += "tail_accessory"
-	if(("body_markings" in H.dna.species.mutant_bodyparts) && (length(GLOB.body_markings_list_species[H.dna.species.features_id] | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX]) > 1))
-		choose_from += "body_markings"
-	if(("ears" in H.dna.species.mutant_bodyparts) && (length(GLOB.ears_list_species[H.dna.species.features_id]) > 1))
-		choose_from += "ears"
-	if((H.dna.features["wings"] != "None") && (length(GLOB.wings_list_species[H.dna.species.features_id]) > 1))
-		choose_from += "wings"
+
+	for(var/feature in H.dna.features)
+		if(feature in H.dna.species.mutant_bodyparts)
+			choose_from += feature
 
 	var/choice = input(user, "Something to change?", "Magical Grooming") as null|anything in choose_from
 
@@ -302,6 +290,7 @@
 				return
 			if(new_tail)
 				H.dna.features["tail"] = new_tail
+				H.update_body()
 
 		if("snout")
 			var/new_snout
@@ -310,6 +299,7 @@
 				return
 			if(new_snout)
 				H.dna.features["snout"] = new_snout
+				H.update_body()
 
 		if("horns")
 			var/new_horns
@@ -318,6 +308,7 @@
 				return
 			if(new_horns)
 				H.dna.features["horns"] = new_horns
+				H.update_body()
 
 		if("frills")
 			var/new_frills
@@ -326,6 +317,7 @@
 				return
 			if(new_frills)
 				H.dna.features["frills"] = new_frills
+				H.update_body()
 
 		if("tail_accessory")
 			var/new_tail_accessory
@@ -334,6 +326,7 @@
 				return
 			if(new_tail_accessory)
 				H.dna.features["tail_accessory"] = new_tail_accessory
+				H.update_body()
 
 		if("body_markings")
 			var/new_body_markings
@@ -342,6 +335,7 @@
 				return
 			if(new_body_markings)
 				H.dna.features["body_markings"] = new_body_markings
+				H.update_body()
 
 		if("ears")
 			var/new_ears
@@ -350,6 +344,7 @@
 				return
 			if(new_ears)
 				H.dna.features["ears"] = new_ears
+				H.update_body()
 
 		if("wings")
 			var/new_wings
@@ -358,8 +353,7 @@
 				return
 			if(new_wings)
 				H.dna.features["wings"] = new_wings
-				message_admins("[H.dna.features["wings"]]")
-				message_admins("[english_list(GLOB.wings_list)]")
+				H.update_body()
 
 
 	if(choice)

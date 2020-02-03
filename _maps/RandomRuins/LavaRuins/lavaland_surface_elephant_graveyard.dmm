@@ -277,7 +277,7 @@
 "bd" = (
 /obj/item/organ/heart,
 /obj/item/organ/eyes,
-/obj/item/organ/ears,
+/obj/item/organ/external/ears,
 /obj/effect/decal/cleanable/blood/gibs/old,
 /turf/open/floor/plating/asteroid/basalt/wasteland,
 /area/ruin/unpowered/elephant_graveyard)
@@ -611,7 +611,7 @@
 "cr" = (
 /obj/structure/bonfire/prelit,
 /obj/effect/decal/cleanable/ash,
-/obj/item/organ/tail/lizard,
+/obj/item/organ/external/tail/lizard,
 /obj/effect/decal/cleanable/blood/old,
 /obj/structure/stone_tile/slab/cracked,
 /turf/open/floor/plating/asteroid/basalt/wasteland,

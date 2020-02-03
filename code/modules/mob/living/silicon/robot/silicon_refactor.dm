@@ -73,7 +73,7 @@
 	var/obj/item/organ/tongue/vocal_processor = /obj/item/organ/tongue/robot
 
 	// senses
-	var/obj/item/organ/ears/auditory_processor = /obj/item/organ/ears/silicon
+	var/obj/item/organ/external/ears/auditory_processor = /obj/item/organ/external/ears/silicon
 	var/obj/item/organ/eyes/sensory_package = /obj/item/organ/eyes/silicon
 
 	//authentication

@@ -14,7 +14,7 @@
 
 /mob/living/carbon/get_ear_protection()
 	. = ..()
-	var/obj/item/organ/ears/E = getorganslot(ORGAN_SLOT_EARS)
+	var/obj/item/organ/external/ears/E = getorganslot(ORGAN_SLOT_EARS)
 	if(!E)
 		return INFINITY
 	else
@@ -344,7 +344,7 @@
 	SEND_SIGNAL(src, COMSIG_CARBON_SOUNDBANG, reflist)
 	intensity = reflist[1]
 	var/ear_safety = get_ear_protection()
-	var/obj/item/organ/ears/ears = getorganslot(ORGAN_SLOT_EARS)
+	var/obj/item/organ/external/ears/ears = getorganslot(ORGAN_SLOT_EARS)
 	var/effect_amount = intensity - ear_safety
 	if(effect_amount > 0)
 		if(stun_pwr)
@@ -385,6 +385,6 @@
 
 /mob/living/carbon/can_hear()
 	. = FALSE
-	var/obj/item/organ/ears/ears = getorganslot(ORGAN_SLOT_EARS)
+	var/obj/item/organ/external/ears/ears = getorganslot(ORGAN_SLOT_EARS)
 	if(istype(ears) && !ears.deaf)
 		. = TRUE

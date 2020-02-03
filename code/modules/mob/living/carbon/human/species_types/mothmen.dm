@@ -15,6 +15,7 @@
 	disliked_food = FRUIT | GROSS | SENTIENT
 	toxic_food = MEAT | RAW
 	mutanteyes = /obj/item/organ/eyes/moth
+	mutantwings = /obj/item/organ/external/wings
 	changesource_flags = MIRROR_BADMIN | WABBAJACK | MIRROR_MAGIC | MIRROR_PRIDE | ERT_SPAWN | RACE_SWAP | SLIME_EXTRACT
 	species_language_holder = /datum/language_holder/moth
 

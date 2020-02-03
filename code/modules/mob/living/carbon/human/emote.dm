@@ -110,25 +110,31 @@
 	if(!.)
 		return
 	var/mob/living/carbon/human/H = user
-	if(!istype(H) || !H.dna || !H.dna.species || !H.dna.species.can_wag_tail(H))
+	if(!istype(H) || !H.dna || !H.dna.species)
 		return
-	if(!H.dna.species.is_wagging_tail())
-		H.dna.species.start_wagging_tail(H)
-	else
-		H.dna.species.stop_wagging_tail(H)
+	var/obj/item/organ/external/tail/T = H.getorganslot(ORGAN_SLOT_TAIL)
+	if(!T)
+		return
+	if(T.can_wag())
+		T.wag()
+
+
 
 /datum/emote/living/carbon/human/wag/can_run_emote(mob/user, status_check = TRUE , intentional)
 	if(!..())
 		return FALSE
 	var/mob/living/carbon/human/H = user
-	return H.dna && H.dna.species && H.dna.species.can_wag_tail(user)
+	if(H.dna && H.dna.species)
+		var/obj/item/organ/external/tail/T = H.getorganslot(ORGAN_SLOT_TAIL)
+		return T
 
 /datum/emote/living/carbon/human/wag/select_message_type(mob/user, intentional)
 	. = ..()
 	var/mob/living/carbon/human/H = user
 	if(!H.dna || !H.dna.species)
 		return
-	if(H.dna.species.is_wagging_tail())
+	var/obj/item/organ/external/tail/T = H.getorganslot(ORGAN_SLOT_TAIL)
+	if(T && T.animated_feature)
 		. = null
 
 /datum/emote/living/carbon/human/wing
@@ -148,32 +154,36 @@
 /datum/emote/living/carbon/human/wing/select_message_type(mob/user, intentional)
 	. = ..()
 	var/mob/living/carbon/human/H = user
-	if("wings" in H.dna.species.mutant_bodyparts)
-		. = "opens " + message
-	else
-		. = "closes " + message
+
+	var/obj/item/organ/external/wings/W = H.getorganslot(ORGAN_SLOT_WINGS)
+
+	if(W)
+		if(W.animated_feature)
+			. = "opens" + message
+		else
+			. = "closes" + message
 
 /datum/emote/living/carbon/human/wing/can_run_emote(mob/user, status_check = TRUE, intentional)
 	if(!..())
 		return FALSE
 	var/mob/living/carbon/human/H = user
-	if(H.dna && H.dna.species && (H.dna.features["wings"] != "None"))
+	if(H.getorganslot(ORGAN_SLOT_WINGS))
 		return TRUE
 
 /mob/living/carbon/human/proc/OpenWings()
 	if(!dna || !dna.species)
 		return
-	if("wings" in dna.species.mutant_bodyparts)
-		dna.species.mutant_bodyparts -= "wings"
-		dna.species.mutant_bodyparts |= "wing_sopen"
+	var/obj/item/organ/external/wings/W = getorganslot(ORGAN_SLOT_WINGS)
+	if(W)
+		W.animated_feature = TRUE
 	update_body()
 
 /mob/living/carbon/human/proc/CloseWings()
 	if(!dna || !dna.species)
 		return
-	if("wings_open" in dna.species.mutant_bodyparts)
-		dna.species.mutant_bodyparts -= "wings_open"
-		dna.species.mutant_bodyparts |= "wings"
+	var/obj/item/organ/external/wings/W = getorganslot(ORGAN_SLOT_WINGS)
+	if(W)
+		W.animated_feature = FALSE
 	update_body()
 	if(isturf(loc))
 		var/turf/T = loc
@@ -182,68 +192,5 @@
 //////////////////
 //Robotic emotes//
 /////////////////
-
-/datum/emote/living/carbon/human/robotic/can_run_emote(mob/user, status_check = TRUE, intentional)
-	. = ..()
-	if(. && ishuman(user))
-		var/mob/living/carbon/human/H = user
-		if(H.getorganslot(ORGAN_SLOT_TONGUE) && (H.getorganslot(ORGAN_SLOT_TONGUE).organ_flags & ORGAN_SYNTHETIC))
-			return TRUE
-		else
-			return FALSE
-
-/datum/emote/carbon/human/robotic/boop
-	key = "boop"
-	key_third_person = "boops"
-	message = "boops."
-
-/datum/emote/carbon/human/robotic/buzz
-	key = "buzz"
-	key_third_person = "buzzes"
-	message = "buzzes."
-	message_param = "buzzes at %t."
-	sound = 'sound/machines/buzz-sigh.ogg'
-
-/datum/emote/carbon/human/robotic/buzz2
-	key = "buzz2"
-	message = "buzzes twice."
-	sound = 'sound/machines/buzz-two.ogg'
-
-/datum/emote/carbon/human/robotic/chime
-	key = "chime"
-	key_third_person = "chimes"
-	message = "chimes."
-	sound = 'sound/machines/chime.ogg'
-
-/datum/emote/carbon/human/robotic/honk
-	key = "honk"
-	key_third_person = "honks"
-	message = "honks."
-	vary = TRUE
-	sound = 'sound/items/bikehorn.ogg'
-
-/datum/emote/carbon/human/robotic/ping
-	key = "ping"
-	key_third_person = "pings"
-	message = "pings."
-	message_param = "pings at %t."
-	sound = 'sound/machines/ping.ogg'
-
-/datum/emote/carbon/human/robotic/beep
-	key = "beep"
-	key_third_person = "beeps"
-	message = "beeps."
-	message_param = "beeps at %t."
-	sound = 'sound/machines/twobeep.ogg'
-
-/datum/emote/carbon/human/robotic/sad
-	key = "sad"
-	message = "plays a sad trombone..."
-	sound = 'sound/misc/sadtrombone.ogg'
-
-/datum/emote/carbon/human/robotic/warn
-	key = "warn"
-	message = "blares an alarm!"
-	sound = 'sound/machines/warning-buzzer.ogg'
 
 //Ayy lmao

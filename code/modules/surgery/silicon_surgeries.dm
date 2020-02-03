@@ -104,7 +104,7 @@
 
 /datum/surgery_step/manipulate_components/chest
 	name = "manipulate components"
-	implements = list(/obj/item/organ = 100, /obj/item/stock_parts/cell, /obj/item/stock_parts/capacitor)
+	implements = list(/obj/item/organ = 100, /obj/item/stock_parts/cell = 100, /obj/item/stock_parts/capacitor = 100)
 	accept_hand = TRUE
 
 /datum/surgery_step/manipulate_components/New()
@@ -177,7 +177,17 @@
 			to_chat(user, "<span class='warning'>[B.cell] is blocking access to the internal wiring of [target]!</span>")
 			return -1
 		I = tool
-		if(!(I.organ_flags & ORGAN_SILICON))
+		var/block_insert = TRUE
+		if(I.organ_flags & ORGAN_SILICON)
+			block_insert = FALSE
+		else if(I.required_bodypart_status == BODYPART_ROBOTIC)
+			block_insert = FALSE
+		else if(istype(I, /obj/item/organ/external))
+			var/obj/item/organ/external/OE = I
+			if(OE.status == ORGAN_ROBOTIC)
+				block_insert = OE.no_update
+
+		if(block_insert)
 			to_chat(user, "<span class='warning'>[I] isn't compatible with [target]'s systems!</span>")
 			return -1
 		if(target_zone != I.zone || target.getorganslot(I.slot))
@@ -208,7 +218,8 @@
 			for(var/obj/item/organ/O in organs)
 				O.on_find(user)
 				organs -= O
-				organs[O.name] = O
+				if(!(O.organ_flags & ORGAN_ABSTRACT))
+					organs[O.name] = O
 
 			I = input("Remove which component?", "Surgery", null, null) as null|anything in sortList(organs)
 			if(I && user && target && user.Adjacent(target) && user.get_active_held_item() == tool)

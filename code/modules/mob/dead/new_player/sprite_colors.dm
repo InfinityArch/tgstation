@@ -224,7 +224,7 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 
 /datum/sprite_color/aug_color/rust
 	name = "Rust"
-	color_hex = "414a53"
+	color_hex = "b7410e"
 
 /datum/sprite_color/aug_color/chromium
 	name = "Chromium"
@@ -236,32 +236,12 @@ proc/init_sprite_color_subtypes(prototype, list/full_list, list/species_list)
 
 /datum/sprite_color/aug_color/cobalt
 	name = "Cobalt"
-	color_hex = "ffdead"
+	color_hex = "0047ab"
 
 /datum/sprite_color/aug_color/ruby
 	name = "Ruby"
-	color_hex = "ffdead"
+	color_hex = "9b111e"
 
 /datum/sprite_color/aug_color/malachite
 	name = "Malachite"
 	color_hex = "0bda51"
-
-/datum/sprite_color/aug_color/electrum
-	name = "Electrum"
-	color_hex = "ffdead"
-
-/datum/sprite_color/aug_color/electrum
-	name = "Silver"
-	color_hex = "ffdead"
-
-/datum/sprite_color/aug_color/gold
-	name = "Gold"
-	color_hex = "ffdead"
-
-/datum/sprite_color/aug_color/platinum
-	name = "Platinum"
-	color_hex = "ffdead"
-
-/datum/sprite_color/aug_color/titanium
-	name = "Titanium"
-	color_hex = "ffdead"

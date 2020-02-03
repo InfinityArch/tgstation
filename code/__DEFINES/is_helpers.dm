@@ -101,7 +101,7 @@ GLOBAL_LIST_INIT(turfs_without_ground, typecacheof(list(
 //Silicon mobs
 #define issilicon(A) (istype(A, /mob/living/silicon))
 
-#define isloresilicon(A) (istype(A, /mob/living/silicon) || is_species(A,/datum/species/ipc)) 
+#define isloresilicon(A) (istype(A, /mob/living/silicon) || is_species(A,/datum/species/ipc))
 
 #define issiliconoradminghost(A) (istype(A, /mob/living/silicon) || IsAdminGhost(A))
 

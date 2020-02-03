@@ -302,6 +302,46 @@
 		else
 			return "dead"
 
+//ipc and newborg hooks
+/mob/living/carbon/proc/diag_hud_set_health()
+	if(!(mob_biotypes & MOB_ROBOTIC))
+		return
+	var/image/holder = hud_list[DIAG_HUD]
+	var/icon/I = icon(icon, icon_state, dir)
+	holder.pixel_y = I.Height() - world.icon_size
+	if(stat == DEAD)
+		holder.icon_state = "huddiagdead"
+	else
+		holder.icon_state = "huddiag[RoundDiagBar(health/maxHealth)]"
+
+/mob/living/carbon/proc/diag_hud_set_status()
+	if(!(mob_biotypes & MOB_ROBOTIC))
+		return
+	var/image/holder = hud_list[DIAG_STAT_HUD]
+	var/icon/I = icon(icon, icon_state, dir)
+	holder.pixel_y = I.Height() - world.icon_size
+	if(has_status_effect(STATUS_EFFECT_SLEEPMODE))
+		holder.icon_state = "hudsleep"
+	else
+		switch(stat)
+			if(CONSCIOUS)
+				holder.icon_state = "hudstat"
+			if(UNCONSCIOUS)
+				holder.icon_state = "hudoffline"
+			else
+				holder.icon_state = "huddead2"
+
+/mob/living/carbon/proc/diag_hud_set_borgcell()
+	var/image/holder = hud_list[DIAG_BATT_HUD]
+	var/icon/I = icon(icon, icon_state, dir)
+	holder.pixel_y = I.Height() - world.icon_size
+	var/obj/item/organ/silicon/battery/B = getorganslot(ORGAN_SLOT_BATTERY)
+	if(B && B.cell)
+		var/chargelvl = (B.cell.charge/B.cell.maxcharge)
+		holder.icon_state = "hudbatt[RoundDiagBar(chargelvl)]"
+	else
+		holder.icon_state = "hudnobatt"
+
 //Sillycone hooks
 /mob/living/silicon/proc/diag_hud_set_health()
 	var/image/holder = hud_list[DIAG_HUD]

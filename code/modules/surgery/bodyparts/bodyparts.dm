@@ -15,6 +15,8 @@
 	var/bodypart_status_flags = 0 // bitfield for status flags
 	var/needs_processing = FALSE
 
+	//sprite accessories
+	var/list/mutant_bodyparts = list() // an association list of sprite accessories names that are attached to this bodypart indexed by their mutant feature name
 	var/body_zone //BODY_ZONE_CHEST, BODY_ZONE_L_ARM, etc , used for def_zone
 	var/aux_zone // used for hands and feet
 	var/aux_layer //what layer to display an auxpart on
@@ -141,6 +143,10 @@
 	if(is_organic_limb())
 		playsound(T, 'sound/misc/splort.ogg', 50, TRUE, -1)
 	for(var/obj/item/I in src)
+		if(isorgan(I))
+			var/obj/item/organ/O = I
+			if(O.organ_flags & ORGAN_ABSTRACT)
+				continue
 		I.forceMove(T)
 
 /obj/item/bodypart/proc/consider_processing()
@@ -285,6 +291,26 @@
 	if(new_limb_status)
 		status = new_limb_status
 
+
+	if(owner)
+		for(var/obj/item/organ/O in owner.internal)
+			if(O.required_bodypart_status && (status != O.required_bodypart_status))
+				O.Remove(owner)
+				if(owner.drop_location())
+					O.forceMove(owner.drop_location())
+				else
+					QDEL_NULL(src)
+		if(!no_update)
+			update_sprite_accessories(owner)
+
+	else
+		for(var/obj/item/organ/O in contents)
+			if(O.required_bodypart_status && (status != O.required_bodypart_status))
+				if(drop_location())
+					O.forceMove(drop_location())
+				else
+					QDEL_NULL(src)
+
 	organic = is_organic_limb()
 
 	if((NO_BONES in species_flags_list) || !organic)
@@ -334,6 +360,10 @@
 			bodypart_draw_flags |= BODYPART_DRAW_MONITOR
 		else
 			bodypart_draw_flags &= ~BODYPART_DRAW_MONITOR
+		if(aug_type == AUG_TYPE_DIGITIGRADE)
+			mutant_bodyparts["legs"] = "Digitigrade Legs"
+		else if("legs" in mutant_bodyparts)
+			mutant_bodyparts["legs"] = "None"
 
 	if(heal_limb)
 		bodypart_status_flags &= ~BODYPART_STATUS_BROKEN_BONES
@@ -369,6 +399,7 @@
 			no_update = TRUE
 		else
 			no_update = FALSE
+			update_sprite_accessories(C)
 
 	if(HAS_TRAIT(C, TRAIT_HUSK) && is_organic_limb())
 		should_draw_husked = TRUE
@@ -557,6 +588,37 @@
 		if(aux)
 			aux.color = aux_color ? "#[aux_color]" : "#[draw_color]"
 
+
+//pulls the correct mutant bodyparts from a mob's features
+
+/obj/item/bodypart/proc/update_sprite_accessories(mob/living/carbon/source)
+	if(!source || !ishuman(source) || no_update)
+		return
+	var/robotic = get_augtype()
+	for(var/feature in source.dna.features)
+		if((feature == "legs") && robotic) // robotic digitigrade legs won't be updated
+			continue
+
+		if(feature in mutant_bodyparts)
+			var/feature_to_add = source.dna.features[feature]
+
+			if(feature_to_add != "None")
+				feature_to_add = check_feature_by_index(feature_to_add, source.dna.species.features_id, feature, TRUE)
+				//if(robotic && !(check_feature_by_index(feature_to_add, FEATURE_ROBOTIC, feature)))
+					//feature_to_add = feature_to_add + "_[aug_id]_" + "[robotic]"
+					//if(!(check_feature_by_index(feature_to_add, FEATURE_AUGMENT, feature)))
+						//feature_to_add = check_feature_by_index(feature_to_add, FEATURE_ROBOTIC, feature, TRUE)
+
+			mutant_bodyparts[feature] = feature_to_add
+
+/obj/item/bodypart/proc/get_sprite_accessory_list(mob/living/carbon/human/H)
+	. = list()
+	if(!istype(H))
+		return
+	for(var/feature in mutant_bodyparts)
+		if(mutant_bodyparts[feature] != "None" && H.dna.species.should_display_feature(H, feature))
+			.[feature] = mutant_bodyparts[feature]
+
 /obj/item/bodypart/deconstruct(disassembled = TRUE)
 	drop_organs()
 	qdel(src)
@@ -568,7 +630,7 @@
 		return AUG_TYPE_ANDROID
 	else if(bodypart_draw_flags & BODYPART_DRAW_MONITOR)
 		return AUG_TYPE_MONITOR
-	else if(bodypart_draw_flags & BODYPART_DRAW_DIGITIGRADE)
+	else if(use_digitigrade)
 		return AUG_TYPE_DIGITIGRADE
 	else if(bodypart_draw_flags & BODYPART_DRAW_ROBOTIC_ALT)
 		return AUG_TYPE_ROBOTIC_ALT
@@ -588,6 +650,7 @@
 	stam_damage_coeff = 1
 	max_stamina_damage = 120
 	var/obj/item/cavity_item
+	mutant_bodyparts = list("body_markings" = "None")
 
 /obj/item/bodypart/chest/can_dismember(obj/item/I)
 	if(!((owner.stat == DEAD) || owner.InFullCritical()))
@@ -770,6 +833,7 @@
 	body_zone = BODY_ZONE_L_LEG
 	status = BODYPART_ORGANIC
 	body_part = LEG_LEFT
+	mutant_bodyparts = list("legs" = "None")
 	aux_zone = BODY_ZONE_PRECISE_L_FOOT
 	aux_layer = FEET_PART_LAYER
 	body_damage_coeff = 0.75
@@ -831,6 +895,7 @@
 	body_zone = BODY_ZONE_R_LEG
 	status = BODYPART_ORGANIC
 	body_part = LEG_RIGHT
+	mutant_bodyparts = list("legs" = "None")
 	aux_zone = BODY_ZONE_PRECISE_R_FOOT
 	aux_layer = FEET_PART_LAYER
 	body_damage_coeff = 0.75

@@ -173,7 +173,7 @@
 	LB.eyes = src
 	..()
 
-/obj/item/organ/ears/transfer_to_limb(obj/item/bodypart/head/LB, mob/living/carbon/human/C)
+/obj/item/organ/external/ears/transfer_to_limb(obj/item/bodypart/head/LB, mob/living/carbon/human/C)
 	LB.ears = src
 	..()
 

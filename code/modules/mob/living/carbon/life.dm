@@ -568,16 +568,16 @@ GLOBAL_LIST_INIT(ballmer_windows_me_msg, list("Yo man, what if, we like, uh, put
 			adjustToxLoss(2) //Let's be honest you shouldn't be alive by now
 
 //used in human and monkey handle_environment()
-/mob/living/carbon/proc/natural_bodytemperature_stabilization(target_temp = BODYTEMP_NORMAL)
-	var/body_temperature_difference = target_temp - bodytemperature
+/mob/living/carbon/proc/natural_bodytemperature_stabilization()
+	var/body_temperature_difference = BODYTEMP_NORMAL - bodytemperature
 	switch(bodytemperature)
-		if(-INFINITY to target_temp - 50) //Cold damage limit is 50 below the default, the temperature where you start to feel effects.
+		if(-INFINITY to BODYTEMP_COLD_DAMAGE_LIMIT) //Cold damage limit is 50 below the default, the temperature where you start to feel effects.
 			return max((body_temperature_difference * metabolism_efficiency / BODYTEMP_AUTORECOVERY_DIVISOR), BODYTEMP_AUTORECOVERY_MINIMUM)
-		if(target_temp - 50 to target_temp)
+		if(BODYTEMP_COLD_DAMAGE_LIMIT to BODYTEMP_NORMAL)
 			return max(body_temperature_difference * metabolism_efficiency / BODYTEMP_AUTORECOVERY_DIVISOR, min(body_temperature_difference, BODYTEMP_AUTORECOVERY_MINIMUM/4))
-		if(target_temp to target_temp + 50) // Heat damage limit is 50 above the default, the temperature where you start to feel effects.
+		if(BODYTEMP_NORMAL to BODYTEMP_HEAT_DAMAGE_LIMIT) // Heat damage limit is 50 above the default, the temperature where you start to feel effects.
 			return min(body_temperature_difference * metabolism_efficiency / BODYTEMP_AUTORECOVERY_DIVISOR, max(body_temperature_difference, -BODYTEMP_AUTORECOVERY_MINIMUM/4))
-		if(target_temp + 50 to INFINITY)
+		if(BODYTEMP_HEAT_DAMAGE_LIMIT to INFINITY)
 			return min((body_temperature_difference / BODYTEMP_AUTORECOVERY_DIVISOR), -BODYTEMP_AUTORECOVERY_MINIMUM)	//We're dealing with negative numbers
 
 /////////

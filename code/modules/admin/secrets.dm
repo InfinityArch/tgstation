@@ -400,8 +400,8 @@
 
 				if(H.dna.species.id == "human")
 					if(H.dna.features["tail"] == "None" || H.dna.features["ears"] == "None")
-						var/obj/item/organ/ears/cat/ears = new
-						var/obj/item/organ/tail/cat/tail = new
+						var/obj/item/organ/external/ears/cat/ears = new
+						var/obj/item/organ/external/tail/cat/tail = new
 						ears.Insert(H, drop_if_replaced=FALSE)
 						tail.Insert(H, drop_if_replaced=FALSE)
 					var/list/honorifics = list("[MALE]" = list("kun"), "[FEMALE]" = list("chan","tan"), "[NEUTER]" = list("san"), "[PLURAL]" = list("san")) //John Robust -> Robust-kun

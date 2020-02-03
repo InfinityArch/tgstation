@@ -133,9 +133,11 @@ GENE SCANNER
 /proc/healthscan(mob/user, mob/living/M, mode = 1, advanced = FALSE)
 	if(isliving(user) && (user.incapacitated() || user.eye_blind))
 		return
-	if((M.mob_biotypes & MOB_ROBOTIC) && !advanced)
-		to_chat(user, "<span class='info'>Analyzing results for [M]:\n\tOverall status: <b>ERROR</b></span>")
-		to_chat(user, "<span class='caution'>Warning, robotic subject detected, unable to acquire health data.</span>")	
+	if((M.mob_biotypes & MOB_ROBOTIC))
+		if(!advanced)
+			to_chat(user, "<span class='info'>Analyzing results for [M]:\n\tOverall status: <b>ERROR</b></span>")
+		else
+			to_chat(user, "<span class='caution'>Warning, robotic subject detected, unable to acquire health data!</span>")
 		return
 
 	//Damage specifics
@@ -208,7 +210,7 @@ GENE SCANNER
 	if(advanced)
 		if(iscarbon(M))
 			var/mob/living/carbon/C = M
-			var/obj/item/organ/ears/ears = C.getorganslot(ORGAN_SLOT_EARS)
+			var/obj/item/organ/external/ears/ears = C.getorganslot(ORGAN_SLOT_EARS)
 			to_chat(user, "\t<span class='info'><b>==EAR STATUS==</b></span>")
 			if(istype(ears))
 				var/healthy = TRUE

@@ -8,6 +8,7 @@
 	status = BODYPART_ORGANIC
 	body_part = HEAD
 	w_class = WEIGHT_CLASS_BULKY //Quite a hefty load
+	mutant_bodyparts = list("horns" = "None", "frills" = "None", "snout" = "None", "face_markings" = "None", "caps" = "None")
 	slowdown = 1 //Balancing measure
 	throw_range = 2 //No head bowling
 	px_x = 0
@@ -18,9 +19,8 @@
 	var/mob/living/brain/brainmob = null //The current occupant.
 	var/obj/item/organ/brain/brain = null //The brain organ
 	var/obj/item/organ/eyes/eyes
-	var/obj/item/organ/ears/ears
+	var/obj/item/organ/external/ears/ears
 	var/obj/item/organ/tongue/tongue
-
 	//Limb appearance info:
 	var/real_name = "" //Replacement name
 	//Hair colour and style
@@ -30,20 +30,11 @@
 	//Facial hair colour and style
 	var/facial_hair_color = "000"
 	var/facial_hairstyle = "Shaved"
-	//Eye Colouring
-	var/eye_optics = ""
-	var/monitor_state = ""
-	var/datum/action/item_action/adjust_monitor_state/monitor_action
 
 	var/lip_style = null
 	var/lip_color = "white"
 
 	//mutant bodyparts
-	var/datum/sprite_accessory/horns/horns_sprite = ""
-	var/datum/sprite_accessory/face_markings/face_markings_sprite = ""
-	var/datum/sprite_accessory/snout_sprite = ""
-	var/datum/sprite_accessory/frills_sprite = ""
-	var/datum/sprite_accessory/ears_sprite = ""
 
 /obj/item/bodypart/head/Destroy()
 	QDEL_NULL(brainmob) //order is sensitive, see warning in handle_atom_del() below
@@ -194,28 +185,12 @@
 
 /obj/item/bodypart/head/change_bodypart_status(new_limb_status, heal_limb, change_icon_to_default, aug_style_target, aug_type = AUG_TYPE_ROBOTIC, aug_color_target)
 	. = ..()
-	var/augmentation_type = get_augtype()
-	if(!augmentation_type) //if its an organic limb
-		eye_optics = ""
-		monitor_state = ""
-		if(monitor_action)
-			QDEL_NULL(monitor_action)
-		return
-	else if(augmentation_type !=  AUG_TYPE_MONITOR)
-		monitor_state = ""
-		if(monitor_action)
-			QDEL_NULL(monitor_action)
-	else
-		if(!monitor_action)
-			monitor_action = new(src)
-		if(owner)
-			monitor_action.Grant(owner)
-
-	var/datum/sprite_accessory/augmentation/augmentation_style = GLOB.augmentation_styles_list[aug_id2augstyle(aug_id)]
-	if(LAZYLEN(augmentation_style.optics_types) && augmentation_type in augmentation_style.optics_types)
-		eye_optics = "[aug_id]_[augmentation_type]"
-	else
-		eye_optics = ""
+	if(owner)
+		var/obj/item/organ/eyes/silicon/E = owner.getorganslot(ORGAN_SLOT_EYES)
+		if(!istype(E))
+			return
+		E.update_eye_optics(owner)
+		owner.update_body()
 
 /obj/item/bodypart/head/update_icon_dropped()
 	var/list/standing = get_limb_icon(1)
@@ -272,23 +247,13 @@
 
 		// eyes
 		var/image/eyes_overlay
-		if(eye_optics)
-			message_admins("here's why this shit is triggering: [eye_optics]")
-			var/datum/sprite_accessory/optics/O = GLOB.augmentation_optics_list[eye_optics]
-			if(O)//InfinityArch: TODO- actually make optics datums for the various robotic heads with alternate eye styles
-				eyes_overlay = image('icons/mob/augmentation/aug_optics.dmi', O.icon_state, -BODY_LAYER, SOUTH)
-				eyes_overlay.color = get_augtype() == AUG_TYPE_MONITOR ? AUG_OPTICS_DEFAULT_COLOR : eyes.eye_color
-				. += eyes_overlay
-		else if(eyes)
-			eyes_overlay = image('icons/mob/human_face.dmi', eyes.eye_icon_state, -BODY_LAYER, SOUTH)
+		if(eyes)
+			eyes_overlay = image(eyes.eye_icon_base, eyes.eye_icon_state, -BODY_LAYER, SOUTH)
 			if(eyes.eye_color)
 				eyes_overlay.color = "#" + eyes.eye_color
 			. += eyes_overlay
 		else if(is_organic_limb())
 			eyes_overlay = image('icons/mob/human_face.dmi', "eyes_missing", -BODY_LAYER, SOUTH)
-			. += eyes_overlay
-		else
-			eyes_overlay = image('icons/mob/human_face.dmi', "eyes_missing_robotic", -BODY_LAYER, SOUTH)
 			. += eyes_overlay
 
 /obj/item/bodypart/head/monkey

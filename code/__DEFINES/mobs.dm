@@ -75,17 +75,18 @@
 #define BODYPART_DRAW_ANDROID_SKELETAL	1 << 4 // causes android parts to render in their flesh stripped state
 
 //augmentation customization defaults
-#define AUGMENTATION_INDEX			"augmentation"
+#define FEATURE_AUGMENT				"augmentation"	  // augmented versions of organic features are found under this index in the species indexed sprite_accessory lists
+#define FEATURE_ROBOTIC				"feature_robotic" // robot exclusive features are found under THIS index in the species indexed sprite_accessory lists
 #define AUG_COLOR					"aug_color"
 #define AUG_COLOR_DEFAULT			"Gunmetal"
 #define AUG_STYLE_DEFAULT			"Nanotrasen Robotics Division"
-#define AUG_OPTICS_DEFAULT_COLOR	"#013220" //color hex for optics that are currently off
+#define AUG_OPTICS_DEFAULT_COLOR	"013220" //color hex for optics that are currently off
 
 // bodypart customization
 #define BODYPART_AMPUTATED		"amputated"
 #define AUG_TYPE_ROBOTIC		"robotic"
 #define AUG_TYPE_ROBOTIC_ALT	"robotic_alt"
-#define AUG_TYPE_DIGITIGRADE	"robotic digitigrade"
+#define AUG_TYPE_DIGITIGRADE	"robotic_digitigrade"
 #define AUG_TYPE_ANDROID		"android"
 #define AUG_TYPE_MONITOR		"monitor"
 
@@ -327,10 +328,12 @@
 #define	ETHEREAL_CHARGE_FACTOR	0.12 //factor at which ethereal's charge decreases
 #define	REAGENTS_METABOLISM 0.4	//How many units of reagent are consumed per tick, by default.
 #define REAGENTS_EFFECT_MULTIPLIER (REAGENTS_METABOLISM / 0.4)	// By defining the effect multiplier this way, it'll exactly adjust all effects according to how they originally were with the 0.4 metabolism
-#define DEFAULT_SPECIES_INDEX "default" // the fallback species index to use for a sprite feature
-#define DEFAULT_FEATURES_LIST list("mcolor" = "FFFFFF", "tail" = "None", "wings" = "None", "snout" = "None", "horns" = "None", "ears" = "None", "frills" = "None", "tail_accessory" = "None", "face_markings" = "None", "body_markings" = "None", "legs" = "Normal Legs", "caps" = "None")
-#define DEFAULT_FEATURES_NAMES list("skin_tone" = "skin tone", "hair" = "hairstyle", "facial_hair" = "facial hairstyle", "mcolor" = "body color", "tail" = "tail", "wings" = "wings", "snout" = "snout", "horns" = "horns", "ears" = "ears", "frills" = "frills", "tail_accessory" = "tail accessory", "face_markings" = "face_markings", "body_markings" = "body markings", "legs" = "legs")
 
+// features related defines
+#define DEFAULT_SPECIES_INDEX "default" // the fallback species index to use for a sprite feature
+#define DEFAULT_FEATURES_LIST list("mcolor" = "FFFFFF", "tail" = "None", "wings" = "None", "snout" = "None", "horns" = "None", "ears" = "None", "frills" = "None", "tail_accessory" = "None", "face_markings" = "None", "body_markings" = "None", "legs" = "None", "caps" = "None")
+#define DEFAULT_FEATURES_NAMES list("skin_tone" = "skin tone", "hair" = "hairstyle", "facial_hair" = "facial hairstyle", "mcolor" = "body color", "tail" = "tail", "wings" = "wings", "snout" = "snout", "horns" = "horns", "ears" = "ears", "frills" = "frills", "tail_accessory" = "tail accessory", "face_markings" = "face_markings", "body_markings" = "body markings", "legs" = "legs style")
+#define HEAD_FEATURES_LIST list("snout", "horns", "ears", "frills", "face_markings", "caps")
 
 // Eye protection
 #define FLASH_PROTECTION_SENSITIVE -1

@@ -5,7 +5,7 @@
 	naming_convention = NAME_NUM
 	names_id = "human"
 	species_traits = list(NOHEART,NOZOMBIE,NOTRANSSTING, NO_DNA_COPY, NOSTOMACH, TORSO_BRAIN, EYECOLOR, HAIR, FACEHAIR, MUTCOLORS, LIPS)
-	inherent_traits = list(TRAIT_VIRUSIMMUNE, TRAIT_NOMETABOLISM,TRAIT_TOXIMMUNE,TRAIT_NOBREATH,
+	inherent_traits = list(TRAIT_NOMETABOLISM,TRAIT_TOXIMMUNE,TRAIT_NOBREATH,
 							TRAIT_RESISTHIGHPRESSURE,TRAIT_RESISTLOWPRESSURE,TRAIT_RADIMMUNE,
 							TRAIT_NOHUNGER, TRAIT_EASYDISMEMBER, TRAIT_NOHARDCRIT,
 							TRAIT_SLEEPIMMUNE, TRAIT_EASYLIMBDISABLE, TRAIT_RESISTHEATHANDS,
@@ -16,16 +16,19 @@
 	damage_overlay_type = "robotic"
 	mutanttongue = /obj/item/organ/tongue/robot/silicon
 	mutanteyes = /obj/item/organ/eyes/silicon
-	mutantears = /obj/item/organ/ears/silicon
+	mutantears = /obj/item/organ/external/ears/silicon
 	mutant_brain = /obj/item/organ/brain/silicon
+	feature_names = list("horns" = "head accessory")
+	mutant_bodyparts = list("horns")
+	default_features = list("mcolor" = "FFF", "horns" = "None")
 	species_hud = "ipc"
-	armor = 20 //ipcs don't have crit, and go straight to dead, so they have 120 effective HP
 	speedmod = 2 // as slow as golems
 	age_min = 0
 	age_max = 394
 	mutant_organs = list(/obj/item/organ/silicon/battery/ipc, /obj/item/organ/silicon/coolant_pump, /obj/item/organ/silicon/module/arm/apc_charger)
 	quirk_budget = 0 //ipcs don't get quirk points
-	limbs_id = "human" // ipcs with android parts will use human cosmetics
+	limbs_id = "human" // ipcs with android parts will use human hair and limb styles
+	features_id = "robotic" //but their roundstart mutant bodypart selection is limited to robotic features
 	changesource_flags = MIRROR_BADMIN | MIRROR_PRIDE | RACE_SWAP | ERT_SPAWN
 	species_language_holder = /datum/language_holder/synthetic
 	limb_customization_type = LIMB_CUSTOMIZATION_FULL
@@ -35,6 +38,7 @@
 	var/safe_start = FALSE // set to true when vital internal organs are removed; note that the posibrain/mmi is not actually vital.
 	var/static_power_update_delay = 20
 	var/datum/action/innate/toggle_sleep_mode/sleep_mode_toggle
+	//var/obj/screen/battery_display/battery_hud
 	var/voluntary_sleepmode // if they're in in sleep mode of its own volition, skips power handling procs
 	var/charging // if we've recieved any recharging this update
 
@@ -49,11 +53,9 @@
 	. = ..()
 	C.bubble_icon = "robot"
 	sleep_mode_toggle = new
+	//battery_hud = new
+	//C.infodisplay += battery_hud
 	sleep_mode_toggle.Grant(C)
-	//for(var/datum/atom_hud/data/human/medical/medi_hud in GLOB.huds)
-		//hud.remove_from_hud(C)
-	//for(var/datum/atom_hud/data/diagnostic/diag_hud in GLOB.huds)
-		//hud.add_to_hud(C)
 	if(C.loc && ishuman(C))
 		var/mob/living/carbon/human/H = C
 		handle_heat_load(H.calculate_affecting_pressure(H.loc.return_air()), H, FALSE)
@@ -77,7 +79,13 @@
 	C.clear_alert("overheating")
 	C.clear_alert("charge")
 	C.bubble_icon = initial(C.bubble_icon)
+
 	sleep_mode_toggle.Remove(C)
+	QDEL_NULL(sleep_mode_toggle)
+
+	//infodisplay -= battery_hud
+	//QDELNULL(battery_hud)
+
 	. = ..()
 	var/datum/status_effect/incapacitating/sleep_mode/S = C.has_status_effect(STATUS_EFFECT_SLEEPMODE)
 	if(S)
@@ -85,9 +93,6 @@
 	var/datum/status_effect/cyborg_power_regen/RC = C.has_status_effect(STATUS_EFFECT_POWERREGEN)
 	if(RC)
 		qdel(RC)
-	for(var/X in C.bodyparts)
-		var/obj/item/bodypart/BP = X
-		BP.change_bodypart_status(BODYPART_ORGANIC, FALSE, TRUE)
 	for(var/Y in C.internal_organs) // remove any aftermarket silicon components
 		var/obj/item/organ/O = Y
 		if(O.gc_destroyed)
@@ -98,6 +103,11 @@
 				O.forceMove(C.drop_location())
 			else
 				qdel(O)
+	for(var/X in C.bodyparts)
+		var/obj/item/bodypart/BP = X
+		if(BP.no_update) // aftermarket parts won't be flipped back to organic
+			continue
+		BP.change_bodypart_status(BODYPART_ORGANIC, FALSE, TRUE)
 
 /datum/species/ipc/spec_life(mob/living/carbon/human/H)
 	if(H.stat != DEAD)
@@ -146,7 +156,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	if(. && H.stat != DEAD && (H.health < 0.5 * H.getMaxHealth()) && damagetype == BRUTE && prob(CLAMP(damage, 10, 60)))
 		do_sparks(5, FALSE, H)
 
-/datum/species/ipc/handle_environment(datum/gas_mixture/environment, mob/living/carbon/human/H)
+/datum/species/ipc/handle_environment(datum/gas_mixture/environment, mob/living/carbon/human/H) //overriding the entire handle environment proc for these guys was the least of all possible evils
 	if(!environment)
 		return
 	if(istype(H.loc, /obj/machinery/atmospherics/components/unary/cryo_cell))

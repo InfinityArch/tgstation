@@ -1,6 +1,15 @@
 /datum/emote/silicon
-	mob_type_allowed_typecache = list(/mob/living/silicon)
+	mob_type_allowed_typecache = list(/mob/living/silicon, /mob/living/carbon/human)
 	emote_type = EMOTE_AUDIBLE
+
+/datum/emote/silicon/can_run_emote(mob/user, status_check = TRUE, intentional)
+	if(!..())
+		return FALSE
+	if(issilicon(user))
+		return TRUE
+	var/mob/living/carbon/human/H = user
+	if(H.getorganslot(ORGAN_SLOT_TONGUE) && (H.getorganslot(ORGAN_SLOT_TONGUE).organ_flags & ORGAN_SYNTHETIC))
+		return TRUE
 
 /datum/emote/silicon/boop
 	key = "boop"

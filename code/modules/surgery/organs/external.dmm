@@ -1,7 +1,0 @@
-// Note: tails only work in humans. They use human-specific parameters and rely on human code for displaying.
-
-/obj/item/organ/external
-	name = "tail"
-
-	icon_state = "severedtail"
-	var/datum/sprite_accessory/sprite_part

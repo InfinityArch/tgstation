@@ -60,6 +60,7 @@ GLOBAL_LIST_EMPTY(face_markings_list_species)
 GLOBAL_LIST_EMPTY(body_markings_list)
 GLOBAL_LIST_EMPTY(body_markings_list_species)
 GLOBAL_LIST_EMPTY(caps_list)
+GLOBAL_LIST_EMPTY(caps_list_species)
 
 	//Augmentation
 GLOBAL_LIST_EMPTY(aug_colors_list)

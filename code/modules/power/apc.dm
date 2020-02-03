@@ -77,7 +77,7 @@
 	var/chargecount = 0
 	var/locked = TRUE
 	var/coverlocked = TRUE
-	var/free_recharging = TRUE // If true charging cables can draw power with this apc without the user having engineering access -- InfinityArch
+	var/free_recharging = TRUE // If true charging cables can draw power with this apc without the user having engineering access -- TODO: Make this work-InfinityArch
 	var/aidisabled = 0
 	var/tdir = null
 	var/obj/machinery/power/terminal/terminal = null

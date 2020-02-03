@@ -91,7 +91,7 @@ __Returns__:
 	if(!GLOB.wings_list.len)
 		init_sprite_accessory_subtypes(/datum/sprite_accessory/wings, GLOB.wings_list, species_list = GLOB.wings_list_species)
 	if(!GLOB.caps_list.len)
-		init_sprite_accessory_subtypes(/datum/sprite_accessory/caps, GLOB.caps_list)
+		init_sprite_accessory_subtypes(/datum/sprite_accessory/caps, GLOB.caps_list, species_list = GLOB.caps_list_species)
 
 	var/temp_index // this is used to store whether the current feature to randomize has a valid entry in its global species list under the species' features_id index
 	if(!features || !features.len)
@@ -131,8 +131,99 @@ __Returns__:
 		temp_index = "legs" in S.mutant_bodyparts ? S.features_id : DEFAULT_SPECIES_INDEX
 		features["legs"] = pick(GLOB.legs_list | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])
 	if("caps" in S.mutant_bodyparts)
-		features["caps"] = pick(GLOB.caps_list)
+		features["caps"] = pick(GLOB.caps_list | GLOB.caps_list_species[DEFAULT_SPECIES_INDEX])
 	return features
+
+
+/*
+# get_feature_list
+
+__description__
+- This proc fetches the global list associated with a particular sprite feature
+
+__Arguments__
+*feature*: the feature to find a global list for
+*species_index*: if supplied with an id string the proc will search for a list in the species indexed sprite accessory arrays under this index.
+*return_null*: whether to return null or an empty list if no valid list is found for the inputs
+__Returns__:
+- returns the global list associated with a supplie feature, or the species indexed list stored in the relevant array. If no list is found, it will return null if return_null is TRUE and an empty list otherwise.
+*/
+proc/get_feature_list(feature, species_index, return_null)
+	. = return_null ? null : list()
+	switch(feature)
+		if("tail")
+			if(species_index)
+				if(GLOB.tails_list_species[species_index])
+					. = GLOB.tails_list_species[species_index]
+			else
+				. = GLOB.tails_list
+		if("waggingtail")
+			. = GLOB.animated_tails_list
+		if("wings")
+			if(species_index)
+				if(GLOB.wings_list_species[species_index])
+					. = GLOB.wings_list_species[species_index]
+			else
+				. = GLOB.wings_list
+		if("wings_animated")
+			. = GLOB.wings_open_list
+		if("snout")
+			if(species_index)
+				if(GLOB.snouts_list_species[species_index])
+					. = GLOB.snouts_list_species[species_index]
+			else
+				. = GLOB.snouts_list
+		if("horns")
+			if(species_index)
+				if(GLOB.horns_list_species[species_index])
+					. = GLOB.horns_list_species[species_index]
+			else
+				. = GLOB.horns_list
+		if("frills")
+			if(species_index)
+				if(GLOB.frills_list_species[species_index])
+					. = GLOB.frills_list_species[species_index]
+			else
+				. = GLOB.frills_list
+		if("tail_accessory")
+			if(species_index)
+				if(GLOB.tail_accessory_list_species[species_index])
+					. = GLOB.tail_accessory_list_species[species_index]
+			else
+				. = GLOB.tail_accessory_list
+		if("waggingtail_accessory")
+			. = GLOB.animated_tail_accessory_list
+		if("face_markings")
+			if(species_index)
+				if(GLOB.face_markings_list_species[species_index])
+					. = GLOB.face_markings_list_species[species_index]
+			else
+				. = GLOB.face_markings_list
+		if("body_markings")
+			if(species_index)
+				if(GLOB.body_markings_list_species[species_index])
+					. = GLOB.body_markings_list_species[species_index]
+			else
+				. = GLOB.body_markings_list
+		if("legs")
+			if(species_index)
+				if(GLOB.legs_list_species[species_index])
+					. = GLOB.legs_list_species[species_index]
+			else
+				. = GLOB.legs_list_species
+		if("caps")
+			if(species_index)
+				if(GLOB.caps_list_species[species_index])
+					. = GLOB.caps_list_species[species_index]
+			else
+				. = GLOB.caps_list
+		if("ears")
+			if(species_index)
+				if(GLOB.ears_list_species[species_index])
+					. = GLOB.ears_list_species[species_index]
+			else
+				. = GLOB.ears_list
+
 
 /proc/random_hairstyle(gender, species_index = DEFAULT_SPECIES_INDEX)
 	switch(gender)

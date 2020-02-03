@@ -97,6 +97,15 @@
 		if(target_zone != I.zone || target.getorganslot(I.slot))
 			to_chat(user, "<span class='warning'>There is no room for [I] in [target]'s [parse_zone(target_zone)]!</span>")
 			return -1
+		var/block_insert = FALSE
+		if(I.organ_flags & ORGAN_SILICON)
+			block_insert = TRUE
+			if(I.required_bodypart_status)
+				var/obj/item/bodypart/BP = target.get_bodypart(target_zone)
+				if(BP.status != I.required_bodypart_status)
+					block_insert = TRUE
+			if(block_insert)
+				to_chat(user, "<span class='warning'>[I] isn't compatible with [target]'s physiology!</span>")
 
 		display_results(user, target, "<span class='notice'>You begin to insert [tool] into [target]'s [parse_zone(target_zone)]...</span>",
 			"<span class='notice'>[user] begins to insert [tool] into [target]'s [parse_zone(target_zone)].</span>",
@@ -112,7 +121,8 @@
 			for(var/obj/item/organ/O in organs)
 				O.on_find(user)
 				organs -= O
-				organs[O.name] = O
+				if(!(O.organ_flags & ORGAN_ABSTRACT))
+					organs[O.name] = O
 
 			I = input("Remove which organ?", "Surgery", null, null) as null|anything in sortList(organs)
 			if(I && user && target && user.Adjacent(target) && user.get_active_held_item() == tool)

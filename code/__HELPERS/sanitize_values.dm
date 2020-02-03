@@ -41,7 +41,7 @@ __Arguments__
 __Returns__: returns the input list (features) with features found in *features_to_sanitize* corrected to permitted values for the given *species_index*, runtimes if no input list is given
 */
 
-/proc/sanitize_features(list/features, species_index = DEFAULT_SPECIES_INDEX, list/features_to_sanitize = list(), aug_exmpt = FALSE)
+/proc/sanitize_features(list/features, species_index = DEFAULT_SPECIES_INDEX, list/features_to_sanitize = list(), aug_exempt = FALSE)
 	var/temp_index // this stores the species_index, and is checked for validity prior to sanitizing a feature, if there's nothing at species_index, then we use DEFAULT_SPECIES_INDEX instead
 	if(!features_to_sanitize.len)
 		features_to_sanitize = features
@@ -73,25 +73,79 @@ __Returns__: returns the input list (features) with features found in *features_
 		features["body_markings"] = sanitize_inlist(features["body_markings"], (GLOB.body_markings_list & GLOB.body_markings_list_species[temp_index]) | GLOB.body_markings_list_species[DEFAULT_SPECIES_INDEX])
 	if("legs" in features_to_sanitize)
 		temp_index = GLOB.legs_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
-		features["feature_legs"] = sanitize_inlist(features["legs"], (GLOB.legs_list && GLOB.legs_list_species[temp_index]) | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])
+		features["legs"] = sanitize_inlist(features["legs"], GLOB.legs_list | GLOB.legs_list_species[DEFAULT_SPECIES_INDEX])
 	if("wings" in features_to_sanitize)
 		temp_index = GLOB.wings_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		features["wings"] = sanitize_inlist(features["wings"], GLOB.wings_list & GLOB.wings_list_species[temp_index])
 	return features
 
 /*
-# sanitize_bodyparts
+# check_feature_by_index
 
-__description__: this proc checks whether a hair or facial hair style is valid and permitted for a given character
+__description__: this proc checks whether a a given sprite accessory index is present in the global sprite accessory lists
 
 __Arguments__
-*alternate_bodyparts*: a list
-*limb customization type*: which types of limbs customization is allowed
+*feature*: the string associated with the sprite_accessory
+*species index*: what index in the sprite accessory species list to search under
+*feature_type*: a string the denotes the type of feature, see DEFAULT_FEATURES_LIST in mobs.dm
+*sanitize*: if true, the proc will sanitize the feature, use this to quickly get a valid state for a single feature
+__Returns__:
+*If sanitize is true, returns either the original feature or a valid entry within the target list.
+* If sanitize is false, it will return false if the feature is not present in the target list, and true if it is
+*/
+proc/check_feature_by_index(feature, species_index, feature_type, sanitize = FALSE)
+
+	if(sanitize)
+		var/list/feature_list = list()
+		feature_list[feature_type] = feature
+		feature_list = sanitize_features(feature_list, species_index)
+		return feature_list[feature_type]
+
+	switch(feature_type)
+		if("tail")
+			if(GLOB.tails_list_species[species_index])
+				. = feature in GLOB.tails_list & GLOB.tails_list_species[species_index]
+		if("tail_accessory")
+			if(GLOB.tail_accessory_list[species_index])
+				. = feature in GLOB.tail_accessory_list & GLOB.tail_accessory_list[species_index]
+		if("snout")
+			if(GLOB.snouts_list_species[species_index])
+				. = feature in GLOB.snouts_list & GLOB.snouts_list_species[species_index]
+		if("ears")
+			if(GLOB.ears_list_species[species_index])
+				. = feature in GLOB.ears_list & GLOB.ears_list_species[species_index]
+		if("frills")
+			if(GLOB.frills_list_species[species_index])
+				. = feature in GLOB.frills_list & GLOB.frills_list_species[species_index]
+		if("horns")
+			if(GLOB.horns_list_species[species_index])
+				if(feature in GLOB.horns_list & GLOB.horns_list_species[species_index])
+					return TRUE
+		if("wings")
+			if(GLOB.wings_list_species[species_index])
+				. = feature in GLOB.wings_list & GLOB.wings_list_species[species_index]
+		if("body_markings")
+			if(GLOB.body_markings_list[species_index])
+				. = feature in GLOB.body_markings_list & GLOB.body_markings_list[species_index]
+		if("face_markings")
+			if(GLOB.face_markings_list[species_index])
+				. = feature in GLOB.face_markings_list & GLOB.body_markings_list[species_index]
+		if("legs")
+			. = TRUE
+
+/*
+# sanitize_bodyparts
+
+__description__: this proc checks an input list of roundstart alternate bodyparts are valid for a given character
+
+__Arguments__
+*alternate_bodyparts*: association list with modification types indexed by bodyzone
+*limb customization type*: which types of limbs customization is allowed for this species
 __Returns__: returns the input list modified according to the limb customization type allowed
 */
 
 /proc/sanitize_bodyparts(list/alternate_bodyparts, limb_customization_type = LIMB_CUSTOMIZATION_DEFAULT)
-	if(!limb_customization_type || !alternate_bodyparts)
+	if(!limb_customization_type || !alternate_bodyparts || !alternate_bodyparts.len)
 		return list()
 	if(limb_customization_type == LIMB_CUSTOMIZATION_DEFAULT)
 		if(BODY_ZONE_CHEST in alternate_bodyparts)
@@ -116,24 +170,26 @@ __Returns__: returns the original style if its valid for the character, and the 
 */
 
 /proc/sanitize_hairstyle(hairstyle, species_index, gender = NEUTER, facial = FALSE)
-	var/hair_type = hairstyle
+
 	if(!facial)
+		species_index = GLOB.hairstyles_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		if(gender == MALE)
-			hair_type = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]))
+			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_male_list & GLOB.hairstyles_list_species[species_index]))
 		else if(gender == FEMALE)
-			hair_type = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[species_index]))
+			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_female_list & GLOB.hairstyles_list_species[species_index]))
 		else
-			hair_type = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[species_index])
+			hairstyle = sanitize_inlist(hairstyle, GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.hairstyles_list_species[species_index])
 
 	else
+		species_index = GLOB.facial_hairstyles_list_species[species_index] ? species_index : DEFAULT_SPECIES_INDEX
 		if(gender == MALE)
-			hair_type = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]))
+			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_male_list & GLOB.facial_hairstyles_list_species[species_index]))
 		else if(gender == FEMALE)
-			hair_type = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[species_index]))
+			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.facial_hairstyles_female_list & GLOB.facial_hairstyles_list_species[species_index]))
 		else
-			hair_type = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.facial_hairstyles_list_species[species_index])
+			hairstyle = sanitize_inlist(hairstyle, GLOB.facial_hairstyles_list_species[DEFAULT_SPECIES_INDEX] | GLOB.facial_hairstyles_list_species[species_index])
 
-	return hair_type
+	return hairstyle
 
 /*
 # sanitize_skin_tone

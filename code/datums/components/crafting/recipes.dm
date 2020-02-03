@@ -112,7 +112,7 @@
 /datum/crafting_recipe/tailclub
 	name = "Tail Club"
 	result = /obj/item/tailclub
-	reqs = list(/obj/item/organ/tail/lizard = 1,
+	reqs = list(/obj/item/organ/external/tail/lizard = 1,
 	            /obj/item/stack/sheet/metal = 1)
 	time = 40
 	category = CAT_WEAPONRY
@@ -121,7 +121,7 @@
 /datum/crafting_recipe/tailwhip
 	name = "Liz O' Nine Tails"
 	result = /obj/item/melee/chainofcommand/tailwhip
-	reqs = list(/obj/item/organ/tail/lizard = 1,
+	reqs = list(/obj/item/organ/external/tail/lizard = 1,
 	            /obj/item/stack/cable_coil = 1)
 	time = 40
 	category = CAT_WEAPONRY
@@ -130,7 +130,7 @@
 /datum/crafting_recipe/catwhip
 	name = "Cat O' Nine Tails"
 	result = /obj/item/melee/chainofcommand/tailwhip/kitty
-	reqs = list(/obj/item/organ/tail/cat = 1,
+	reqs = list(/obj/item/organ/external/tail/cat = 1,
 	            /obj/item/stack/cable_coil = 1)
 	time = 40
 	category = CAT_WEAPONRY
@@ -360,7 +360,7 @@
 	name = "Lizard Cloche Hat"
 	result = /obj/item/clothing/head/lizard
 	time = 10
-	reqs = list(/obj/item/organ/tail/lizard = 1)
+	reqs = list(/obj/item/organ/external/tail/lizard = 1)
 	category = CAT_MISC
 
 /datum/crafting_recipe/lizardhat_alternate
@@ -374,8 +374,8 @@
 	name = "Kitty Ears"
 	result = /obj/item/clothing/head/kitty/genuine
 	time = 10
-	reqs = list(/obj/item/organ/tail/cat = 1,
-				/obj/item/organ/ears/cat = 1)
+	reqs = list(/obj/item/organ/external/tail/cat = 1,
+				/obj/item/organ/external/ears/cat = 1)
 	category = CAT_MISC
 
 /datum/crafting_recipe/skateboard

@@ -32,6 +32,7 @@
 	var/lighting_alpha
 	var/no_glasses
 	var/damaged	= FALSE	//damaged indicates that our eyes are undergoing some level of negative effect
+	var/dynamic_optics = FALSE // whether this eyes has dynamic optics
 
 /obj/item/organ/eyes/Insert(mob/living/carbon/M, special = FALSE, drop_if_replaced = FALSE, initialising)
 	. = ..()
@@ -132,6 +133,7 @@
 	desc = "Your vision is augmented."
 	status = ORGAN_ROBOTIC
 	organ_flags = ORGAN_SYNTHETIC
+	actions_types = list()
 
 /obj/item/organ/eyes/robotic/emp_act(severity)
 	. = ..()
@@ -397,10 +399,17 @@
 
 /obj/item/organ/eyes/silicon
 	name = "optical sensory package"
-	icon_state = "silicon_eyeballs"
+	icon_state = "optical_sensory_package"
+	icon = 'icons/obj/silicon_components.dmi'
+	eye_icon_base = 'icons/mob/augmentation/optics.dmi'
 	desc = "A robot's optical sensory package"
 	status = ORGAN_ROBOTIC
-	organ_flags = ORGAN_SYNTHETIC | ORGAN_SILICON
+	actions_types = list(/datum/action/item_action/organ_action/adjust_eye_optics, /datum/action/item_action/organ_action/toggle)
+	var/monitor_state = ""
+	var/optics_color = ""
+	var/active = FALSE
+	required_bodypart_status = BODYPART_ROBOTIC
+	organ_flags = ORGAN_SYNTHETIC
 
 /obj/item/organ/eyes/silicon/emp_act(severity)
 	. = ..()
@@ -410,3 +419,94 @@
 		return
 	to_chat(owner, "<span class='warning'>Static obfuscates your vision!</span>")
 	owner.flash_act(visual = 1)
+	if(active)
+		toggle_active()
+		owner.update_body()
+
+/datum/action/item_action/organ_action/adjust_eye_optics
+	name = "adjust eye optics"
+	desc = "Changes the display state of your optics"
+	check_flags = AB_CHECK_SLEEPMODE|AB_CHECK_CONSCIOUS
+
+/obj/item/organ/eyes/silicon/ui_action_click(mob/living/carbon/C, action)
+	if(istype(action, /datum/action/item_action/organ_action/toggle))
+		toggle_active()
+		C.update_body()
+	else if(istype(action, /datum/action/item_action/organ_action/adjust_eye_optics))
+		prompt_for_controls(C)
+
+/obj/item/organ/eyes/silicon/proc/toggle_active()
+	active = !active
+	update_eye_optics(owner)
+
+/obj/item/organ/eyes/silicon/proc/prompt_for_controls(mob/living/carbon/C)
+	var/obj/item/bodypart/head/HD = owner.get_bodypart(BODY_ZONE_HEAD)
+	var/augtype = HD.get_augtype()
+	if(augtype == AUG_TYPE_MONITOR)
+		var/new_monitor_state = input(owner, "Choose a face for your monitor display", "Display Customization")  as null|anything in GLOB.monitor_styles_list
+		if(!new_monitor_state)
+			return
+		monitor_state = GLOB.monitor_styles_list[new_monitor_state].icon_state
+	else
+		if(!optics_color)
+			optics_color = "7F7F7F"
+		var/new_optics_color = input(owner, "Choose a color for your optics", "Optics Color Customization", "#" + optics_color) as color|null
+		if(!new_optics_color)
+			return
+		if(new_optics_color == "#000000")
+			return
+		var/temp_hsv = RGBtoHSV(new_optics_color)
+		if(ReadHSV(temp_hsv)[3] >= ReadHSV("#7F7F7F")[3])
+			optics_color = sanitize_hexcolor(new_optics_color)
+		else
+			return
+
+	update_eye_optics(owner)
+	owner.update_body()
+
+/obj/item/organ/eyes/silicon/proc/update_eye_optics(mob/living/carbon/C)
+	var/obj/item/bodypart/head/HD
+	if(C)
+		HD = C.get_bodypart(BODY_ZONE_HEAD)
+	else
+		HD = loc
+	if(!istype(HD))
+		return
+	var/augtype = HD.get_augtype()
+	if(!augtype)
+		return
+	if(augtype != AUG_TYPE_MONITOR)
+		monitor_state = ""
+
+	if(augtype == AUG_TYPE_ANDROID)
+		eye_icon_state = initial(eye_icon_state)
+	else
+		eye_icon_state = HD.aug_id + "_" + augtype
+
+	eye_color = "fff"
+
+	if(active)
+		if(monitor_state)
+			eye_icon_state += "_" + monitor_state
+		else if(augtype == AUG_TYPE_MONITOR)
+			eye_color = AUG_OPTICS_DEFAULT_COLOR
+		else if(optics_color)
+			eye_color = optics_color
+	else
+		eye_color = AUG_OPTICS_DEFAULT_COLOR
+
+/obj/item/organ/eyes/silicon/Insert(mob/living/carbon/M, special = FALSE, drop_if_replaced = FALSE, initialising)
+	if(ishuman(M))
+		var/mob/living/carbon/human/H = M
+		optics_color = H.eye_color
+	active = TRUE
+	update_eye_optics(M)
+	. = ..()
+
+/obj/item/organ/eyes/silicon/Remove(mob/living/carbon/M, special = 0)
+	if(active)
+		toggle_active()
+	. = ..()
+
+
+

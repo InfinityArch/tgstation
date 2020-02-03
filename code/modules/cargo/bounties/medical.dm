@@ -22,7 +22,7 @@
 	description = "Multiple staff at Station 12 have been left deaf due to unauthorized clowning. Ship them new ears."
 	reward = 10000
 	required_count = 3
-	wanted_types = list(/obj/item/organ/ears)
+	wanted_types = list(/obj/item/organ/external/ears)
 
 /datum/bounty/item/medical/liver
 	name = "Livers"
@@ -50,10 +50,10 @@
 	name = "Lizard Tail"
 	description = "The Wizard Federation has made off with Nanotrasen's supply of lizard tails. While CentCom is dealing with the wizards, can the station spare a tail of their own?"
 	reward = 3000
-	wanted_types = list(/obj/item/organ/tail/lizard)
+	wanted_types = list(/obj/item/organ/external/tail/lizard)
 
 /datum/bounty/item/medical/cat_tail
 	name = "Cat Tail"
 	description = "Central Command has run out of heavy duty pipe cleaners. Can you ship over a cat tail to help us out?"
 	reward = 3000
-	wanted_types = list(/obj/item/organ/tail/cat)
+	wanted_types = list(/obj/item/organ/external/tail/cat)

@@ -579,7 +579,7 @@
 	build_type = PROTOLATHE | MECHFAB
 	construction_time = 30
 	materials = list(/datum/material/iron = 250, /datum/material/glass = 400)
-	build_path = /obj/item/organ/ears/cybernetic
+	build_path = /obj/item/organ/external/ears/cybernetic
 	category = list("Misc", "Medical Designs")
 	departmental_flags = DEPARTMENTAL_FLAG_MEDICAL
 
@@ -590,7 +590,7 @@
 	build_type = PROTOLATHE | MECHFAB
 	construction_time = 40
 	materials = list(/datum/material/iron = 500, /datum/material/glass = 500, /datum/material/silver = 500)
-	build_path = /obj/item/organ/ears/cybernetic/upgraded
+	build_path = /obj/item/organ/external/ears/cybernetic/upgraded
 	category = list("Misc", "Medical Designs")
 	departmental_flags = DEPARTMENTAL_FLAG_MEDICAL
 /////////////////////

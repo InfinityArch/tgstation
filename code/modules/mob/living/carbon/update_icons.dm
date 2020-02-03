@@ -245,8 +245,6 @@
 	apply_overlay(BODYPARTS_LAYER)
 	update_damage_overlays()
 
-
-
 /////////////////////
 // Limb Icon Cache //
 /////////////////////
