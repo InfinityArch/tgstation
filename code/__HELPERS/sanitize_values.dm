@@ -34,14 +34,13 @@
 __description__: this proc checks whether a list of features are valid and permitted for a given species, and returns the input list with illegal values corrected to permitted values
 
 __Arguments__
-*features*: typically a list of sprite features found in datum/dna, but should work on any list
+*features*: typically a list of sprite features found in datum/dna, but will work on any list of features
 *species_index*: what index to search under in the global features lists for this species; this should normally be *features_id* from a mob's datum/species, but will accept any string
 *features_to_sanitize*: a list of features that should be sanitized, defaults to *features* if not given. See /proc/random_features in the mobs.dm helper for an example of what that full list entails
-*aug_exempt*: if true, cybernetic features will not be sanitized
 __Returns__: returns the input list (features) with features found in *features_to_sanitize* corrected to permitted values for the given *species_index*, runtimes if no input list is given
 */
 
-/proc/sanitize_features(list/features, species_index = DEFAULT_SPECIES_INDEX, list/features_to_sanitize = list(), aug_exempt = FALSE)
+/proc/sanitize_features(list/features, species_index = DEFAULT_SPECIES_INDEX, list/features_to_sanitize = list())
 	var/temp_index // this stores the species_index, and is checked for validity prior to sanitizing a feature, if there's nothing at species_index, then we use DEFAULT_SPECIES_INDEX instead
 	if(!features_to_sanitize.len)
 		features_to_sanitize = features
@@ -88,52 +87,34 @@ __Arguments__
 *feature*: the string associated with the sprite_accessory
 *species index*: what index in the sprite accessory species list to search under
 *feature_type*: a string the denotes the type of feature, see DEFAULT_FEATURES_LIST in mobs.dm
+*draw_state*: the draw state of the host bodypart, used to evaluate the need to check for an augmented icon_state
 *sanitize*: if true, the proc will sanitize the feature, use this to quickly get a valid state for a single feature
 __Returns__:
 *If sanitize is true, returns either the original feature or a valid entry within the target list.
 * If sanitize is false, it will return false if the feature is not present in the target list, and true if it is
 */
-proc/check_feature_by_index(feature, species_index, feature_type, sanitize = FALSE)
+proc/check_feature_by_index(feature, species_index, feature_type, draw_state = BODYPART_DRAW_ORGANIC, sanitize = TRUE)
+	. = pick(get_feature_list(feature_type, DEFAULT_SPECIES_INDEX))
+	var/datum/sprite_accessory/S = get_feature_list(feature_type)[feature]
+	if(!S)
+		return
+	var/list/indicies_to_check = list()
+	var/check_augment
+	switch(draw_state)
+		if(BODYPART_DRAW_ORGANIC to BODYPART_DRAW_ANDROID_SKELETAL)
+			indicies_to_check |= species_index
+		if(BODYPART_DRAW_ANDROID to BODYPART_DRAW_ANDROID_SKELETAL)
+			check_augment = TRUE
+		if(BODYPART_DRAW_ANDROID to BODYPART_DRAW_MONITOR)
+			indicies_to_check |= FEATURE_ROBOTIC
 
+	for(var/index in indicies_to_check)
+		if((index == S.species) && (!check_augment || S.has_augmented_states))
+			return feature
 	if(sanitize)
-		var/list/feature_list = list()
-		feature_list[feature_type] = feature
-		feature_list = sanitize_features(feature_list, species_index)
-		return feature_list[feature_type]
-
-	switch(feature_type)
-		if("tail")
-			if(GLOB.tails_list_species[species_index])
-				. = (feature in GLOB.tails_list & GLOB.tails_list_species[species_index])
-		if("tail_accessory")
-			if(GLOB.tail_accessory_list[species_index])
-				. = (feature in GLOB.tail_accessory_list & GLOB.tail_accessory_list[species_index])
-		if("snout")
-			if(GLOB.snouts_list_species[species_index])
-				. = (feature in GLOB.snouts_list & GLOB.snouts_list_species[species_index])
-		if("ears")
-			if(GLOB.ears_list_species[species_index])
-				. = (feature in GLOB.ears_list & GLOB.ears_list_species[species_index])
-		if("frills")
-			if(GLOB.frills_list_species[species_index])
-				. = (feature in GLOB.frills_list & GLOB.frills_list_species[species_index])
-		if("horns")
-			if(GLOB.horns_list_species[species_index])
-				.= (feature in GLOB.horns_list & GLOB.horns_list_species[species_index])
-		if("wings")
-			if(GLOB.wings_list_species[species_index])
-				. = (feature in GLOB.wings_list & GLOB.wings_list_species[species_index])
-		if("body_markings")
-			if(GLOB.body_markings_list[species_index])
-				. = (feature in GLOB.body_markings_list & GLOB.body_markings_list[species_index])
-		if("face_markings")
-			if(GLOB.face_markings_list[species_index])
-				. = (feature in GLOB.face_markings_list & GLOB.body_markings_list[species_index])
-		if("legs")
-			. = (feature in GLOB.legs_list)
-		if("caps")
-			if(GLOB.caps_list_species[species_index])
-				. = (feature in GLOB.caps_list & GLOB.caps_list_species[species_index])
+		var/list/species_list = get_feature_list(feature, indicies_to_check[indicies_to_check.len])
+		if(species_list.len)
+			return sanitize_inlist(feature, species_list)
 
 /*
 # sanitize_bodyparts

@@ -164,7 +164,7 @@
 			if(has_owner)
 				H.fully_replace_character_name(null, "[initial(X.prefix)] Golem ([rand(1,999)])")
 			else
-				H.fully_replace_character_name(null, H.dna.species.random_name(H.gender, NAMEGEN_LIMIT))
+				H.fully_replace_character_name(null, H.dna.species.random_name(H.gender))
 		else
 			H.fully_replace_character_name(null, name)
 	if(has_owner)

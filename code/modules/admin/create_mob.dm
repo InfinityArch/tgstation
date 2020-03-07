@@ -15,7 +15,7 @@
 		H.gender = PLURAL
 	else
 		H.gender = pick(MALE, FEMALE, PLURAL)
-	H.real_name = H.dna.species.random_name(H.gender, NAMEGEN_LIMIT)
+	H.real_name = H.dna.species.random_name(H.gender)
 	H.name = H.real_name
 	H.underwear = random_underwear(H.gender)
 	H.underwear_color = random_short_color()

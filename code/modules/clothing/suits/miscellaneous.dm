@@ -549,6 +549,8 @@
 	desc = "A gorgeously embroidered silk shirt."
 	icon_state = "changshan_red"
 	item_state = "changshan_red"
+	icon = 'icons/obj/clothing/suit/costume.dmi'
+	mob_overlay_icon = 'icons/mob/clothing/suit/costume.dmi'
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS
 
 /obj/item/clothing/suit/changshan_blue
@@ -556,6 +558,8 @@
 	desc = "A gorgeously embroidered silk shirt."
 	icon_state = "changshan_blue"
 	item_state = "changshan_blue"
+	icon = 'icons/obj/clothing/suit/costume.dmi'
+	mob_overlay_icon = 'icons/mob/clothing/suit/costume.dmi'
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS
 
 /obj/item/clothing/suit/cheongsam_red
@@ -563,6 +567,8 @@
 	desc = "A gorgeously embroidered silk dress."
 	icon_state = "cheongsam_red"
 	item_state = "cheongsam_red"
+	icon = 'icons/obj/clothing/suit/costume.dmi'
+	mob_overlay_icon = 'icons/mob/clothing/suit/costume.dmi'
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS
 
 /obj/item/clothing/suit/cheongsam_blue
@@ -570,6 +576,8 @@
 	desc = "A gorgeously embroidered silk dress."
 	icon_state = "cheongsam_blue"
 	item_state = "cheongsam_blue"
+	icon = 'icons/obj/clothing/suit/costume.dmi'
+	mob_overlay_icon = 'icons/mob/clothing/suit/costume.dmi'
 	body_parts_covered = CHEST|GROIN|ARMS|LEGS
 
 // WINTER COATS

@@ -149,6 +149,12 @@
 	if(.)
 		if(updating_canmove)
 			owner.update_mobility()
+		owner.update_stat()
+
+/datum/status_effect/incapacitating/sleep_mode/on_remove()
+	. = ..()
+	owner.update_stat()
+
 
 /datum/status_effect/incapacitating/sleep_mode/proc/end_sleepmode(mob/living/carbon/C, voluntary)
 	if(voluntary && owner)
@@ -156,7 +162,7 @@
 	else
 		to_chat(C, "<span class='robot notice'>Power restored, now exiting sleep mode.</span>")
 	duration = world.time
-	
+
 
 /obj/screen/alert/status_effect/sleep_mode
 	name = "Sleep Mode"

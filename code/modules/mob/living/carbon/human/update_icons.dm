@@ -591,17 +591,17 @@ generate/load female uniform sprites matching all previously decided variables
 
 	for(var/X in bodyparts)
 		var/obj/item/bodypart/BP = X
-		. += "-[BP.body_zone]"
-		if(BP.is_organic_limb())
-			. += "-organic"
-		else
-			. += "-robotic-[BP.aug_id]-[BP.aug_color]-"
-
+		. += "-[BP.body_zone]_[BP.draw_state]"
+		if(BP.aug_id)
+			. += "-[BP.aug_id]"
+			if(BP.aug_color)
+				.+= "-[BP.aug_color]"
+		if(BP.decal_color)
+			. += "-decal-[BP.decal_color]"
 		if(BP.use_digitigrade)
 			. += "-digitigrade[BP.use_digitigrade]"
 		if(BP.dmg_overlay_type)
 			. += "-[BP.dmg_overlay_type]"
-
 
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "-husk"
@@ -647,7 +647,7 @@ generate/load female uniform sprites matching all previously decided variables
 
 	if(HD && !(HAS_TRAIT(src, TRAIT_HUSK)))
 		// lipstick
-		if(lip_style && (LIPS in dna.species.species_traits) && !((HIDEFACE in head.flags_inv) || (HIDEFACE in wear_mask.flags_inv)) && HD.draw_organic_features)
+		if(lip_style && (LIPS in dna.species.species_traits) && !((HIDEFACE in head.flags_inv) || (HIDEFACE in wear_mask.flags_inv)) && (HD.draw_state < BODYPART_DRAW_ANDROID_SKELETAL))
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[dna.species.limbs_id]_lips_[lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = "#" + lip_color
 			lip_overlay.alpha = MAKEUP_OPACITY

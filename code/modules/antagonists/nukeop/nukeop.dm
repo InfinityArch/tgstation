@@ -77,7 +77,7 @@
 	if(nuke_team && nuke_team.syndicate_name)
 		var/mob/living/carbon/human/H = owner.current
 		if(istype(H)) // Reinforcements get a real name
-			var/chosen_name = H.dna.species.random_name(H.gender, NAMEGEN_LIMIT, SURNAME_ONLY)
+			var/chosen_name = H.dna.species.random_name(H.gender, naming_convention_override = SURNAME_ONLY)
 			chosen_name= nuke_team.syndicate_name + "Operative " + chosen_name
 			H.fully_replace_character_name(H.real_name,chosen_name)
 		else

@@ -152,72 +152,100 @@ proc/get_feature_list(feature, species_index, return_null)
 	. = return_null ? null : list()
 	switch(feature)
 		if("tail")
+			if(!GLOB.tails_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/tails, GLOB.tails_list, species_list = GLOB.tails_list_species)
 			if(species_index)
 				if(GLOB.tails_list_species[species_index])
 					. = GLOB.tails_list_species[species_index]
 			else
 				. = GLOB.tails_list
 		if("waggingtail")
+			if(!GLOB.animated_tails_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/tails_animated, GLOB.animated_tails_list)
 			. = GLOB.animated_tails_list
 		if("wings")
+			if(!GLOB.wings_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/wings, GLOB.wings_list, species_list = GLOB.wings_list_species)
 			if(species_index)
 				if(GLOB.wings_list_species[species_index])
 					. = GLOB.wings_list_species[species_index]
 			else
 				. = GLOB.wings_list
 		if("wings_animated")
+			if(!GLOB.wings_open_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/wings_open, GLOB.wings_open_list)
 			. = GLOB.wings_open_list
 		if("snout")
+			if(!GLOB.tails_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/tails, GLOB.tails_list, species_list = GLOB.tails_list_species)
 			if(species_index)
 				if(GLOB.snouts_list_species[species_index])
 					. = GLOB.snouts_list_species[species_index]
 			else
 				. = GLOB.snouts_list
 		if("horns")
+			if(!GLOB.horns_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/horns, GLOB.horns_list, species_list = GLOB.horns_list_species)
 			if(species_index)
 				if(GLOB.horns_list_species[species_index])
 					. = GLOB.horns_list_species[species_index]
 			else
 				. = GLOB.horns_list
 		if("frills")
+			if(!GLOB.frills_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/frills, GLOB.frills_list, species_list = GLOB.frills_list_species)
 			if(species_index)
 				if(GLOB.frills_list_species[species_index])
 					. = GLOB.frills_list_species[species_index]
 			else
 				. = GLOB.frills_list
 		if("tail_accessory")
+			if(!GLOB.tail_accessory_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/tail_accessory, GLOB.tail_accessory_list, species_list = GLOB.tail_accessory_list_species)
 			if(species_index)
 				if(GLOB.tail_accessory_list_species[species_index])
 					. = GLOB.tail_accessory_list_species[species_index]
 			else
 				. = GLOB.tail_accessory_list
 		if("waggingtail_accessory")
+			if(!GLOB.animated_tail_accessory_list)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/tail_accessory_animated, GLOB.animated_tail_accessory_list)
 			. = GLOB.animated_tail_accessory_list
 		if("face_markings")
+			if(!GLOB.face_markings_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/face_markings, GLOB.face_markings_list, species_list = GLOB.face_markings_list_species)
 			if(species_index)
 				if(GLOB.face_markings_list_species[species_index])
 					. = GLOB.face_markings_list_species[species_index]
 			else
 				. = GLOB.face_markings_list
 		if("body_markings")
+			if(!GLOB.body_markings_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/body_markings, GLOB.body_markings_list, species_list = GLOB.body_markings_list_species)
 			if(species_index)
 				if(GLOB.body_markings_list_species[species_index])
 					. = GLOB.body_markings_list_species[species_index]
 			else
 				. = GLOB.body_markings_list
 		if("legs")
+			if(!GLOB.legs_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/legs, GLOB.legs_list, species_list = GLOB.legs_list_species)
 			if(species_index)
 				if(GLOB.legs_list_species[species_index])
 					. = GLOB.legs_list_species[species_index]
 			else
 				. = GLOB.legs_list_species
 		if("caps")
+			if(!GLOB.caps_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/caps, GLOB.caps_list, species_list = GLOB.caps_list_species)
 			if(species_index)
 				if(GLOB.caps_list_species[species_index])
 					. = GLOB.caps_list_species[species_index]
 			else
 				. = GLOB.caps_list
 		if("ears")
+			if(!GLOB.ears_list.len)
+				init_sprite_accessory_subtypes(/datum/sprite_accessory/ears, GLOB.ears_list, species_list = GLOB.ears_list_species)
 			if(species_index)
 				if(GLOB.ears_list_species[species_index])
 					. = GLOB.ears_list_species[species_index]

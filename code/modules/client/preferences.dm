@@ -71,6 +71,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/lip_style
 	var/lip_color = "FFFFFF"
 	var/aug_color = AUG_COLOR_DEFAULT // cybernetic part color
+	var/aug_decal_color = ""
 	var/list/aug_features = list() // list of roundstart robotic features
 	var/datum/species/pref_species = new /datum/species/human()	//Mutant race
 	var/list/features = DEFAULT_FEATURES_LIST
@@ -138,7 +139,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	random_character()		//let's create a random character then - rather than a fat, bald and naked man.
 	key_bindings = deepCopyList(GLOB.hotkey_keybinding_list_by_key) // give them default keybinds and update their movement keys
 	C?.update_movement_keys(src)
-	real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
+	real_name = pref_species.random_name(gender)
 	if(!loaded_preferences_successfully)
 		save_preferences()
 	save_character()		//let's save this new random character so it doesn't keep generating new ones.
@@ -246,7 +247,38 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<h2>Body</h2>"
 			dat += "<a href='?_src_=prefs;preference=all;task=random'>Random Body</A> "
 			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_BODY]'>Always Random Body: [(randomise[RANDOM_BODY]) ? "Yes" : "No"]</A>"
-			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_BODY_ANTAG]'>When Antagonist: [(randomise[RANDOM_BODY_ANTAG]) ? "Yes" : "No"]</A><br>"
+			dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_BODY_ANTAG]'>When Antagonist: [(randomise[RANDOM_BODY_ANTAG]) ? "Yes" : "No"]</A><BR>"
+
+			//bodypart customization
+			alternate_bodyparts = sanitize_bodyparts(alternate_bodyparts, pref_species.limb_customization_type)
+			var/list/limb_status = list(BODY_ZONE_CHEST, BODY_ZONE_HEAD, BODY_ZONE_L_ARM, BODY_ZONE_R_ARM, BODY_ZONE_R_LEG)
+			for(var/body_zone in limb_status)
+				if(body_zone in alternate_bodyparts)
+					if(alternate_bodyparts[body_zone] == BODYPART_AMPUTATED)
+						limb_status[body_zone] = BODYPART_AMPUTATED
+					else
+						limb_status[body_zone] = alternate_bodyparts[body_zone]["aug_type"]
+				else if(body_zone == BODY_ZONE_HEAD && pref_species.id == "ipc") // OOF level snowflake code, but this avoids a massive headache
+					limb_status[body_zone] = AUG_TYPE_MONITOR
+				else
+					limb_status[body_zone] = (pref_species.inherent_biotypes & MOB_ROBOTIC) ? BODYPART_ROBOTIC : BODYPART_ORGANIC
+
+			if(pref_species.limb_customization_type)
+				dat += "<a href='?_src_=prefs;preference=customize_bodyparts;task=input'>Customize Bodyparts</A>"
+				var/show_limb_colors = (pref_species.inherent_biotypes & MOB_ROBOTIC) ? TRUE : FALSE
+				if(!show_limb_colors)
+					for(var/body_zone in limb_status)
+						if(!((limb_status[body_zone] == BODYPART_AMPUTATED) || (limb_status[body_zone] == BODYPART_ORGANIC)))
+							show_limb_colors = TRUE
+
+				if(show_limb_colors)
+					dat += pref_species.inherent_biotypes & MOB_ROBOTIC ? "<h3>Limb Finish</h3>" : "<h3>Augmentation Color</h3>"
+					dat += "<a href='?_src_=prefs;preference=a_color;task=input'>[aug_color]</A>"
+					dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_AUG_COLOR]'>[(randomise[RANDOM_AUG_COLOR]) ? "Lock" : "Unlock"]</A>"
+					var/use_color = aug_decal_color ? aug_decal_color : "808080"
+					dat += "<br><span style='border:1px solid #161616; background-color: #[use_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=a_decal;task=input'>Change Secondary Color</a><br>"
+					if(aug_decal_color)
+						dat += "<a href='?_src_=prefs;preference=a_decal_remove;task=input'>Remove Secondary Color</a>"
 
 			dat += "<table width='100%'><tr><td width='24%' valign='top'>"
 
@@ -277,19 +309,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 
 			dat += "<br><b>Uplink Spawn Location:</b><BR><a href ='?_src_=prefs;preference=uplink_loc;task=input'>[uplink_spawn_loc]</a><BR></td>"
-
-			var/list/limb_status = list(BODY_ZONE_CHEST, BODY_ZONE_HEAD, BODY_ZONE_L_ARM, BODY_ZONE_R_ARM, BODY_ZONE_R_LEG)
-			for(var/body_zone in limb_status)
-				if(body_zone in alternate_bodyparts)
-					if(alternate_bodyparts[body_zone] == BODYPART_AMPUTATED)
-						limb_status[body_zone] = BODYPART_AMPUTATED
-					else
-						limb_status[body_zone] = alternate_bodyparts[body_zone]["aug_type"]
-				else if(body_zone == BODY_ZONE_HEAD && pref_species.id == "ipc") // OOF level snowflake code, but this avoids a massive headache
-					limb_status[body_zone] = AUG_TYPE_MONITOR
-				else
-					limb_status[body_zone] = (pref_species.inherent_biotypes & MOB_ROBOTIC) ? BODYPART_ROBOTIC : BODYPART_ORGANIC
-
 
 			var/use_skintones
 			if((SKIN_TONE in pref_species.species_traits) || (DYNCOLORS in pref_species.species_traits))
@@ -370,7 +389,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			if((LIPS in pref_species.species_traits) && (limb_status[BODY_ZONE_HEAD] in list(BODYPART_ORGANIC, AUG_TYPE_ANDROID)))
 				dat += "<h3>lip color</h3>"
-				dat += "<span style='border: 1px solid #161616; background-color: #[lip_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=lip_color;task=input'>Change</a><BR>"
+				var/use_color = lip_color ? lip_color : "808080"
+				dat += "<span style='border: 1px solid #161616; background-color: #[use_color];'>&nbsp;&nbsp;&nbsp;</span> <a href='?_src_=prefs;preference=lip_color;task=input'>Change</a><BR>"
 				if(lip_style)
 					dat += "<a href='?_src_=prefs;preference=remove_lipstick;task=input'>remove lipstick</a><BR>"
 			else
@@ -522,17 +542,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if(mutant_category >= MAX_MUTANT_ROWS)
 					dat += "</td>"
 					mutant_category = 0
-
-
-			//bodypart customization
-			alternate_bodyparts = sanitize_bodyparts(alternate_bodyparts, pref_species.limb_customization_type)
-			if(pref_species.limb_customization_type)
-				dat += "<a href='?_src_=prefs;preference=customize_bodyparts;task=input'>Customize Bodyparts</a><BR>"
-			if(alternate_bodyparts.len || pref_species.inherent_biotypes & MOB_ROBOTIC)
-				dat += pref_species.inherent_biotypes & MOB_ROBOTIC ? "<h3>Limb Finish</h3>" : "<h3>Augmentation Color</h3>"
-				dat += "<a href='?_src_=prefs;preference=a_color;task=input'>[aug_color]</a>"
-				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_AUG_COLOR]'>[(randomise[RANDOM_AUG_COLOR]) ? "Lock" : "Unlock"]</A>"
-				dat += "<br>"
 
 				if(mutant_category)
 					dat += "</td>"
@@ -1159,7 +1168,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		if("random")
 			switch(href_list["preference"])
 				if("name")
-					real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
+					real_name = pref_species.random_name(gender)
 				if("age")
 					age = rand(pref_species.age_min, pref_species.age_max)
 				if("hair")
@@ -1244,7 +1253,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					var/new_age = input(user, "Choose your character's age:\n([pref_species.age_min]-[pref_species.age_max])", "Character Preference") as num|null
 					if(!new_age)
 						new_age = age
-					age = sanitize_integer(age, pref_species.age_min, pref_species.age_max, initial(age))
+					age = CLAMP(age, pref_species.age_min, pref_species.age_max)
 
 				if("hair")
 					var/new_hair = input(user, "Choose your character's hair colour:", "Character Preference","#"+hair_color) as color|null
@@ -1361,7 +1370,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						if((SKIN_TONE in pref_species.species_traits) || (DYNCOLORS in pref_species.species_traits))
 							skin_tone = sanitize_skin_tone(skin_tone, pref_species.limbs_id)
 						features = sanitize_features(features, pref_species.features_id)
-						age = sanitize_integer(age, pref_species.age_min, pref_species.age_max, initial(age))
+						age = CLAMP(age, pref_species.age_min, pref_species.age_max)
 
 				if("remove_lipstick")
 					lip_style = null
@@ -1451,9 +1460,17 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						skin_tone = new_s_tone
 
 				if("a_color")
-					var/new_a_color = input(user, "Choose the color of your character's augmentations:", "Character Preference")  as null|anything in GLOB.aug_colors_list
+					var/new_a_color = input(user, "Choose the finish of your character's augmentations:", "Character Preference")  as null|anything in GLOB.aug_colors_list
 					if(new_a_color)
 						aug_color = new_a_color
+
+				if("a_decal")
+					var/new_a_decal = input(user, "Choose the trim color of your character's augmentations:", "Character Preference") as color|null
+					if(new_a_decal)
+						aug_decal_color = sanitize_hexcolor(new_a_decal)
+
+				if("a_decal_remove")
+					aug_decal_color = ""
 
 				if("customize_bodyparts")
 					var/list/selection = LIMB_CUSTOMIZATION_DEFAULT_NAMELIST
@@ -1787,7 +1804,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("changeslot")
 					if(!load_character(text2num(href_list["num"])))
 						random_character()
-						real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
+						real_name = pref_species.random_name(gender)
 						save_character()
 
 				if("tab")
@@ -1807,16 +1824,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	if((randomise[RANDOM_NAME] || randomise[RANDOM_NAME_ANTAG] && antagonist) && !character_setup)
 		slot_randomized = TRUE
-		real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
+		real_name = pref_species.random_name(gender)
 
 	if(roundstart_checks)
 		if(CONFIG_GET(flag/humans_need_surnames) && (pref_species.id == "human"))
 			var/firstspace = findtext(real_name, " ")
 			var/name_length = length(real_name)
 			if(!firstspace)	//we need a surname
-				real_name += " [pick(pref_species.random_name(gender, NAMEGEN_LIMIT, SURNAME_ONLY))]"
+				real_name += " [pick(pref_species.random_name(gender, naming_convention_override = SURNAME_ONLY))]"
 			else if(firstspace == name_length)
-				real_name += "[pick(pref_species.random_name(gender, NAMEGEN_LIMIT, SURNAME_ONLY))]"
+				real_name += "[pick(pref_species.random_name(gender, naming_convention_override = SURNAME_ONLY))]"
 
 
 	//clearing alternate limbs and reseting the body to the default state
@@ -1887,15 +1904,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				qdel(old_bodypart)
 			else
 				if(old_bodypart)
-					old_bodypart.change_bodypart_status(BODYPART_ROBOTIC, TRUE, FALSE, alternate_bodyparts[target_zone]["aug_style"], alternate_bodyparts[target_zone]["aug_type"], aug_color)
+					old_bodypart.change_bodypart_status(BODYPART_ROBOTIC, TRUE, FALSE, alternate_bodyparts[target_zone]["aug_style"], alternate_bodyparts[target_zone]["aug_type"], aug_color, aug_decal_color)
 				else
-					var/obj/item/bodypart/new_bodypart = character.newBodyPart(target_zone, TRUE, FALSE, alternate_bodyparts[target_zone]["aug_style"], alternate_bodyparts[target_zone]["aug_type"], aug_color)
+					var/obj/item/bodypart/new_bodypart = character.newBodyPart(target_zone, TRUE, FALSE, alternate_bodyparts[target_zone]["aug_style"], alternate_bodyparts[target_zone]["aug_type"], aug_color, aug_decal_color)
 					new_bodypart.replace_limb(character, TRUE)
 
 	for(var/obj/item/bodypart/robot_bodypart in character.bodyparts)
 		if(robot_bodypart.is_organic_limb())
 			continue
 		robot_bodypart.aug_color = aug_color
+		robot_bodypart.decal_color = aug_decal_color
 
 	if(icon_updates)
 		character.update_body()
@@ -1919,7 +1937,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			return DEFAULT_RELIGION
 		if("deity")
 			return DEFAULT_DEITY
-	return pref_species.random_name(gender, NAMEGEN_LIMIT)
+	return pref_species.random_name(gender)
 
 /datum/preferences/proc/ask_for_custom_name(mob/user,name_id)
 	var/namedata = GLOB.preferences_custom_names[name_id]

@@ -482,7 +482,7 @@
 			return
 	if(frn)
 		client.prefs.random_character()
-		client.prefs.real_name = client.prefs.pref_species.random_name(gender,NAMEGEN_LIMIT)
+		client.prefs.real_name = client.prefs.pref_species.random_name(gender)
 
 	var/is_antag
 	if(mind in GLOB.pre_setup_antags)

@@ -52,8 +52,8 @@
 	if(!iscarbon(eater))
 		return 0
 	var/mob/living/carbon/C = eater
-	if(C.mob_biotypes & MOB_ROBOTIC) // &&!(src in GLOB.silicon_consumables_typechace)
-		to_chat(user, "<span class='warning'>Where do you intend to put that?</span>")
+	if(C.mob_biotypes & MOB_ROBOTIC) // &&!(is_typein_typecache(src, GLOB.robot_consumables_typechace))
+		to_chat(user, "<span class='robot danger'>ERROR: incompatible substance loaded into materials interface port!</span>")
 		return 0
 	var/covered = ""
 	if(C.is_mouth_covered(head_only = 1))

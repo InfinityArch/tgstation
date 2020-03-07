@@ -96,7 +96,7 @@ GLOBAL_VAR_INIT(observer_default_invisibility, INVISIBILITY_OBSERVER)
 
 		if(ishuman(body))
 			var/mob/living/carbon/human/body_human = body
-			name = body_human.dna.species.random_name(body_human.gender, NAMEGEN_LIMIT)
+			name = body_human.dna.species.random_name(body_human.gender)
 			if(HAIR in body_human.dna.species.species_traits)
 				hairstyle = body_human.hairstyle
 				hair_color = brighten_color(body_human.hair_color)
@@ -748,7 +748,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 
 	if(client.prefs.randomise[RANDOM_NAME])
-		client.prefs.real_name = client.prefs.pref_species.random_name(gender, NAMEGEN_LIMIT)
+		client.prefs.real_name = client.prefs.pref_species.random_name(gender)
 	if(client.prefs.randomise[RANDOM_BODY])
 		client.prefs.random_character(gender)
 

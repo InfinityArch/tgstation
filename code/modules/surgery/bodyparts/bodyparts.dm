@@ -10,8 +10,7 @@
 	var/mob/living/carbon/owner = null
 	var/mob/living/carbon/original_owner = null
 	var/status = BODYPART_ORGANIC // is the bodypart robotic or organic?
-	var/draw_organic_features = TRUE
-	var/bodypart_draw_flags = 0 // bitfield for draw flags
+	var/draw_state = BODYPART_ORGANIC
 	var/bodypart_status_flags = 0 // bitfield for status flags
 	var/needs_processing = FALSE
 
@@ -19,7 +18,7 @@
 	var/list/mutant_bodyparts = list() // an association list of sprite accessories names that are attached to this bodypart indexed by their mutant feature name
 	var/body_zone //BODY_ZONE_CHEST, BODY_ZONE_L_ARM, etc , used for def_zone
 	var/aux_zone // used for hands and feet
-	var/aux_layer //what layer to display an auxpart on
+	var/aux_layer // if defined, the bodypart will render its aux_zone as an overlay on this layer
 	var/body_part = null //bitflag used to check which clothes cover this bodypart
 	var/use_digitigrade = NOT_DIGITIGRADE //Used for alternate legs, useless elsewhere
 	var/list/embedded_objects = list()
@@ -52,7 +51,8 @@
 	var/should_draw_husked = FALSE
 	var/species_color = ""
 	var/mutation_color = ""
-	var/aux_color = "" //color to use for aux parts, if any
+	var/aux_color = "" // color to use for aux parts, if any
+	var/decal_color = "" // color for an independently colored area of this part, rendered as an overlay on top of the bodypart and if applicable its aux layer
 	var/aug_color = "" // color to use for robotic parts
 	var/no_update = 0
 
@@ -272,26 +272,21 @@
 	var/tbrute	= round( (brute_dam/max_damage)*3, 1 )
 	var/tburn	= round( (burn_dam/max_damage)*3, 1 )
 	if((tbrute != brutestate) || (tburn != burnstate))
+		. = TRUE
 		brutestate = tbrute
 		burnstate = tburn
-		if((get_augtype() == AUG_TYPE_ANDROID) && !(bodypart_draw_flags & BODYPART_DRAW_ANDROID_SKELETAL) && (tbrute + tburn >= 3))
-			bodypart_draw_flags |= BODYPART_DRAW_ANDROID_SKELETAL // spooky scary terminator skeleton
+		if((draw_state == BODYPART_DRAW_ANDROID) && (tbrute + tburn > 3))
+			draw_state = BODYPART_DRAW_ANDROID_SKELETAL
 			if(owner)
 				to_chat(owner, "<span class='warning'>The synthetic flesh on your damaged [src] sloughs off!</span>")
-
-
-
-		return TRUE
-	return FALSE
+				owner.update_body()
+			else if(original_owner)
+				update_limb(TRUE, original_owner)
 
 //Proc for modifying the bodypart's status
-/obj/item/bodypart/proc/change_bodypart_status(new_limb_status, heal_limb, change_icon_to_default, aug_style_target, aug_type = AUG_TYPE_ROBOTIC, aug_color_target)
-	var/organic
-
+/obj/item/bodypart/proc/change_bodypart_status(new_limb_status, heal_limb, change_icon_to_default, aug_style_target, aug_type = AUG_TYPE_ROBOTIC, aug_color_target, aug_decal_target)
 	if(new_limb_status)
 		status = new_limb_status
-
-
 	if(owner)
 		for(var/obj/item/organ/O in owner.internal)
 			if(O.required_bodypart_status && (status != O.required_bodypart_status))
@@ -311,22 +306,12 @@
 				else
 					QDEL_NULL(src)
 
-	organic = is_organic_limb()
-
-	if((NO_BONES in species_flags_list) || !organic)
-		bodypart_status_flags &= ~BODYPART_STATUS_BROKEN_BONES
-		bodypart_status_flags &= ~BODYPART_STATUS_SPLINTED_BONES
-		bodypart_status_flags |= BODYPART_STATUS_NO_BONES
-	else
-		bodypart_status_flags &= ~BODYPART_STATUS_NO_BONES
-	if(organic)
+	if(is_organic_limb())
 		aug_id = ""
 		aug_color = ""
-		bodypart_draw_flags &= ~BODYPART_DRAW_MONITOR
+		decal_color = ""
+		draw_state = BODYPART_DRAW_ORGANIC
 		bodypart_status_flags &= ~BODYPART_STATUS_EMAGGED
-		bodypart_draw_flags &= ~BODYPART_DRAW_ANDROID_SKELETAL
-		bodypart_draw_flags &= ~BODYPART_DRAW_ROBOTIC_ALT
-		draw_organic_features = TRUE
 		light_brute_msg = "bruised"
 		medium_brute_msg = "battered"
 		heavy_brute_msg = "mangled"
@@ -334,6 +319,21 @@
 		medium_burn_msg = "blistered"
 		heavy_burn_msg = "peeling away"
 	else
+		switch(aug_type)
+			if(AUG_TYPE_MONITOR)
+				draw_state = BODYPART_DRAW_MONITOR
+			if(AUG_TYPE_ANDROID)
+				draw_state = BODYPART_DRAW_ANDROID
+			else
+				draw_state = BODYPART_DRAW_ROBOTIC
+
+		if("legs" in mutant_bodyparts)
+			mutant_bodyparts["legs"] = aug_type == AUG_TYPE_DIGITIGRADE ? "Digitigrade Legs" : "None"
+			if(mutant_bodyparts["legs"] != "None")
+				use_digitigrade = FULL_DIGITIGRADE
+			else
+				use_digitigrade = NOT_DIGITIGRADE
+
 		light_brute_msg = "marred"
 		medium_brute_msg = "dented"
 		heavy_brute_msg = "falling apart"
@@ -344,37 +344,16 @@
 			aug_color = aug_color_target
 		else if(!aug_color)
 			aug_color = AUG_COLOR_DEFAULT
-		var/datum/sprite_accessory/augmentation/augstyle
-		augstyle = aug_style_target ? GLOB.augmentation_styles_list[aug_style_target] : GLOB.augmentation_styles_list[AUG_STYLE_DEFAULT]
+		decal_color = aug_decal_target ? aug_decal_target : ""
+		var/datum/sprite_accessory/augmentation/augstyle = aug_style_target ? GLOB.augmentation_styles_list[aug_style_target] : GLOB.augmentation_styles_list[AUG_STYLE_DEFAULT]
 		aug_id = augstyle.species
-		if(aug_type == AUG_TYPE_ANDROID)
-			draw_organic_features = TRUE
-		else
-			draw_organic_features = FALSE
-			bodypart_draw_flags &= ~BODYPART_DRAW_ANDROID_SKELETAL
-		if(aug_type == AUG_TYPE_ROBOTIC_ALT)
-			bodypart_draw_flags |= BODYPART_DRAW_ROBOTIC_ALT
-		else
-			bodypart_draw_flags &= ~BODYPART_DRAW_ROBOTIC_ALT
-		if(aug_type == AUG_TYPE_MONITOR)
-			bodypart_draw_flags |= BODYPART_DRAW_MONITOR
-		else
-			bodypart_draw_flags &= ~BODYPART_DRAW_MONITOR
-		if(aug_type == AUG_TYPE_DIGITIGRADE)
-			mutant_bodyparts["legs"] = "Digitigrade Legs"
-		else if("legs" in mutant_bodyparts)
-			mutant_bodyparts["legs"] = "None"
 
 	if(heal_limb)
-		bodypart_status_flags &= ~BODYPART_STATUS_BROKEN_BONES
-		bodypart_status_flags &= ~BODYPART_STATUS_SPLINTED_BONES
-		bodypart_status_flags &= ~BODYPART_STATUS_EMAGGED
-		bodypart_draw_flags &= ~BODYPART_DRAW_ANDROID_SKELETAL
 		burn_dam = 0
 		brute_dam = 0
 		brutestate = 0
 		burnstate = 0
-		//update_pain()
+		bodypart_status_flags = initial(bodypart_status_flags)
 		update_disabled()
 
 	if(owner)
@@ -393,6 +372,8 @@
 		C = source
 		if(!original_owner)
 			original_owner = source
+		if(source == original_owner)
+			no_update = FALSE
 	else
 		C = owner
 		if(original_owner && owner != original_owner) //Foreign limb
@@ -406,11 +387,10 @@
 		dmg_overlay_type = ""
 		if(!ishuman(C))
 			species_id = "husk" //overrides species_id
-			dmg_overlay_type = "" //no damage overlay shown when husked
 			should_draw_gender = FALSE
 			should_draw_greyscale = FALSE
 			no_update = TRUE
-	else if(should_draw_husked && !(HAS_TRAIT(C, TRAIT_HUSK)) || !is_organic_limb()) //if the limb is husked but doesn't have the trait, husk visuals get removed
+	else if(should_draw_husked && !(HAS_TRAIT(C, TRAIT_HUSK))) //if the limb is husked but doesn't have the trait, husk visuals get removed
 		should_draw_husked = FALSE
 		no_update = FALSE
 
@@ -425,18 +405,12 @@
 		species_id = S.limbs_id
 		species_flags_list = H.dna.species.species_traits
 		if((NO_BONES in species_flags_list) || !is_organic_limb())
-			bodypart_status_flags |= BODYPART_STATUS_NO_BONES
-			bodypart_status_flags &= ~BODYPART_STATUS_BROKEN_BONES
-			bodypart_status_flags &= ~BODYPART_STATUS_SPLINTED_BONES
-
+			bodypart_status_flags &= ~(BODYPART_STATUS_BROKEN_BONES|BODYPART_STATUS_SPLINTED_BONES)
 		if(SKIN_TONE in S.species_traits)
 			skin_tone = H.skin_tone
 			should_draw_greyscale = TRUE
 		else
 			skin_tone = ""
-		if(AUXCOLORS in S.species_traits && aux_zone)
-			aux_color = S.aux_color
-
 		body_gender = H.gender
 		should_draw_gender = S.sexes
 
@@ -453,26 +427,21 @@
 		else
 			mutation_color = ""
 
-		if(!is_organic_limb())
-			should_draw_greyscale = TRUE
-			should_draw_husked = FALSE
-			dmg_overlay_type = aug_id
-			if(draw_organic_features)
-				dmg_overlay_type = (bodypart_draw_flags & BODYPART_DRAW_ANDROID_SKELETAL) ? "[dmg_overlay_type]_skeletal" : "[dmg_overlay_type]_android"
-			else if(bodypart_draw_flags & BODYPART_DRAW_MONITOR)
-				dmg_overlay_type = "[aug_id]_monitor"
-			else if(bodypart_draw_flags & BODYPART_DRAW_ROBOTIC_ALT)
-				dmg_overlay_type = "[aug_id]_alt"
-		else
+		if(is_organic_limb())
 			dmg_overlay_type = should_draw_husked ? "" : S.damage_overlay_type
+			decal_color = S.limb_decal_color ? S.limb_decal_color : ""
 
+
+		else
+			should_draw_greyscale = TRUE
+			dmg_overlay_type = "[aug_id]_[draw_state]"
 
 	else if(animal_origin == MONKEY_BODYPART) //currently monkeys are the only non human mob to have damage overlays.
 		dmg_overlay_type = animal_origin
 
-	else if(animal_origin == CYBORG_BODYPART)
-		dmg_overlay_type = aug_id + "_borg"
-		should_draw_greyscale = FALSE
+	//else if(animal_origin == CYBORG_BODYPART)
+		//dmg_overlay_type = "[aug_id]_[draw_state]"
+		//should_draw_greyscale = FALSE
 
 	if(dropping_limb || should_draw_husked)
 		no_update = TRUE //when attached, the limb won't be affected by the appearance changes of its mob owner.
@@ -506,9 +475,6 @@
 
 	var/image/limb = image(layer = -BODYPARTS_LAYER, dir = image_dir)
 	var/image/aux
-	var/image/augmentation
-	var/image/augmentation_aux
-	var/draw_color
 	. += limb
 
 	if(animal_origin)
@@ -523,92 +489,91 @@
 			limb.icon_state = "[animal_origin]_[body_zone]"
 		return
 
-	var/icon_gender = (body_gender == FEMALE) ? "f" : "m" //gender of the icon, if applicable
+	if(should_draw_husked)
+		limb.icon = 'icons/mob/human_parts.dmi'
+		limb.icon_state = "husk_[body_zone]"
+		if(aux_layer)
+			aux = image(limb.icon, "husk_[aux_zone]", -aux_layer, image_dir)
+			. += aux
+		return
 
-	if((body_zone != BODY_ZONE_HEAD && body_zone != BODY_ZONE_CHEST))
+	var/icon_gender = (body_gender == FEMALE) ? "f" : "m" //gender of the icon, if applicable
+	var/android = (draw_state == BODYPART_DRAW_ANDROID) ? TRUE : FALSE // if we need extra layers to handle android augmentations
+	var/image/augmentation
+	var/image/augmentation_aux
+	var/image/limb_decal
+	var/image/aux_decal
+	var/draw_color
+
+	if((body_zone != BODY_ZONE_HEAD) && (body_zone != BODY_ZONE_CHEST))
 		should_draw_gender = FALSE
 
 	if(should_draw_greyscale)
-		if(draw_organic_features)
+		if(draw_state >= BODYPART_DRAW_ANDROID_SKELETAL)
+			draw_color = sprite_color2hex(aug_color, GLOB.aug_colors_list)
+			limb.icon = file("icons/mob/augmentation/[aug_id].dmi")
+			limb.icon_state = "[body_zone]_[draw_state]"
+			if(aux_zone)
+				aux = image(limb.icon, "[aux_zone]_[draw_state]", -aux_layer, image_dir)
+				. += aux
+		else
+			draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))
 			limb.icon = file("icons/mob/bodyparts/[species_id].dmi")
 			limb.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]" : "[body_zone]"
-			draw_color = mutation_color || species_color || (skin_tone && sprite_color2hex(skin_tone, GLOB.skin_tones_list))
 			if(aux_zone)
 				aux = image(limb.icon, "[aux_zone]", -aux_layer, image_dir)
 				. += aux
-			if(!is_organic_limb()) //android limbs
-				if(bodypart_draw_flags & BODYPART_DRAW_ANDROID_SKELETAL)
-					limb.icon = file("icons/mob/augmentation/[aug_id].dmi")
-					limb.icon_state += "_skeletal"
-					draw_color = sprite_color2hex(aug_color, GLOB.aug_colors_list)
-					if(aux)
-						aux.icon = file("icons/mob/augmentation/[aug_id].dmi")
-						aux.icon_state += "skeletal"
-						aux_color = null
-				else
-					augmentation = image(layer = -AUGMENTATION_LAYER, dir = image_dir)
-					augmentation.icon = file("icons/mob/augmentation/[aug_id].dmi")
-					augmentation.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]_aug" : "[body_zone]_aug"
-					augmentation.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
-					. += augmentation
-					if(aux)
-						augmentation_aux = image(augmentation.icon, "[aux_zone]_aug", -(aux_layer - 1), image_dir)
-						augmentation_aux.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
-						. += augmentation_aux
-
-		else
-			limb.icon = file("icons/mob/augmentation/[aug_id].dmi")
-			limb.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]" : "[body_zone]"
-			draw_color = sprite_color2hex(aug_color, GLOB.aug_colors_list)
-			if(bodypart_draw_flags & BODYPART_DRAW_MONITOR)
-				limb.icon_state += "_monitor"
-			else if(bodypart_draw_flags & BODYPART_DRAW_ROBOTIC_ALT)
-				limb.icon_state += "_alt"
-			if(aux_zone)
-				aux = image(limb.icon, "[aux_zone]", -aux_layer, image_dir)
-				aux_color = null
-				. += aux
-	else
-		limb.icon = 'icons/mob/human_parts.dmi'
-		limb.icon_state = should_draw_gender ? "[species_id]_[body_zone]_[icon_gender]" :  "[species_id]_[body_zone]"
-		if(aux_zone)
-			aux = image(limb.icon, "[species_id]_[aux_zone]", -aux_layer, image_dir)
-			. += aux
-
-	if(should_draw_husked)
-		limb.icon_state += "_husk"
-		if(aux)
-			aux.icon_state += "_husk"
-
-	else if(should_draw_greyscale)
-		if(!draw_color)
-			draw_color = "808080"
-			//CRASH("[src] attempted to draw greyscale without a valid draw color!")
 		limb.color = "#[draw_color]"
 		if(aux)
 			aux.color = aux_color ? "#[aux_color]" : "#[draw_color]"
+	else
+		limb.icon = 'icons/mob/human_parts.dmi'
+		limb.icon_state = should_draw_gender ? "[species_id]_[body_zone]_[icon_gender]" : "[species_id]_[body_zone]"
+
+	if(use_digitigrade)
+		limb.icon_state = "digitigrade_[use_digitigrade]_[limb.icon_state]"
+
+	if(android)
+		augmentation = image(layer = -BODYPARTS_LAYER, dir = image_dir)
+		augmentation.icon = file("icons/mob/augmentation/[aug_id].dmi")
+		if((body_zone == BODY_ZONE_HEAD) || (body_zone == BODY_ZONE_CHEST))
+			augmentation.icon_state = should_draw_gender ? "[body_zone]_[icon_gender]_[draw_state]" : "[body_zone]_m_[draw_state]"
+		else
+			augmentation.icon_state = "[body_zone]_[draw_state]"
+		augmentation.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
+		. += augmentation
+		if(aux_zone)
+			augmentation_aux = image(augmentation.icon, "[aux_zone]_[draw_state]", -aux_layer, image_dir)
+			augmentation_aux.color = "#" + sprite_color2hex(aug_color, GLOB.aug_colors_list)
+			. += augmentation_aux
+
+	if(decal_color)
+		var/image/target_image = android ? augmentation : limb
+		limb_decal = image(target_image.icon, icon_state = "[target_image.icon_state]_dcolor", layer = -BODYPARTS_LAYER, dir = image_dir)
+		limb_decal.color = "#[decal_color]"
+		. += limb_decal
+		if(aux_zone)
+			target_image = android ? augmentation_aux : aux
+			aux_decal = image(target_image.icon, icon_state = "[target_image.icon_state]_dcolor", layer = -aux_layer, dir = image_dir)
+			aux_decal.color = limb_decal.color
+			. += aux_decal
+
 
 
 //pulls the correct mutant bodyparts from a mob's features
-
 /obj/item/bodypart/proc/update_sprite_accessories(mob/living/carbon/source)
 	if(!source || !ishuman(source) || no_update)
 		return
-	var/robotic = get_augtype()
 	for(var/feature in source.dna.features)
-		if((feature == "legs") && robotic) // robotic digitigrade legs won't be updated
-			continue
-
 		if(feature in mutant_bodyparts)
-			var/feature_to_add = source.dna.features[feature]
-
-			if(feature_to_add != "None")
-				feature_to_add = check_feature_by_index(feature_to_add, source.dna.species.features_id, feature, TRUE)
-				//if(robotic && !(check_feature_by_index(feature_to_add, FEATURE_ROBOTIC, feature)))
-					//feature_to_add = feature_to_add + "_[aug_id]_" + "[robotic]"
-					//if(!(check_feature_by_index(feature_to_add, FEATURE_AUGMENT, feature)))
-						//feature_to_add = check_feature_by_index(feature_to_add, FEATURE_ROBOTIC, feature, TRUE)
-
+			if(feature == "legs")
+				if((get_augtype() == AUG_TYPE_DIGITIGRADE) || (DIGITIGRADE in source.dna.species.species_traits))
+					mutant_bodyparts["legs"] = "Digitgrade Legs"
+				else
+					mutant_bodyparts["legs"] = "None"
+				continue
+			var/feature_to_add = (draw_state >= BODYPART_DRAW_ROBOTIC) ? mutant_bodyparts[feature] : source.dna.features[feature]
+			feature_to_add = check_feature_by_index(feature_to_add, source.dna.species.features_id, feature, draw_state, TRUE)
 			mutant_bodyparts[feature] = feature_to_add
 
 /obj/item/bodypart/proc/get_sprite_accessory_list(mob/living/carbon/human/H)
@@ -616,7 +581,7 @@
 	if(!istype(H))
 		return
 	for(var/feature in mutant_bodyparts)
-		if(mutant_bodyparts[feature] != "None" && H.dna.species.should_display_feature(H, feature))
+		if((mutant_bodyparts[feature] != "None") && draw_state != (BODYPART_DRAW_ANDROID_SKELETAL) && H.dna.species.should_display_feature(H, feature))
 			.[feature] = mutant_bodyparts[feature]
 
 /obj/item/bodypart/deconstruct(disassembled = TRUE)
@@ -626,16 +591,14 @@
 /obj/item/bodypart/proc/get_augtype()
 	if(is_organic_limb())
 		return
-	if(draw_organic_features)
-		return AUG_TYPE_ANDROID
-	else if(bodypart_draw_flags & BODYPART_DRAW_MONITOR)
-		return AUG_TYPE_MONITOR
-	else if(use_digitigrade)
-		return AUG_TYPE_DIGITIGRADE
-	else if(bodypart_draw_flags & BODYPART_DRAW_ROBOTIC_ALT)
-		return AUG_TYPE_ROBOTIC_ALT
-	else
-		return AUG_TYPE_ROBOTIC
+	switch(draw_state)
+		if(BODYPART_DRAW_ANDROID to BODYPART_DRAW_ANDROID_SKELETAL)
+			return AUG_TYPE_ANDROID
+		if(BODYPART_DRAW_MONITOR)
+			return AUG_TYPE_MONITOR
+		else
+			return use_digitigrade ? AUG_TYPE_DIGITIGRADE : AUG_TYPE_ROBOTIC
+
 
 /obj/item/bodypart/chest
 	name = BODY_ZONE_CHEST
@@ -835,7 +798,6 @@
 	body_part = LEG_LEFT
 	mutant_bodyparts = list("legs" = "None")
 	aux_zone = BODY_ZONE_PRECISE_L_FOOT
-	aux_layer = FEET_PART_LAYER
 	body_damage_coeff = 0.75
 	px_x = -2
 	px_y = 12
@@ -897,7 +859,6 @@
 	body_part = LEG_RIGHT
 	mutant_bodyparts = list("legs" = "None")
 	aux_zone = BODY_ZONE_PRECISE_R_FOOT
-	aux_layer = FEET_PART_LAYER
 	body_damage_coeff = 0.75
 	px_x = 2
 	px_y = 12

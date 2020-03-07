@@ -59,15 +59,19 @@
 	var/use_static		//determines if the accessory will be skipped by color preferences
 	var/color_src = MUTCOLORS	//Currently only used by mutantparts so don't worry about hair and stuff. This is the source that this accessory will get its color from. Default is MUTCOLOR, but can also be HAIR, FACEHAIR, EYECOLOR and 0 if none.
 	var/hasinner		//Decides if this sprite has an "inner" part, such as the fleshy parts on ears.
+	var/has_augmented_states = FALSE //whether this part has overlay icons for android bodypart states
 	var/locked = FALSE		//Is this part locked from roundstart selection? Used for parts that apply effects
 	var/dimension_x = 32
 	var/dimension_y = 32
 	var/center = FALSE	//Should we center the sprite?
-	var/species			//What species does this belong to? Make sure to have at least one item with this set this to DEFAULT_SPECIES_INDEX
+	var/species			//What id value this should be indexed under in the id indexed list
+	var/feature_name 	//The top level index that this feature can be found under
+
 
 //////////////////////
 // Hair Definitions //
 //////////////////////
+
 /datum/sprite_accessory/hair
 	icon = 'icons/mob/hair/human.dmi'	  // default icon for all hairs
 	species = "human"
@@ -1765,7 +1769,7 @@
 	icon_state = "roundlight"
 
 /datum/sprite_accessory/snouts/tajaran
-	name = "Light"
+	name = "Light (Tajaran)"
 	icon_state = "tajaran_light"
 	species = "tajaran"
 	hasinner = TRUE
@@ -1814,6 +1818,18 @@ datum/sprite_accessory/horns/antennae
 datum/sprite_accessory/horns/antlers
 	name = "Antlers"
 	icon_state = "antlers"
+	color_src = AUG_COLOR
+	species = "robotic"
+
+datum/sprite_accessory/horns/tvantennae
+	name = "TV Antennae"
+	icon_state = "tvantennae"
+	color_src = AUG_COLOR
+	species = "robotic"
+
+datum/sprite_accessory/horns/crowned
+	name = "Crowned"
+	icon_state = "crowned"
 	color_src = AUG_COLOR
 	species = "robotic"
 
@@ -2153,13 +2169,19 @@ datum/sprite_accessory/horns/antlers
 	icon = 'icons/mob/sprite_accessories/misc.dmi'
 	color_src = HAIR
 
+/datum/sprite_accessory/caps/none
+	name = "None"
+	icon_state = "none"
+	species = DEFAULT_SPECIES_INDEX
+
 /datum/sprite_accessory/caps/round
 	name = "Round"
 	icon_state = "round"
+	species = "mush"
 
-////////////////////////
-// Augmentation Parts //
-////////////////////////
+//////////////////
+// Augmentation //
+//////////////////
 
 //augmented limb sets
 
@@ -2182,7 +2204,7 @@ datum/sprite_accessory/horns/antlers
 /datum/sprite_accessory/augmentation/bishop
 	name = "Bishop Cybernetics"
 	species = "bishop"
-	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR, AUG_TYPE_ANDROID, AUG_TYPE_ROBOTIC_ALT),
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR, AUG_TYPE_ANDROID),
 								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID),
 								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID),
 								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID),
@@ -2193,7 +2215,7 @@ datum/sprite_accessory/horns/antlers
 /datum/sprite_accessory/augmentation/medical
 	name = "Ward-Takahashi Robotics Medical Line"
 	species = "wt-medical"
-	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID, AUG_TYPE_ROBOTIC_ALT),
+	eligible_bodyparts = list(BODY_ZONE_HEAD = list(AUG_TYPE_ROBOTIC, AUG_TYPE_ANDROID, AUG_TYPE_MONITOR),
 								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
@@ -2208,8 +2230,8 @@ datum/sprite_accessory/horns/antlers
 								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
-								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE),
-								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC))
 	optics_types = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR)
 
 /datum/sprite_accessory/augmentation/shellguard
@@ -2219,8 +2241,8 @@ datum/sprite_accessory/horns/antlers
 								BODY_ZONE_CHEST = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_L_ARM = list(AUG_TYPE_ROBOTIC),
 								BODY_ZONE_R_ARM = list(AUG_TYPE_ROBOTIC),
-								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE),
-								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC, AUG_TYPE_DIGITIGRADE))
+								BODY_ZONE_L_LEG = list(AUG_TYPE_ROBOTIC),
+								BODY_ZONE_R_LEG = list(AUG_TYPE_ROBOTIC))
 	optics_types = list(AUG_TYPE_ROBOTIC, AUG_TYPE_MONITOR)
 
 /datum/sprite_accessory/augmentation/prosthetic
@@ -2303,5 +2325,37 @@ datum/sprite_accessory/horns/antlers
 	icon_state = "lumi_eyes"
 
 /datum/sprite_accessory/monitor_state/lumi_waiting
-	name = "waiting"
+	name = "Waiting"
 	icon_state = "lumi_waiting"
+
+/datum/sprite_accessory/monitor_state/eight
+	name = "Eight"
+	icon_state = "eight"
+
+/datum/sprite_accessory/monitor_state/red_eyes
+	name = "Red Eyes"
+	icon_state = "eyes_red"
+
+/datum/sprite_accessory/monitor_state/alert
+	name = "Alert"
+	icon_state = "alert"
+
+/datum/sprite_accessory/monitor_state/heart
+	name = "Heart"
+	icon_state = "heart"
+
+/datum/sprite_accessory/monitor_state/monoeye
+	name = "Mono Eye"
+	icon_state = "monoeye"
+
+/datum/sprite_accessory/monitor_state/nature
+	name = "Nature"
+	icon_state = "nature"
+
+/datum/sprite_accessory/monitor_state/orange
+	name = "Orange"
+	icon_state = "orange"
+
+/datum/sprite_accessory/monitor_state/skull
+	name = "Skull"
+	icon_state = "skull"

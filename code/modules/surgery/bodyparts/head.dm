@@ -64,7 +64,7 @@
 
 /obj/item/bodypart/head/examine(mob/user)
 	. = ..()
-	if(is_organic_limb() && !(TORSO_BRAIN in species_flags_list))
+	if(!(TORSO_BRAIN in species_flags_list))
 		if(!brain)
 			. += "<span class='info'>The brain has been removed from [src].</span>"
 		else if(brain.suicided || brainmob?.suiciding)
@@ -209,7 +209,7 @@
 	. = ..()
 	if(dropped) //certain overlays only appear when the limb is being detached from its owner.
 
-		if(draw_organic_features) //having a robotic head hides certain features.
+		if(draw_state < BODYPART_DRAW_ANDROID_SKELETAL)
 			//facial hair
 			if(facial_hairstyle)
 				var/datum/sprite_accessory/S = GLOB.facial_hairstyles_list[facial_hairstyle]

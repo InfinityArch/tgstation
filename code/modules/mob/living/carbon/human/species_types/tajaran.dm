@@ -18,6 +18,7 @@
 	attack_verb = "slash"
 	attack_sound = 'sound/weapons/slash.ogg'
 	miss_sound = 'sound/weapons/slashmiss.ogg'
+	species_language_holder = /datum/language_holder/tajaran
 	meat = /obj/item/reagent_containers/food/snacks/meat/slab/human/mutant/tajaran
 	skinned_type = /obj/item/stack/sheet/animalhide/cat
 	exotic_bloodtype = "T"
@@ -25,7 +26,7 @@
 	liked_food = DAIRY | MEAT
 	deathsound = 'sound/voice/lizard/deathsound.ogg'
 
-datum/species/lizard/after_equip_job(datum/job/J, mob/living/carbon/human/H)
+datum/species/tajaran/after_equip_job(datum/job/J, mob/living/carbon/human/H)
 	H.grant_language(/datum/language/tajaran)
 
 //I wag in death

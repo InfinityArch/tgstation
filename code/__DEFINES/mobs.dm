@@ -58,29 +58,39 @@
 #define BODYPART_ORGANIC	1
 #define BODYPART_ROBOTIC	2
 
+//bodypart draw states
+#define BODYPART_DRAW_ORGANIC			0
+#define BODYPART_DRAW_ANDROID			1
+#define BODYPART_DRAW_ANDROID_SKELETAL	2
+#define BODYPART_DRAW_ROBOTIC			3
+#define BODYPART_DRAW_MONITOR			4
+#define BODYPART_DRAW_BORG				5
+
 
 //bodypart status flags
 #define BODYPART_STATUS_DISABLED_DAMAGE 	1 << 0
 #define BODYPART_STATUS_DISABLED_PAIN	  	1 << 1
 #define BODYPART_STATUS_DISABLED_PARALYSIS	1 << 2
-#define BODYPART_STATUS_NO_BONES			1 << 3
-#define BODYPART_STATUS_BROKEN_BONES		1 << 4
-#define BODYPART_STATUS_SPLINTED_BONES		1 << 5
-#define BODYPART_STATUS_EMAGGED				1 << 6
-
-//bodypart draw flags
-#define BODYPART_DRAW_MONITOR	 	  	1 << 1 // monitor heads
-#define BODYPART_DRAW_ROBOTIC_ALT		1 << 2 // alternate robotic icons
-#define BODYPART_DRAW_DIGITIGRADE	  	1 << 3 // makes legs draw in digitigrade style, blocks equiping of shoes that aren't fitted for digitigrade
-#define BODYPART_DRAW_ANDROID_SKELETAL	1 << 4 // causes android parts to render in their flesh stripped state
+#define BODYPART_STATUS_BROKEN_BONES		1 << 3
+#define BODYPART_STATUS_SPLINTED_BONES		1 << 4
+#define BODYPART_STATUS_EMAGGED				1 << 5
 
 //augmentation customization defaults
 #define FEATURE_AUGMENT				"augmentation"	  // augmented versions of organic features are found under this index in the species indexed sprite_accessory lists
-#define FEATURE_ROBOTIC				"feature_robotic" // robot exclusive features are found under THIS index in the species indexed sprite_accessory lists
+#define FEATURE_ROBOTIC				"robotic" // robot exclusive features are found under THIS index in the species indexed sprite_accessory lists
 #define AUG_COLOR					"aug_color"
-#define AUG_COLOR_DEFAULT			"Gunmetal"
+
 #define AUG_STYLE_DEFAULT			"Nanotrasen Robotics Division"
+
+
+//color default defines
+#define BODYPART_HUSK_COLOR_MOD		"525252" // color applied to husked limbs
+#define AUG_COLOR_DEFAULT			"Gunmetal"
+#define BLOOD_COLOR_DEFAULT			"red"
+#define BLOOD_COLOR_OIL				"black"
+#define BLOOD_COLOR_XENO			"lime"
 #define AUG_OPTICS_DEFAULT_COLOR	"013220" //color hex for optics that are currently off
+
 
 // bodypart customization
 #define BODYPART_AMPUTATED		"amputated"
@@ -386,17 +396,17 @@
 #define WABBAJACK     (1<<6)
 
 //Flags for naming conventions
-#define HUMAN_WESTERN   0 // Given_name Surname
-#define HUMAN_EASTERN   1 // Surname Given_name
-#define APO_NAME  	    2 // Given_name'surname
-#define APO_NAME_REV    3 // Surname'given_name
-#define APO_NAME_EXT	4 // Given_name'given_name'surname
-#define HYPHEN_NAME	    5 // Given_name-surname
-#define GIVEN_ONLY	    6 // Given_name
-#define SURNAME_ONLY	7 // Surname
-#define NAME_NUMERAL	8 // Given_name Numeral
-#define NAME_NUM		9 // Given_name Number
-#define NAME_LETTER     10 // Given_name Letter
+#define HUMAN_WESTERN   0 // [Given_name] [Surname]
+#define HUMAN_EASTERN   1 // [Surname] [Given_name]
+#define APO_NAME  	    2 // [Given_name]'[surname]
+#define APO_NAME_REV    3 // [Surname]'[given_name]
+#define APO_NAME_EXT	4 // [Given_name]'[given_name_2]'[surname]
+#define HYPHEN_NAME	    5 // [Given_name]-[surname]
+#define GIVEN_ONLY	    6 // [Given_name]
+#define SURNAME_ONLY	7 // [Surname]
+#define NAME_NUMERAL	8 // [Given_name] [Numeral]
+#define NAME_NUM		9 // [Given_name] [Number]
+#define NAME_LETTER     10 // [Given_name] [Letter]
 
 //other naming defines
 #define NAMEGEN_LIMIT 10 // limit for how many names the random_name() function should genearte

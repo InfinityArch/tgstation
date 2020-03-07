@@ -217,7 +217,7 @@
 	O.updateappearance(mutcolor_update=1)
 
 	if(cmptext("monkey",copytext(O.dna.real_name,1,7)))
-		O.real_name = O.dna.species.random_name(O.gender, NAMEGEN_LIMIT)
+		O.real_name = O.dna.species.random_name(O.gender)
 		O.dna.generate_unique_enzymes(O)
 	else
 		O.real_name = O.dna.real_name

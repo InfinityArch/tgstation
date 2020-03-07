@@ -178,7 +178,8 @@
 
 /obj/item/organ/external/ears/silicon
 	name = "auditory receiver module"
-	icon_state = "ears-silicon"
+	icon_state = "auditory-receiver-module"
+	icon = 'icons/obj/silicon_components.dmi'
 	desc = "An audio receiver module used in machines and androids"
 	status = ORGAN_ROBOTIC
 	required_bodypart_status = BODYPART_ROBOTIC

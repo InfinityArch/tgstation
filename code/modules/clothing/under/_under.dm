@@ -73,7 +73,7 @@
 
 	if(mutantrace_variation && ishuman(user))
 		var/mob/living/carbon/human/H = user
-		if(DIGITIGRADE in H.dna.species.species_traits)
+		if(H.has_digitigrade_legs())
 			adjusted = DIGITIGRADE_STYLE
 		H.update_inv_w_uniform()
 

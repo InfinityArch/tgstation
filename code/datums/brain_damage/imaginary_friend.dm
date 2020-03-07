@@ -102,7 +102,7 @@
 /mob/camera/imaginary_friend/proc/setup_friend()
 	var/gender = pick(MALE, FEMALE)
 	var/datum/species/S = new /datum/species/human
-	real_name = S.random_name(gender, NAMEGEN_LIMIT)
+	real_name = S.random_name(gender)
 	name = real_name
 	human_image = get_flat_human_icon(null, pick(SSjob.occupations))
 

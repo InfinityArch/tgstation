@@ -9,18 +9,19 @@
 							TRAIT_RESISTHIGHPRESSURE,TRAIT_RESISTLOWPRESSURE,TRAIT_RADIMMUNE,
 							TRAIT_NOHUNGER, TRAIT_EASYDISMEMBER, TRAIT_NOHARDCRIT,
 							TRAIT_SLEEPIMMUNE, TRAIT_EASYLIMBDISABLE, TRAIT_RESISTHEATHANDS,
-							TRAIT_XENO_IMMUNE, TRAIT_NOPAIN, TRAIT_NOSOFTCRIT, TRAIT_RESISTCOLD)
+							TRAIT_XENO_IMMUNE, TRAIT_NOPAIN, TRAIT_NOSOFTCRIT, TRAIT_RESISTLOWPRESSURE)
 	inherent_biotypes = MOB_ROBOTIC|MOB_HUMANOID
 	meat = null
+	//gib_type
 	exotic_blood = /datum/reagent/fuel/oil
 	damage_overlay_type = "robotic"
 	mutanttongue = /obj/item/organ/tongue/robot/silicon
 	mutanteyes = /obj/item/organ/eyes/silicon
 	mutantears = /obj/item/organ/external/ears/silicon
 	mutant_brain = /obj/item/organ/brain/silicon
-	feature_names = list("horns" = "head accessory")
-	mutant_bodyparts = list("horns")
-	default_features = list("mcolor" = "FFF", "horns" = "None")
+	feature_names = list("horns" = "head accessory (top)", "frills" = "head accessory (sides)")
+	mutant_bodyparts = list("horns")//,"frills")
+	default_features = list("mcolor" = "FFF", "horns" = "None")//, "frills" = "None")
 	species_hud = "ipc"
 	speedmod = 2 // as slow as golems
 	age_min = 0
@@ -30,7 +31,7 @@
 	limbs_id = "human" // ipcs with android parts will use human hair and limb styles
 	features_id = "robotic" //but their roundstart mutant bodypart selection is limited to robotic features
 	changesource_flags = MIRROR_BADMIN | MIRROR_PRIDE | RACE_SWAP | ERT_SPAWN
-	species_language_holder = /datum/language_holder/synthetic
+	species_language_holder = /datum/language_holder/ipc
 	limb_customization_type = LIMB_CUSTOMIZATION_FULL
 	var/power_load = 0
 	var/heat_load = 0
@@ -51,6 +52,16 @@
 	RegisterSignal(C, COMSIG_HANDLE_APC_RECHARGING, .proc/handle_apc_charging)
 	RegisterSignal(C, COMSIG_SILICON_TOGGLE_SLEEP_MODE, .proc/toggle_sleep_mode)
 	. = ..()
+
+	//ipcs appear on diagnostic hud, not health hud
+	var/image/stat_holder = C.hud_list[STATUS_HUD]
+	var/image/health_holder = C.hud_list[HEALTH_HUD]
+	stat_holder.icon_state = null
+	health_holder.icon_state = null
+	for(var/datum/atom_hud/data/diagnostic/D in GLOB.huds)
+		D.add_to_hud(C)
+
+
 	C.bubble_icon = "robot"
 	sleep_mode_toggle = new
 	//battery_hud = new
@@ -79,12 +90,17 @@
 	C.clear_alert("overheating")
 	C.clear_alert("charge")
 	C.bubble_icon = initial(C.bubble_icon)
+	var/image/stat_holder = C.hud_list[DIAG_STAT_HUD]
+	var/image/health_holder = C.hud_list[DIAG_HUD]
+	var/image/battery_holder = C.hud_list[DIAG_BATT_HUD]
+	stat_holder.icon_state = null
+	health_holder.icon_state = null
+	battery_holder.icon_state = null
+	for(var/datum/atom_hud/data/diagnostic/D in GLOB.huds)
+		D.remove_from_hud(C)
 
 	sleep_mode_toggle.Remove(C)
 	QDEL_NULL(sleep_mode_toggle)
-
-	//infodisplay -= battery_hud
-	//QDELNULL(battery_hud)
 
 	. = ..()
 	var/datum/status_effect/incapacitating/sleep_mode/S = C.has_status_effect(STATUS_EFFECT_SLEEPMODE)
@@ -129,12 +145,11 @@
 
 /datum/species/ipc/spec_death(gibbed, mob/living/carbon/human/H)
 	if(H.health > H.crit_threshold)
-		safe_start = TRUE
+		safe_start = gibbed ? FALSE : TRUE
 	H.clear_alert("charge")
 	H.clear_alert("overheating")
 	var/datum/status_effect/incapacitating/sleep_mode/S = H.has_status_effect(STATUS_EFFECT_SLEEPMODE)
 	if(S && !S.gc_destroyed)
-		message_admins("[S] from [H] is being deleted...")
 		qdel(S)
 
 datum/species/ipc/handle_blood(mob/living/carbon/human/H)
@@ -153,96 +168,29 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 
 /datum/species/ipc/apply_damage(damage, damagetype = BRUTE, def_zone = null, blocked, mob/living/carbon/human/H, forced = FALSE, spread_damage = FALSE)
 	. = ..()
-	if(. && H.stat != DEAD && (H.health < 0.5 * H.getMaxHealth()) && damagetype == BRUTE && prob(CLAMP(damage, 10, 60)))
+	if(. && H.stat != DEAD && (H.health < 0.5 * H.getMaxHealth()) && damagetype == BRUTE)// && prob(CLAMP(damage, 10, 60)))
 		do_sparks(5, FALSE, H)
 
-/datum/species/ipc/handle_environment(datum/gas_mixture/environment, mob/living/carbon/human/H) //overriding the entire handle environment proc for these guys was the least of all possible evils
-	if(!environment)
-		return
-	if(istype(H.loc, /obj/machinery/atmospherics/components/unary/cryo_cell))
-		return
+/datum/species/ipc/handle_environment(datum/gas_mixture/environment, mob/living/carbon/human/H)
+	bodytemp_normal = environment ? handle_heat_load(environment, H) : initial(bodytemp_normal)
+	if(H.stat != DEAD)
+		if(isspaceturf(H.loc))
+			H.adjust_bodytemperature(natural_bodytemperature_stabilization(H))
+			return handle_body_temperature(H)
+	. = ..()
 
-	var/loc_temp = H.get_temperature(environment)
-	var/target_temp = handle_heat_load(environment, H)
+/datum/species/ipc/natural_bodytemperature_stabilization(mob/living/carbon/human/H, overheat = FALSE)
+	if(bodytemp_normal > bodytemp_heat_damage_limit)
+		var/body_temperature_difference = bodytemp_normal - H.bodytemperature
+		return max((body_temperature_difference * H.metabolism_efficiency / BODYTEMP_AUTORECOVERY_DIVISOR), \
+			min(body_temperature_difference, bodytemp_autorecovery_min))
+	. = ..()
 
-	//Body temperature is adjusted in two parts: first there your body tries to naturally preserve homeostasis (shivering/sweating), then it reacts to the surrounding environment
-	//Thermal protection (insulation) has mixed benefits in two situations (hot in hot places, cold in hot places)
-	if(!H.on_fire) //If you're on fire, you do not heat up or cool down based on surrounding gases
-		var/natural = 0
-		if(H.stat != DEAD)
-			natural = H.natural_bodytemperature_stabilization()
-		var/thermal_protection = 1
-		if(loc_temp < H.bodytemperature) //Place is colder than we are
-			thermal_protection -= H.get_cold_protection(loc_temp) //This returns a 0 - 1 value, which corresponds to the percentage of protection based on what you're wearing and what you're exposed to.
-			if(target_temp > BODYTEMP_NORMAL)
-				if(H.bodytemperature < target_temp)
-					var/heating_factor = CLAMP((target_temp - H.bodytemperature)/target_temp, BODYTEMP_OVERHEAT_MIN, BODYTEMP_OVERHEAT_MAX)
-					H.adjust_bodytemperature(min(target_temp - H.bodytemperature, BODYTEMP_HEATING_MAX * heating_factor))
-			else if(H.bodytemperature < BODYTEMP_NORMAL) //we're cold, insulation helps us retain body heat and will reduce the heat we lose to the environment
-				H.adjust_bodytemperature((thermal_protection+1)*natural + max(thermal_protection * (loc_temp - H.bodytemperature) / BODYTEMP_COLD_DIVISOR, BODYTEMP_COOLING_MAX))
-			else //we're sweating, insulation hinders our ability to reduce heat - and it will reduce the amount of cooling you get from the environment
-				H.adjust_bodytemperature(natural*(1/(thermal_protection+1)) + max((thermal_protection * (loc_temp - H.bodytemperature) + BODYTEMP_NORMAL - H.bodytemperature) / BODYTEMP_COLD_DIVISOR , BODYTEMP_COOLING_MAX)) //Extra calculation for hardsuits to bleed off heat
-	if (loc_temp > H.bodytemperature) //Place is hotter than we are
-		var/natural = 0
-		if(H.stat != DEAD)
-			natural = H.natural_bodytemperature_stabilization()
-		var/thermal_protection = 1
-		thermal_protection -= H.get_heat_protection(loc_temp) //This returns a 0 - 1 value, which corresponds to the percentage of protection based on what you're wearing and what you're exposed to.
-		if(H.bodytemperature < target_temp) //and we're cold, insulation enhances our ability to retain body heat but reduces the heat we get from the environment
-			H.adjust_bodytemperature((thermal_protection+1)*natural + min(thermal_protection * (loc_temp - H.bodytemperature) / BODYTEMP_HEAT_DIVISOR, BODYTEMP_HEATING_MAX))
-		else if(H.bodytemperature < BODYTEMP_NORMAL) //we're cold, insulation helps us retain body heat and will reduce the heat we lose to the environment
-			H.adjust_bodytemperature((thermal_protection+1)*natural + max(thermal_protection * (loc_temp - H.bodytemperature) / BODYTEMP_COLD_DIVISOR, BODYTEMP_COOLING_MAX))
-		else //we're sweating, insulation hinders out ability to reduce heat - but will reduce the amount of heat we get from the environment
-			H.adjust_bodytemperature(natural*(1/(thermal_protection+1)) + min(thermal_protection * (loc_temp - H.bodytemperature) / BODYTEMP_HEAT_DIVISOR, BODYTEMP_HEATING_MAX))
+/datum/species/ipc/handle_body_temperature(mob/living/carbon/human/H)
+	bodytemp_normal = initial(bodytemp_normal)
+	. = ..()
 
-	// +/- 50 degrees from 310K is the 'safe' zone, where no damage is dealt.
-	if(H.bodytemperature > BODYTEMP_HEAT_DAMAGE_LIMIT && !HAS_TRAIT(H, TRAIT_RESISTHEAT))
-		//Body temperature is too hot.
 
-		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "cold")
-		SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "hot", /datum/mood_event/hot)
-
-		H.remove_movespeed_modifier(MOVESPEED_ID_COLD)
-
-		var/burn_damage
-		var/firemodifier = H.fire_stacks / 50
-		if (H.on_fire)
-			burn_damage = max(log(2-firemodifier,(H.bodytemperature-BODYTEMP_NORMAL))-5,0)
-		else
-			firemodifier = min(firemodifier, 0)
-			burn_damage = max(log(2-firemodifier,(H.bodytemperature-BODYTEMP_NORMAL))-5,0) // this can go below 5 at log 2.5
-		if (burn_damage)
-			switch(burn_damage)
-				if(0 to 2)
-					H.throw_alert("temp", /obj/screen/alert/hot, 1)
-				if(2 to 4)
-					H.throw_alert("temp", /obj/screen/alert/hot, 2)
-				else
-					H.throw_alert("temp", /obj/screen/alert/hot, 3)
-		burn_damage = burn_damage * heatmod * H.physiology.heat_mod
-		H.apply_damage(burn_damage, BURN, spread_damage = TRUE)
-
-	else if(H.bodytemperature < BODYTEMP_COLD_DAMAGE_LIMIT && !HAS_TRAIT(H, TRAIT_RESISTCOLD))
-		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "hot")
-		SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "cold", /datum/mood_event/cold)
-		//Sorry for the nasty oneline but I don't want to assign a variable on something run pretty frequently
-		H.add_movespeed_modifier(MOVESPEED_ID_COLD, override = TRUE, multiplicative_slowdown = ((BODYTEMP_COLD_DAMAGE_LIMIT - H.bodytemperature) / COLD_SLOWDOWN_FACTOR), blacklisted_movetypes = FLOATING)
-		switch(H.bodytemperature)
-			if(200 to BODYTEMP_COLD_DAMAGE_LIMIT)
-				H.throw_alert("temp", /obj/screen/alert/cold, 1)
-				H.apply_damage(COLD_DAMAGE_LEVEL_1*coldmod*H.physiology.cold_mod, BURN)
-			if(120 to 200)
-				H.throw_alert("temp", /obj/screen/alert/cold, 2)
-				H.apply_damage(COLD_DAMAGE_LEVEL_2*coldmod*H.physiology.cold_mod, BURN)
-			else
-				H.throw_alert("temp", /obj/screen/alert/cold, 3)
-				H.apply_damage(COLD_DAMAGE_LEVEL_3*coldmod*H.physiology.cold_mod, BURN)
-
-	else
-		H.clear_alert("temp")
-		H.remove_movespeed_modifier(MOVESPEED_ID_COLD)
-		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "cold")
-		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "hot")
 
 /datum/species/ipc/proc/handle_heat_load(datum/gas_mixture/environment, mob/living/carbon/human/H, send_notifications = TRUE)
 	. = BODYTEMP_NORMAL
@@ -271,8 +219,6 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 			if(report && send_notifications)
 				to_chat(H, "<span class='robot notice'>NOTICE: [CP.name] [CP.serial_number] has automatically switched to \
 	[CP.get_power_state_string()]" + report)
-
-
 
 	// calculate the amount of excess heat we're generating, and throw an alert if necessary
 	. += CLAMP(SILICON_HEAT_LOAD_FACTOR * (heat_load - cooling_capacity), 0, 100)
@@ -349,7 +295,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		if(S.organ_flags & ORGAN_VITAL)
 			continue
 		report = null
-		while(S.power_state && S.power_state * S.base_power_load > B.battery_rating * B.power_state)
+		while(S.power_state && (S.power_state * S.base_power_load > B.battery_rating * B.power_state))
 			if(S.power_state > POWER_STATE_LOW && S.adjust_power_state(S.power_state * 0.5))
 				report = TRUE
 			else
@@ -394,6 +340,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	B.cell.use(B.cell.charge) //reduce the cell's charge to exactly zero
 
 /datum/species/ipc/proc/update_power_icons(mob/living/carbon/human/H)
+	diag_hud_set_borgcell(H)
 	var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
 	if(!B)
 		H.clear_alert("charge")
@@ -431,7 +378,6 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	var/datum/status_effect/incapacitating/sleep_mode/S = H.has_status_effect(STATUS_EFFECT_SLEEPMODE)
 	var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
 	var/obj/item/organ/silicon/coolant_pump/CP = H.getorganslot(ORGAN_SLOT_COOLANT_PUMP)
-
 	if(S)
 		if(B && B.cell && B.cell.charge && CP)
 			if(voluntary)
@@ -449,9 +395,6 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 				update_battery(H)
 			if(H.loc)
 				handle_heat_load(H.loc.return_air(), H, FALSE)
-
-
-
 
 	else
 		H.apply_status_effect(STATUS_EFFECT_SLEEPMODE)
@@ -478,13 +421,13 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 				if(CP.base_power_load * POWER_STATE_LOW > B.battery_rating)
 					to_chat(H, "<span class='robot danger'>WARNING: [B.name] [B.serial_number] has insufficient capacity to operate [CP.name] [CP.serial_number], systems running on emergency power!</span>")
 
-
 /datum/species/ipc/proc/charge(mob/living/carbon/human/H, amount, repairs) // check if we need to have the right number of arguments
 	var/obj/item/organ/silicon/battery/B = H.getorganslot(ORGAN_SLOT_BATTERY)
 	var/power_recieved
 
 	if(B && B.cell && amount)
 		power_recieved = B.cell.give(amount)
+		diag_hud_set_borgcell(H)
 		if(power_recieved)
 			charging = world.time + 30
 	return power_recieved
@@ -510,10 +453,10 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	else if(istype(charging_source, /obj/item/stock_parts/cell))
 		source_cell = charging_source
 	else
-		CRASH("[C] attempted to charge with an invalid charing source [charging_source]!")
+		stack_trace("[C] attempted to charge with an invalid charing source [charging_source]!")
 		return
 	if(!source_cell)
-		CRASH("Non-SMES source [charging_source] attempted to recharge [src] without passing a power cell")
+		stack_trace("Non-SMES source [charging_source] attempted to recharge [src] without passing a power cell")
 		return
 	if(source_cell.charge < source_cell.chargerate)
 		to_chat(C, "<span class='robot danger'>ERROR: [charging_source == source_cell ? "[source_cell]" : "[source_cell] mounted in [charging_source]"] has insufficient power to charge internal cell!</span>")
@@ -538,3 +481,44 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		safe_start = FALSE // if they go below the crit threshold they need a cyborg jump starter (and repairs) to be revived
 	else
 		return C.getorganslot(ORGAN_SLOT_BATTERY) && C.getorganslot(ORGAN_SLOT_COOLANT_PUMP)
+
+//diagnostic HUD hooks
+/datum/species/ipc/med_hud_set_health_spec(mob/living/carbon/human/H)
+	. = TRUE
+	var/image/holder = H.hud_list[DIAG_HUD]
+	var/icon/I = icon(H.icon, H.icon_state, H.dir)
+	holder.pixel_y = I.Height() - world.icon_size
+	if(H.stat == DEAD)
+		holder.icon_state = "huddiagdead_h"
+	else
+		holder.icon_state = "huddiag[RoundDiagBar(H.health/H.maxHealth)]_h"
+
+/datum/species/ipc/med_hud_set_status_spec(mob/living/carbon/human/H)
+	. = TRUE
+	var/image/holder = H.hud_list[DIAG_STAT_HUD]
+	var/icon/I = icon(H.icon, H.icon_state, H.dir)
+	holder.pixel_y = I.Height() - world.icon_size
+	if(H.has_status_effect(STATUS_EFFECT_SLEEPMODE))
+		holder.icon_state = "hudoffline_h"
+		return
+	switch(H.stat)
+		if(CONSCIOUS)
+			holder.icon_state = "hudstat_h"
+		if(UNCONSCIOUS)
+			holder.icon_state = "hudoffline_h"
+		else
+			holder.icon_state = "huddead2_h"
+
+
+/datum/species/ipc/proc/diag_hud_set_borgcell(mob/living/carbon/C)
+	var/image/holder = C.hud_list[DIAG_BATT_HUD]
+	var/obj/item/organ/silicon/battery/B = C.getorganslot(ORGAN_SLOT_BATTERY)
+	var/icon/I = icon(C.icon, C.icon_state, C.dir)
+	holder.pixel_y = I.Height() - world.icon_size
+	if(B && B.cell)
+		var/chargelvl = (B.cell.charge/B.cell.maxcharge)
+		holder.icon_state = "hudbatt[RoundDiagBar(chargelvl)]_h"
+	else
+		holder.icon_state = "hudnobatt_h"
+
+

@@ -22,10 +22,11 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	var/hair_color	// this allows races to have specific hair colors... if null, it uses the H's hair/facial hair colors. if "mutcolor", it uses the H's mutant_color
 	var/hair_alpha = 255	// the alpha used by the hair. 255 is completely solid, 0 is transparent.
-	var/aux_color // works like hair_color, but for aux parts; if defined and species has AUXCOLORS_OVERRIDE in traits, the auxparts will be colored as such, AUXCOLORS can also be a color SRC for a
+	var/limb_decal_color // if defined, this species bodypart icons will have subparts colored separately
 	var/list/feature_names = DEFAULT_FEATURES_NAMES // what the in game name of the species' features are
 	var/exotic_blood = ""	// If your race wants to bleed something other than bog standard blood, change this to reagent id.
 	var/exotic_bloodtype = "" //If your race uses a non standard bloodtype (A+, O-, AB-, etc)
+	var/blood_color = "red" // what color to display this species' blood as, must be the name of a web color included in the color2hex() proc found in type2type. This will be ignored if your mob has oil for blood, as oil splatters have their own icons
 	var/meat = /obj/item/reagent_containers/food/snacks/meat/slab/human //What the species drops on gibbing
 	var/skinned_type
 	var/liked_food = NONE
@@ -311,14 +312,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				H.hud_used.update_ui_style(ui_style2icon(H.dna.species.species_hud))
 
 	// this needs to be FIRST because qdel calls update_body which checks if we have DIGITIGRADE legs or not and if not then removes DIGITIGRADE from species_traits
-	if(("legs" in C.dna.species.mutant_bodyparts) && C.dna.features["legs"] == "Digitigrade Legs")
-		species_traits += DIGITIGRADE
-	if(DIGITIGRADE in species_traits)
-		C.Digitigrade_Leg_Swap(FALSE)
 	if(C.dna)
 		C.dna.features = sanitize_features(C.dna.features, C.dna.species.features_id)
 		for(var/obj/item/bodypart/BP in C.bodyparts)
 			BP.update_sprite_accessories(C)
+	if(("legs" in C.dna.species.mutant_bodyparts) && C.dna.features["legs"] == "Digitigrade Legs")
+		species_traits |= DIGITIGRADE
+	if(DIGITIGRADE in species_traits)
+		C.Digitigrade_Leg_Swap(FALSE)
 
 	C.mob_biotypes = inherent_biotypes
 
@@ -416,7 +417,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/dynamic_fhair_suffix = ""
 
 	//for robotic heads
-	if(!(HD.draw_organic_features))
+	if(HD.draw_state > BODYPART_DRAW_ANDROID)
 		return
 
 	//we check if our hat or helmet hides our facial hair.
@@ -557,7 +558,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	if(HD && !(HAS_TRAIT(H, TRAIT_HUSK)))
 		// lipstick
-		if(H.lip_style && (LIPS in species_traits) && !(H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) && !(H.head && (H.head.flags_inv & HIDEFACE)) && (HD.draw_organic_features))
+		if(H.lip_style && (LIPS in species_traits) && !(H.wear_mask && (H.wear_mask.flags_inv & HIDEFACE)) && !(H.head && (H.head.flags_inv & HIDEFACE)) && (HD.draw_state < BODYPART_DRAW_ANDROID_SKELETAL))
 			var/mutable_appearance/lip_overlay = mutable_appearance('icons/mob/sprite_accessories/lips.dmi', "[H.dna.species.limbs_id]_lips_[H.lip_style]", -COSMETICS_LAYER)
 			lip_overlay.color = "#" + H.lip_color
 			lip_overlay.alpha = MAKEUP_OPACITY
@@ -574,14 +575,15 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				eye_overlay = mutable_appearance('icons/mob/human_face.dmi', "eyes_missing", -BODY_LAYER)
 			else if(E)
 				eye_overlay = mutable_appearance(E.eye_icon_base, E.eye_icon_state, -BODY_LAYER)
-				eye_overlay.color = E.eye_color ? "#[E.eye_color]" : "#[H.eye_color]"
+				if(EYECOLOR in species_traits || E.eye_color)
+					eye_overlay.color = E.eye_color ? "#[E.eye_color]" : "#[H.eye_color]"
 			if(OFFSET_FACE in H.dna.species.offset_features)
 				eye_overlay.pixel_x += H.dna.species.offset_features[OFFSET_FACE][1]
 				eye_overlay.pixel_y += H.dna.species.offset_features[OFFSET_FACE][2]
 			standing += eye_overlay
 
 	//Underwear, Undershirts & Socks
-	if(!(NO_UNDERWEAR in species_traits) && (TR.draw_organic_features))
+	if(!(NO_UNDERWEAR in species_traits) && (TR && TR.draw_state < BODYPART_DRAW_ANDROID_SKELETAL))
 		if(H.underwear)
 			var/datum/sprite_accessory/underwear/underwear = GLOB.underwear_list[H.underwear]
 			var/mutable_appearance/underwear_overlay
@@ -599,7 +601,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				else
 					standing += mutable_appearance(undershirt.icon, undershirt.icon_state, -BODY_LAYER)
 
-		if(H.socks && H.get_num_legs(FALSE) >= 2 && !(DIGITIGRADE in species_traits))
+		if(H.socks && H.get_num_legs(FALSE) >= 2 && !(H.has_digitigrade_legs()))
 			var/datum/sprite_accessory/socks/socks = GLOB.socks_list[H.socks]
 			if(socks)
 				standing += mutable_appearance(socks.icon, socks.icon_state, -BODY_LAYER)
@@ -638,11 +640,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	//digitigrade limbs
 	var/update_needed = FALSE
+
 	for(var/obj/item/bodypart/BP in H.bodyparts)
 
 		bodyparts_to_add |= BP.get_sprite_accessory_list(H)
 
-		if(("Legs" in BP.mutant_bodyparts) && (BP.mutant_bodyparts["Legs"] != "None"))
+		if(("legs" in BP.mutant_bodyparts) && (BP.mutant_bodyparts["legs"] != "None"))
 			if(H.wear_suit && ((H.wear_suit.flags_inv & HIDEJUMPSUIT) || (H.wear_suit.body_parts_covered & LEGS)) || (H.w_uniform && (H.w_uniform.body_parts_covered & LEGS)))
 				if(BP.use_digitigrade != SQUISHED_DIGITIGRADE)
 					update_needed = TRUE
@@ -650,8 +653,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			else if(BP.use_digitigrade != FULL_DIGITIGRADE)
 				update_needed = TRUE
 				BP.use_digitigrade = FULL_DIGITIGRADE
-		else if(BP.get_augtype()) // prevents clearing of robotic digitigrade legs that (generally speaking) won't correspond to an entry in features
-			continue
 		else if(BP.use_digitigrade)
 			BP.use_digitigrade = FALSE
 			update_needed = TRUE
@@ -671,7 +672,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		for(var/feature in bodyparts_to_add)
 
 			var/datum/sprite_accessory/S = get_feature_list(feature)[bodyparts_to_add[feature]]
-			if(!S || S.icon_state == "none")
+			if(!S || S.icon_state == "None")
 				continue
 
 			var/mutable_appearance/accessory_overlay = mutable_appearance(S.icon, layer = -layer)
@@ -864,7 +865,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				return FALSE
 			if(num_legs < 2)
 				return FALSE
-			if(DIGITIGRADE in species_traits)
+			if(H.has_digitigrade_legs())
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>The footwear around here isn't compatible with your feet!</span>")
 				return FALSE
@@ -875,7 +876,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_CHEST)
 
-			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_organic_features)))
+			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_state <= BODYPART_DRAW_ANDROID_SKELETAL)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -920,7 +921,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 				return FALSE
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_CHEST)
-			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_organic_features)))
+			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_state <= BODYPART_DRAW_ANDROID_SKELETAL)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -935,7 +936,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_L_LEG)
 
-			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_organic_features)))
+			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_state <= BODYPART_DRAW_ANDROID_SKELETAL)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -949,7 +950,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 			var/obj/item/bodypart/O = H.get_bodypart(BODY_ZONE_R_LEG)
 
-			if(!H.w_uniform && !nojumpsuit && (!O || O.status && (O.draw_organic_features)))
+			if(!H.w_uniform && !nojumpsuit && (!O || (O.draw_state <= BODYPART_DRAW_ANDROID_SKELETAL)))
 				if(!disable_warning)
 					to_chat(H, "<span class='warning'>You need a jumpsuit before you can attach this [I.name]!</span>")
 				return FALSE
@@ -1130,8 +1131,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(0 to NUTRITION_LEVEL_STARVING)
 			H.throw_alert("nutrition", /obj/screen/alert/starving)
 
-/datum/species/proc/update_health_hud(mob/living/carbon/human/H)
-	return 0
+
+/datum/species/proc/med_hud_set_health_spec(mob/living/carbon/human/H)
+	return FALSE
+
+/datum/species/proc/med_hud_set_status_spec(mob/living/carbon/human/H)
+	return FALSE
 
 /datum/species/proc/handle_mutations_and_radiation(mob/living/carbon/human/H)
 	. = FALSE
@@ -2023,12 +2028,12 @@ __Returns__:
 - Returns a valid name string after it finds an unused one or reaches the limit of *attempts_to_find_unique_name*
 */
 
-/datum/species/proc/random_name(gender = PLURAL, attempts_to_find_unique_name=1, naming_convention_override)
+/datum/species/proc/random_name(gender = PLURAL, attempts_to_find_unique_name = NAMEGEN_LIMIT, naming_convention_override)
 	. = "NAME_GENERATION_ERROR"
 	if(!length(GLOB.first_names_male))
 		init_species_names_lists(GLOB.first_names_male, GLOB.first_names_female, GLOB.last_names)
 	if(!naming_convention_override)
-		naming_convention_override = naming_convention ? naming_convention : pick(HUMAN_WESTERN, HUMAN_EASTERN)
+		naming_convention_override = naming_convention ? naming_convention : HUMAN_WESTERN
 
 	for(var/i in 1 to attempts_to_find_unique_name)
 		if(gender == FEMALE)

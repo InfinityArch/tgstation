@@ -541,7 +541,7 @@
 				switch(rand(1,6))
 					if(1)
 						var/datum/species/S = new (pick(GLOB.roundstart_races))
-						R.fields["name"] = S.random_name(pick(MALE, FEMALE, PLURAL), NAMEGEN_LIMIT)
+						R.fields["name"] = S.random_name(pick(MALE, FEMALE, PLURAL))
 					if(2)
 						R.fields["gender"]	= pick("Male", "Female", "Other")
 					if(3)

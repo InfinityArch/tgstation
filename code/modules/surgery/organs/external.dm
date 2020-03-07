@@ -63,32 +63,26 @@
 /obj/item/organ/external/proc/update_from_features(mob/living/carbon/C, forced = FALSE, clear_empty = TRUE) //pulls the sprite accessory from features, use this after sanitizing features on a mob
 	if(no_update && !forced)
 		return
-	if(ishuman(C))
-		var/mob/living/carbon/human/H = C
-		var/obj/item/bodypart/parent_bodypart = H.get_bodypart(zone)
-		var/aug_type = parent_bodypart.get_augtype()
-		if(aug_type)
-			status = ORGAN_ROBOTIC
-			organ_flags |= ORGAN_SYNTHETIC
-		else if(initial(status) == ORGAN_ROBOTIC)
-			status = ORGAN_ROBOTIC
-			organ_flags |= ORGAN_SYNTHETIC
-		else
-			status = ORGAN_ORGANIC
-			organ_flags &= ~ORGAN_SYNTHETIC
+	if(!ishuman(C))
+		return
+	var/mob/living/carbon/human/H = C
+	var/obj/item/bodypart/parent_bodypart = H.get_bodypart(zone)
+	if(!parent_bodypart)
+		return
+	var/aug_type = parent_bodypart.get_augtype()
+	if(aug_type || (initial(status) == ORGAN_ROBOTIC))
+		status = ORGAN_ROBOTIC
+		organ_flags |= ORGAN_SYNTHETIC
+	else
+		status = ORGAN_ORGANIC
+		organ_flags &= ~(ORGAN_SYNTHETIC|ORGAN_SYNTHETIC_EMP)
 
-		for(var/feature_name in mutant_bodyparts)
-			if(feature_name in H.dna.features)
-				mutant_bodyparts[feature_name] = H.dna.features[feature_name]
-			if(mutant_bodyparts[feature_name] == "None")
-				continue
-			if(aug_type)
-				if(check_feature_by_index(mutant_bodyparts[feature_name], FEATURE_ROBOTIC, feature_name)) // first see if it's in the augment list
-					continue
-				mutant_bodyparts[feature_name] += "_" + parent_bodypart.aug_id + "_" + aug_type
-				if(check_feature_by_index(mutant_bodyparts[feature_name], FEATURE_AUGMENT, feature_name))
-					continue
-				mutant_bodyparts[feature_name] = check_feature_by_index(mutant_bodyparts[feature_name], FEATURE_ROBOTIC, feature_name, TRUE)
+	for(var/feature in H.dna.features)
+		if(feature in mutant_bodyparts)
+			var/feature_to_add = (parent_bodypart.draw_state >= BODYPART_DRAW_ROBOTIC) ? mutant_bodyparts[feature] : H.dna.features[feature]
+			feature_to_add = check_feature_by_index(feature_to_add, H.dna.species.features_id, feature, parent_bodypart.draw_state, TRUE)
+			mutant_bodyparts[feature] = feature_to_add
+
 	update_icon()
 	if(initial(no_update) && !no_update)
 		required_bodypart_status = FALSE //this is a contingency against world spawned external organs like cat tails which can also spawn at roundstart due to their types being used for meme content
@@ -96,9 +90,15 @@
 /obj/item/organ/external/proc/get_sprite_accessory_list(mob/living/carbon/human/H)
 	. = list()
 	if(istype(H))
+		var/obj/item/bodypart/parent_bodypart = H.get_bodypart(zone)
+		if(!parent_bodypart)
+			return
+		if(parent_bodypart.draw_state == BODYPART_DRAW_ANDROID_SKELETAL)
+			return
 		for(var/feature in mutant_bodyparts)
 			if((mutant_bodyparts[feature] != "None") && H.dna.species.should_display_feature(H, feature))
-				.[feature] = mutant_bodyparts[feature]
+				if(parent_bodypart.draw_state != BODYPART_DRAW_ANDROID_SKELETAL)
+					.[feature] = mutant_bodyparts[feature]
 
 ////////
 //TAIL//
@@ -111,7 +111,7 @@
 	mutant_bodyparts = list("tail" = "None", "tail_accessory" = "None")
 	desc = "a severed tail."
 
-//snowflake tails for the lizard discrimination memes!
+//snowflake tails for the felinid/lizard discrimination memes!
 /obj/item/organ/external/tail/cat
 	name = "cat tail"
 	mutant_bodyparts = list("tail" = "Cat", "tail_accessory" = "None")
@@ -135,6 +135,9 @@
 /obj/item/organ/external/tail/get_sprite_accessory_list(mob/living/carbon/human/H)
 	. = list()
 	if(istype(H))
+		var/obj/item/bodypart/parent_bodypart = owner.get_bodypart(zone)
+		if(parent_bodypart.draw_state == BODYPART_DRAW_ANDROID_SKELETAL)
+			return
 		for(var/feature in mutant_bodyparts)
 			if((mutant_bodyparts[feature] != "None") && H.dna.species.should_display_feature(H, feature))
 				if(animated_feature)
@@ -185,7 +188,6 @@
 
 
 
-
 /obj/item/organ/external/wings/Insert(mob/living/carbon/C, special = 0, drop_if_replaced = FALSE)
 	. = ..()
 	if(ishuman(C))
@@ -200,19 +202,3 @@
 	if(ishuman(C))
 		var/mob/living/carbon/human/H = C
 		H.dna.species.flying_species = FALSE
-
-//////////
-//OPTICS//
-//////////
-/obj/item/organ/optics
-	name = "optics"
-	desc = "a set of badass looking robotic optics."
-	icon_state = "optics"
-	slot = ORGAN_SLOT_OPTICS
-	zone = BODY_ZONE_HEAD
-	status = ORGAN_ROBOTIC
-	organ_flags = ORGAN_SYNTHETIC
-	required_bodypart_status = BODYPART_ROBOTIC //TODO: setup surgeries for this, and setup the bodypart status change procs so they dump the organ in question when status doesn't match -InfiityArch
-	//actions = list(/datum/action/item_action/organ_action/adjust_optics)
-	var/optics_state = ""
-	var/monitor_optics = FALSE //set true when placed in a monitor head

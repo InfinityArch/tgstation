@@ -948,8 +948,8 @@
 								return
 							augtype = input(usr, "Select the type of augmentation to install") as null|anything in get_eligible_augmentation_types(augstyle, BP.body_zone)
 							if(!augtype)
-								return	
-							augcolor = input(usr, "Select a color for this augmentation") as null|anything in GLOB.aug_colors_list	
+								return
+							augcolor = input(usr, "Select a color for this augmentation") as null|anything in GLOB.aug_colors_list
 							BP.change_bodypart_status(BODYPART_ROBOTIC, TRUE, TRUE, augstyle, augtype, augcolor)
 						else
 							to_chat(usr, "<span class='boldwarning'>[src] doesn't have such bodypart.</span>")

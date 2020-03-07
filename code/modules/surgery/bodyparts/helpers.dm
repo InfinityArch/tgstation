@@ -160,7 +160,7 @@
 
 
 //Helper for quickly creating a new limb - used by augment code in species.dm spec_attacked_by
-/mob/living/carbon/proc/newBodyPart(zone, robotic, fixed_icon, aug_style_target = AUG_STYLE_DEFAULT, aug_type = AUG_TYPE_ROBOTIC, aug_color_target = AUG_COLOR_DEFAULT)
+/mob/living/carbon/proc/newBodyPart(zone, robotic, fixed_icon, aug_style_target = AUG_STYLE_DEFAULT, aug_type = AUG_TYPE_ROBOTIC, aug_color_target = AUG_COLOR_DEFAULT, aug_decal_target)
 	var/obj/item/bodypart/L
 	switch(zone)
 		if(BODY_ZONE_L_ARM)
@@ -178,7 +178,7 @@
 	if(L)
 		L.update_limb(fixed_icon, src)
 		if(robotic)
-			L.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE, aug_style_target, aug_type, aug_color_target)
+			L.change_bodypart_status(BODYPART_ROBOTIC, FALSE, TRUE, aug_style_target, aug_type, aug_color_target, aug_decal_target)
 	. = L
 
 /mob/living/carbon/monkey/newBodyPart(zone, robotic, fixed_icon, aug_style_target = AUG_STYLE_DEFAULT, aug_type = AUG_TYPE_ROBOTIC, aug_color_target = AUG_COLOR_DEFAULT)
@@ -267,40 +267,33 @@
 		if("orange")
 			. = "ffc905"
 
-/mob/living/carbon/proc/Digitigrade_Leg_Swap(swap_back)
+/mob/living/carbon/proc/Digitigrade_Leg_Swap(swap_back, swap_augmented)
 	var/body_plan_changed = FALSE
-	for(var/X in bodyparts)
-		var/obj/item/bodypart/O = X
-		var/obj/item/bodypart/N
-		if((!O.use_digitigrade && swap_back == FALSE) || (O.use_digitigrade && swap_back == TRUE))
-			if(O.body_part == LEG_LEFT)
-				if(swap_back == TRUE)
-					N = new /obj/item/bodypart/l_leg
-				else
-					N = new /obj/item/bodypart/l_leg/digitigrade
-			else if(O.body_part == LEG_RIGHT)
-				if(swap_back == TRUE)
-					N = new /obj/item/bodypart/r_leg
-				else
-					N = new /obj/item/bodypart/r_leg/digitigrade
-		if(!N)
+	for(var/obj/item/bodypart/BP in bodyparts)
+		if(!("legs" in BP.mutant_bodyparts) || BP.no_update || ((BP.get_augtype() == AUG_TYPE_DIGITIGRADE) && !swap_augmented))
 			continue
-		body_plan_changed = TRUE
-		O.drop_limb(1)
-		qdel(O)
-		N.attach_limb(src)
+		if(swap_back && BP.use_digitigrade)
+			BP.use_digitigrade = NOT_DIGITIGRADE
+			BP.mutant_bodyparts["legs"] = "None"
+			body_plan_changed = TRUE
+		else if(!BP.use_digitigrade)
+			BP.mutant_bodyparts["legs"] = "Digitigrade Legs"
+			body_plan_changed = TRUE
+
 	if(body_plan_changed && ishuman(src))
 		var/mob/living/carbon/human/H = src
-		if(H.w_uniform)
-			var/obj/item/clothing/under/U = H.w_uniform
-			if(U.mutantrace_variation)
-				if(swap_back)
-					U.adjusted = NORMAL_STYLE
-				else
-					U.adjusted = DIGITIGRADE_STYLE
-				H.update_inv_w_uniform()
+		var/obj/item/clothing/under/U = H.w_uniform
+		if(U && U.mutantrace_variation)
+			U.adjusted = swap_back ? NORMAL_STYLE : DIGITIGRADE_STYLE
+			H.update_inv_w_uniform()
 		if(H.shoes && !swap_back)
 			H.dropItemToGround(H.shoes)
+		H.update_mutant_bodyparts()
+
+/mob/living/carbon/proc/has_digitigrade_legs()
+	for(var/obj/item/bodypart/BP in bodyparts)
+		if(BP.use_digitigrade)
+			return TRUE
 
 /proc/aug_id2augstyle(aug_id)
 	switch(aug_id)

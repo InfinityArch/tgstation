@@ -37,12 +37,12 @@
 /obj/item/organ/eyes/Insert(mob/living/carbon/M, special = FALSE, drop_if_replaced = FALSE, initialising)
 	. = ..()
 	if(ishuman(owner))
-		var/mob/living/carbon/human/HMN = owner
-		old_eye_color = HMN.eye_color
-		if(eye_color)
-			//HMN.eye_color = eye_color
-			HMN.regenerate_icons()
-		if(HAS_TRAIT(HMN, TRAIT_NIGHT_VISION) && !lighting_alpha)
+		var/mob/living/carbon/human/H= owner
+		if(!eye_color && (EYECOLOR in H.dna.species.species_traits))
+			eye_color = H.eye_color
+		H.regenerate_icons()
+
+		if(HAS_TRAIT(H, TRAIT_NIGHT_VISION) && !lighting_alpha)
 			lighting_alpha = LIGHTING_PLANE_ALPHA_NV_TRAIT
 	M.update_tint()
 	owner.update_sight()
@@ -52,9 +52,8 @@
 /obj/item/organ/eyes/Remove(mob/living/carbon/M, special = 0)
 	..()
 	if(ishuman(M) && eye_color)
-		var/mob/living/carbon/human/HMN = M
-		HMN.eye_color = old_eye_color
-		HMN.regenerate_icons()
+		var/mob/living/carbon/human/H = M
+		H.regenerate_icons()
 	M.cure_blind(EYE_DAMAGE)
 	M.cure_nearsighted(EYE_DAMAGE)
 	M.set_blindness(0)
@@ -399,7 +398,7 @@
 
 /obj/item/organ/eyes/silicon
 	name = "optical sensory package"
-	icon_state = "optical_sensory_package"
+	icon_state = "optical-sensory-package"
 	icon = 'icons/obj/silicon_components.dmi'
 	eye_icon_base = 'icons/mob/augmentation/optics.dmi'
 	desc = "A robot's optical sensory package"
@@ -427,6 +426,7 @@
 	name = "adjust eye optics"
 	desc = "Changes the display state of your optics"
 	check_flags = AB_CHECK_SLEEPMODE|AB_CHECK_CONSCIOUS
+	//button_icon_state = "eye_optics"
 
 /obj/item/organ/eyes/silicon/ui_action_click(mob/living/carbon/C, action)
 	if(istype(action, /datum/action/item_action/organ_action/toggle))
@@ -441,8 +441,7 @@
 
 /obj/item/organ/eyes/silicon/proc/prompt_for_controls(mob/living/carbon/C)
 	var/obj/item/bodypart/head/HD = owner.get_bodypart(BODY_ZONE_HEAD)
-	var/augtype = HD.get_augtype()
-	if(augtype == AUG_TYPE_MONITOR)
+	if(HD.draw_state == BODYPART_DRAW_MONITOR)
 		var/new_monitor_state = input(owner, "Choose a face for your monitor display", "Display Customization")  as null|anything in GLOB.monitor_styles_list
 		if(!new_monitor_state)
 			return
@@ -472,25 +471,22 @@
 		HD = C.get_bodypart(BODY_ZONE_HEAD)
 	else
 		HD = loc
-	if(!istype(HD))
+	if(!istype(HD) || !HD.aug_id)
 		return
-	var/augtype = HD.get_augtype()
-	if(!augtype)
-		return
-	if(augtype != AUG_TYPE_MONITOR)
-		monitor_state = ""
 
-	if(augtype == AUG_TYPE_ANDROID)
+	monitor_state = HD.draw_state == BODYPART_DRAW_MONITOR ? monitor_state : ""
+
+	if(HD.draw_state < BODYPART_DRAW_ROBOTIC)
 		eye_icon_state = initial(eye_icon_state)
+		eye_icon_base = initial(eye_icon_base)
 	else
-		eye_icon_state = HD.aug_id + "_" + augtype
-
-	eye_color = "fff"
+		eye_icon_state = "[HD.aug_id]_[HD.draw_state]"
 
 	if(active)
 		if(monitor_state)
 			eye_icon_state += "_" + monitor_state
-		else if(augtype == AUG_TYPE_MONITOR)
+			eye_color = "fff"
+		else if(HD.draw_state == BODYPART_DRAW_MONITOR)
 			eye_color = AUG_OPTICS_DEFAULT_COLOR
 		else if(optics_color)
 			eye_color = optics_color

@@ -382,7 +382,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	real_name = reject_bad_name(real_name)
 	gender = sanitize_gender(gender)
 	if(!real_name)
-		real_name = pref_species.random_name(gender, NAMEGEN_LIMIT)
+		real_name = pref_species.random_name(gender)
 
 	for(var/custom_name_id in GLOB.preferences_custom_names)
 		var/namedata = GLOB.preferences_custom_names[custom_name_id]
@@ -415,7 +415,7 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 		undershirt 		= sanitize_inlist(undershirt, GLOB.undershirt_list)
 
 	socks			= sanitize_inlist(socks, GLOB.socks_list)
-	age				= sanitize_integer(age, pref_species.age_min, pref_species.age_max, initial(age))
+	age = isnum(age) ? CLAMP(age, pref_species.age_min, pref_species.age_max) : initial(age)
 	hair_color			= sanitize_hexcolor(hair_color, 3, 0)
 	facial_hair_color			= sanitize_hexcolor(facial_hair_color, 3, 0)
 	underwear_color			= sanitize_hexcolor(underwear_color, 3, 0)

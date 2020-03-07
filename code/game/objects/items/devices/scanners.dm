@@ -136,10 +136,10 @@ GENE SCANNER
 	if(isliving(user) && (user.incapacitated() || user.eye_blind))
 		return
 	if((M.mob_biotypes & MOB_ROBOTIC))
-		if(!advanced)
-			to_chat(user, "<span class='info'>Analyzing results for [M]:\n\tOverall status: <b>ERROR</b></span>")
-		else
+		if(advanced)
 			to_chat(user, "<span class='caution'>Warning, robotic subject detected, unable to acquire health data!</span>")
+		else
+			to_chat(user, "<span class='info'>Analyzing results for [M]:\n\tOverall status: <b>ERROR</b></span>")
 		return
 
 	// the final list of strings to render

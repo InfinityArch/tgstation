@@ -103,7 +103,7 @@
 		if(storedpart.is_organic_limb()) // break glass in case of badminnery
 			to_chat(user, "<span class='warning'>\The [storedpart] is not a robotic limb!</span>")
 			eject_part(user)
-			return 
+			return
 
 		var/augstyle = input(user, "Select augmentation style.", "Augment Custom Fitting") as null|anything in GLOB.augmentation_styles_list
 		if(!augstyle)
@@ -119,22 +119,17 @@
 			return
 		if(!storedpart)
 			return
-		var/augcolor = input(user, "Select augmentation color.", "Augment Custom Fitting") as null|anything in GLOB.aug_colors_list
+		var/augcolor = input(user, "Select augmentation finish.", "Augment Custom Fitting") as null|anything in GLOB.aug_colors_list
 		if(!augcolor)
 			return
 		if(!in_range(src, user))
 			return
 		if(!storedpart)
 			return
-		//if(augmentation.use_decal)
-			//var/decalcolor = input(user, "Select augmentation decal color.", "Augment Custom Fitting") as null|anything in GLOB.aug_decals_list
-			//if(!in_range(src, user))
-				//return
-			//if(!storedpart)
-				//return
-			//if(decalcolor)
-				//storedpart.change_bodypart_decal(augmentation.aug_id, decalcolor)
-		storedpart.change_bodypart_status(FALSE, FALSE, TRUE, augstyle, augtype, augcolor)
+		var/decal_color = input(user, "Select an augmentation decal color, or cancel to finalize limb customization", "Augment Custom Fitting") as color|null
+		if(!in_range(src, user))
+			return
+		storedpart.change_bodypart_status(FALSE, FALSE, TRUE, augstyle, augtype, augcolor, decal_color)
 		storedpart.no_update = FALSE
 		storedpart.original_owner = null
 		eject_part(user)

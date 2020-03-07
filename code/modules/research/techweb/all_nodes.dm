@@ -32,7 +32,7 @@
 	id = "ipc"
 	starting_node = TRUE
 	display_name = "Integrated Robotics Chassis Construction"
-	description = "Sapient humanoid robots. Tools and programmable laws not included."
+	description = "Sapient humanoid robots. Modules and programmable laws not included."
 	design_ids = list("ipc_microbattery", "ipc_coolant_pump", "borg_eyes", "borg_ears", "borg_tongue", "apc_charger")
 
 /datum/techweb_node/mech

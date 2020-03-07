@@ -4,7 +4,9 @@
 	icon = 'icons/mob/human.dmi'
 	icon_state = "human_basic"
 	appearance_flags = KEEP_TOGETHER|TILE_BOUND|PIXEL_SCALE
-	hud_possible = list(HEALTH_HUD,STATUS_HUD,ID_HUD,WANTED_HUD,IMPLOYAL_HUD,IMPCHEM_HUD,IMPTRACK_HUD, NANITE_HUD, DIAG_NANITE_FULL_HUD,ANTAG_HUD,GLAND_HUD,SENTIENT_DISEASE_HUD)
+	hud_possible = list(HEALTH_HUD,STATUS_HUD,ID_HUD,WANTED_HUD,IMPLOYAL_HUD,IMPCHEM_HUD,IMPTRACK_HUD,
+						DIAG_STAT_HUD, DIAG_HUD, DIAG_BATT_HUD, NANITE_HUD, DIAG_NANITE_FULL_HUD,ANTAG_HUD,
+						GLAND_HUD,SENTIENT_DISEASE_HUD)
 	hud_type = /datum/hud/human
 	possible_a_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, INTENT_HARM)
 	pressure_resistance = 25
@@ -22,7 +24,7 @@
 	//Eye colour
 	var/eye_color = "000"
 	//Skin tone
-	var/skin_tone = "African 1" 
+	var/skin_tone = "African 1"
 
 	var/lip_style = null	//no lipstick by default- arguably misleading, as it could be used for general makeup
 	var/datum/sprite_color/lip_color

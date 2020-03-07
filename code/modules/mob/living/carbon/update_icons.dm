@@ -252,9 +252,10 @@
 	Called from update_body_parts() these procs handle the limb icon cache.
 	the limb icon cache adds an icon_render_key to a human mob, it represents:
 	- skin_tone (if applicable)
-	- aug_color (if applicable)
+	- aug_id and aug_color (if applicable)
+	- decal color
 	- gender
-	- limbs (stores as the limb name and whether it is removed/fine, organic/robotic)
+	- limbs (stores as the limb name and whether it is removed/fine, its current draw state (organic, robotic, android, digitigrade, ect)
 	These procs only store limbs as to increase the number of matching icon_render_keys
 	This cache exists because drawing 6/7 icons for humans constantly is quite a waste
 	See RemieRichards on irc.rizon.net #coderbus (RIP remie :sob:)
@@ -265,15 +266,17 @@
 /mob/living/carbon/proc/generate_icon_render_key()
 	for(var/X in bodyparts)
 		var/obj/item/bodypart/BP = X
-		. += "-[BP.body_zone]"
+		. += "-[BP.body_zone]_[BP.draw_state]"
+		if(BP.aug_id)
+			. += "-[BP.aug_id]"
+			if(BP.aug_color)
+				. +="-[BP.aug_color]"
 		if(BP.use_digitigrade)
 			. += "-digitigrade[BP.use_digitigrade]"
 		if(BP.animal_origin)
 			. += "-[BP.animal_origin]"
-		if(BP.is_organic_limb())
-			. += "-organic"
-		else
-			. += "-robotic-[BP.aug_color]-[BP.aug_id]-"
+		if(BP.decal_color)
+			. += "-[BP.decal_color]"
 
 	if(HAS_TRAIT(src, TRAIT_HUSK))
 		. += "-husk"

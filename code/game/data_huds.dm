@@ -166,7 +166,10 @@
 
 //for carbon suit sensors
 /mob/living/carbon/med_hud_set_health()
-	..()
+	var/image/holder = hud_list[HEALTH_HUD]
+	holder.icon_state = "hud[RoundHealth(src)]"
+	var/icon/I = icon(icon, icon_state, dir)
+	holder.pixel_y = I.Height() - world.icon_size
 
 //called when a carbon changes stat, virus or XENO_HOST
 /mob/living/proc/med_hud_set_status()
@@ -206,6 +209,16 @@
 			if(null)
 				holder.icon_state = "hudhealthy"
 
+
+/mob/living/carbon/human/med_hud_set_health()
+	if(dna.species.med_hud_set_health_spec(src))
+		return
+	. = ..()
+
+/mob/living/carbon/human/med_hud_set_status()
+	if(dna.species.med_hud_set_status_spec(src))
+		return
+	. = ..()
 
 /***********************************************
  Security HUDs! Basic mode shows only the job.
@@ -282,60 +295,32 @@
 //For Diag health and cell bars!
 /proc/RoundDiagBar(value)
 	switch(value * 100)
-		if(95 to INFINITY)
-			return "max"
-		if(80 to 100)
-			return "good"
-		if(60 to 80)
-			return "high"
-		if(40 to 60)
-			return "med"
-		if(20 to 40)
-			return "low"
-		if(1 to 20)
-			return "crit"
+		if(100 to INFINITY)
+			return "_100"
+		if(90 to 100)
+			return "_90"
+		if(80 to 90)
+			return "_80"
+		if(70 to 80)
+			return "_70"
+		if(60 to 70)
+			return "_60"
+		if(50 to 60)
+			return "_50"
+		if(40 to 50)
+			return "_40"
+		if(30 to 40)
+			return "_30"
+		if(20 to 30)
+			return "_20"
+		if(10 to 20)
+			return "_10"
+		if(5 to 10)
+			return "_5"
+		if(0.1 to 5)
+			return "_0"
 		else
-			return "dead"
-
-//ipc and newborg hooks
-/mob/living/carbon/proc/diag_hud_set_health()
-	if(!(mob_biotypes & MOB_ROBOTIC))
-		return
-	var/image/holder = hud_list[DIAG_HUD]
-	var/icon/I = icon(icon, icon_state, dir)
-	holder.pixel_y = I.Height() - world.icon_size
-	if(stat == DEAD)
-		holder.icon_state = "huddiagdead"
-	else
-		holder.icon_state = "huddiag[RoundDiagBar(health/maxHealth)]"
-
-/mob/living/carbon/proc/diag_hud_set_status()
-	if(!(mob_biotypes & MOB_ROBOTIC))
-		return
-	var/image/holder = hud_list[DIAG_STAT_HUD]
-	var/icon/I = icon(icon, icon_state, dir)
-	holder.pixel_y = I.Height() - world.icon_size
-	if(has_status_effect(STATUS_EFFECT_SLEEPMODE))
-		holder.icon_state = "hudsleep"
-	else
-		switch(stat)
-			if(CONSCIOUS)
-				holder.icon_state = "hudstat"
-			if(UNCONSCIOUS)
-				holder.icon_state = "hudoffline"
-			else
-				holder.icon_state = "huddead2"
-
-/mob/living/carbon/proc/diag_hud_set_borgcell()
-	var/image/holder = hud_list[DIAG_BATT_HUD]
-	var/icon/I = icon(icon, icon_state, dir)
-	holder.pixel_y = I.Height() - world.icon_size
-	var/obj/item/organ/silicon/battery/B = getorganslot(ORGAN_SLOT_BATTERY)
-	if(B && B.cell)
-		var/chargelvl = (B.cell.charge/B.cell.maxcharge)
-		holder.icon_state = "hudbatt[RoundDiagBar(chargelvl)]"
-	else
-		holder.icon_state = "hudnobatt"
+			return "_dead"
 
 //Sillycone hooks
 /mob/living/silicon/proc/diag_hud_set_health()

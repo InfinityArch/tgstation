@@ -202,8 +202,8 @@ Turf and target are separate in case you want to teleport some distance from a t
 		else
 			switch(role)
 				if("human")
-					var/datum/species/S = new /datum/species/human 
-					newname = S.random_name(gender, NAMEGEN_LIMIT)
+					var/datum/species/S = new /datum/species/human
+					newname = S.random_name(gender)
 				if("clown")
 					newname = pick(GLOB.clown_names)
 				if("mime")
