@@ -99,14 +99,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/obj/item/organ/heart/mutantheart = /obj/item/organ/heart
 	var/obj/item/organ/lungs/mutantlungs = /obj/item/organ/lungs
 	var/obj/item/organ/eyes/mutanteyes = /obj/item/organ/eyes
-	var/obj/item/organ/external/ears/mutantears = /obj/item/organ/ears
+	var/obj/item/organ/external/ears/mutantears = /obj/item/organ/external/ears
 	var/obj/item/organ/tongue/mutanttongue = /obj/item/organ/tongue
 	var/obj/item/organ/liver/mutantliver = /obj/item/organ/liver
 	var/obj/item/organ/stomach/mutantstomach = /obj/item/organ/stomach
 	var/obj/item/organ/appendix/mutantappendix = /obj/item/organ/appendix
 	//species won't have these by default, so they can stay null
-	var/obj/item/organ/external/tail/mutanttail = obj/item/organ/external/tail
-	var/obj/item/organ/external/wings/mutantwings = obj/item/organ/external/wings
+	var/obj/item/organ/external/tail/mutanttail = /obj/item/organ/external/tail
+	var/obj/item/organ/external/wings/mutantwings = /obj/item/organ/external/wings
 	//only an honorary mutantthing because not an organ and not loaded in the same way, you've been warned to do your research
 	var/obj/item/mutanthands
 	var/override_float = FALSE
@@ -197,7 +197,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 		if(!oldorgan && should_have && !(initial(neworgan.zone) in excluded_zones))
 			used_neworgan = TRUE
-			if(istype(neworgan(/obj/item/organ/external)))
+			if(istype(neworgan, /obj/item/organ/external))
 				var/obj/item/organ/external/OE = neworgan
 				OE.no_update = FALSE
 			neworgan.Insert(C, TRUE, FALSE)
@@ -1829,7 +1829,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(H.bodytemperature >= TCRYO && !(HAS_TRAIT(H, TRAIT_HUSK))) //cryosleep or husked people do not pump the blood.
 
 		//Blood regeneration if there is some space
-		if(blood_volume < BLOOD_VOLUME_NORMAL && !HAS_TRAIT(H, TRAIT_NOHUNGER))
+		if(H.blood_volume < BLOOD_VOLUME_NORMAL && !HAS_TRAIT(H, TRAIT_NOHUNGER))
 			var/nutrition_ratio = 0
 			switch(H.nutrition)
 				if(0 to NUTRITION_LEVEL_STARVING)
@@ -1845,7 +1845,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			if(H.satiety > 80)
 				nutrition_ratio *= 1.25
 			H.adjust_nutrition(-nutrition_ratio * HUNGER_FACTOR)
-			H.blood_volume = min(BLOOD_VOLUME_NORMAL, blood_volume + 0.5 * nutrition_ratio)
+			H.blood_volume = min(BLOOD_VOLUME_NORMAL, H.blood_volume + 0.5 * nutrition_ratio)
 
 		//Effects of bloodloss
 		var/word = pick("dizzy","woozy","faint")
@@ -1860,20 +1860,20 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			if(BLOOD_VOLUME_OKAY to BLOOD_VOLUME_SAFE)
 				if(prob(5))
 					to_chat(H, "<span class='warning'>You feel [word].</span>")
-				adjustOxyLoss(round((BLOOD_VOLUME_NORMAL - blood_volume) * 0.01, 1))
+				H.adjustOxyLoss(round((BLOOD_VOLUME_NORMAL - H.blood_volume) * 0.01, 1))
 			if(BLOOD_VOLUME_BAD to BLOOD_VOLUME_OKAY)
-				adjustOxyLoss(round((BLOOD_VOLUME_NORMAL - blood_volume) * 0.02, 1))
+				H.adjustOxyLoss(round((BLOOD_VOLUME_NORMAL - H.blood_volume) * 0.02, 1))
 				if(prob(5))
-					blur_eyes(6)
+					H.blur_eyes(6)
 					to_chat(H, "<span class='warning'>You feel very [word].</span>")
 			if(BLOOD_VOLUME_SURVIVE to BLOOD_VOLUME_BAD)
-				adjustOxyLoss(5)
+				H.adjustOxyLoss(5)
 				if(prob(15))
-					Unconscious(rand(20,60))
+					H.Unconscious(rand(20,60))
 					to_chat(H, "<span class='warning'>You feel extremely [word].</span>")
 			if(-INFINITY to BLOOD_VOLUME_SURVIVE)
 				if(!HAS_TRAIT(H, TRAIT_NODEATH))
-					death()
+					H.death()
 
 		var/temp_bleed = 0
 		//Bleeding out
@@ -1890,10 +1890,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			if(brutedamage >= 20)
 				temp_bleed += (brutedamage * 0.013)
 
-		H.bleed_rate = max(bleed_rate - 0.5, temp_bleed)//if no wounds, other bleed effects (heparin) naturally decreases
+		H.bleed_rate = max(H.bleed_rate - 0.5, temp_bleed)//if no wounds, other bleed effects (heparin) naturally decreases
 
-		if(bleed_rate && !H.bleedsuppress && !(HAS_TRAIT(H, TRAIT_FAKEDEATH)))
-			Hbleed(bleed_rate)
+		if(H.bleed_rate && !H.bleedsuppress && !(HAS_TRAIT(H, TRAIT_FAKEDEATH)))
+			H.bleed(H.bleed_rate)
 
 ////////////
 //  Stun  //

@@ -220,7 +220,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_GENDER_ANTAG]'>When Antagonist: [(randomise[RANDOM_GENDER_ANTAG]) ? "Yes" : "No"]</A>"
 
 
-			age = sanitize_integer(age, pref_species.age_min, pref_species.age_max, initial(age))
+			age = clamp(age, pref_species.age_min, pref_species.age_max)
 			dat += "<br><b>Age:</b> <a href='?_src_=prefs;preference=age;task=input'>[age]</a>"
 			if(randomise[RANDOM_BODY] || randomise[RANDOM_BODY_ANTAG]) //doesn't work unless random body
 				dat += "<a href='?_src_=prefs;preference=toggle_random;random_type=[RANDOM_AGE]'>Always Random Age: [(randomise[RANDOM_AGE]) ? "Yes" : "No"]</A>"
@@ -1251,9 +1251,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				if("age")
 					var/new_age = input(user, "Choose your character's age:\n([pref_species.age_min]-[pref_species.age_max])", "Character Preference") as num|null
-					if(!new_age)
-						new_age = age
-					age = CLAMP(age, pref_species.age_min, pref_species.age_max)
+					if(new_age)
+						age = new_age
+					age = clamp(age, pref_species.age_min, pref_species.age_max)
 
 				if("hair")
 					var/new_hair = input(user, "Choose your character's hair colour:", "Character Preference","#"+hair_color) as color|null
@@ -1370,7 +1370,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						if((SKIN_TONE in pref_species.species_traits) || (DYNCOLORS in pref_species.species_traits))
 							skin_tone = sanitize_skin_tone(skin_tone, pref_species.limbs_id)
 						features = sanitize_features(features, pref_species.features_id)
-						age = CLAMP(age, pref_species.age_min, pref_species.age_max)
+						age = clamp(age, pref_species.age_min, pref_species.age_max)
 
 				if("remove_lipstick")
 					lip_style = null

@@ -12,10 +12,10 @@
 	unit_name = "humanoid eyes"
 	export_types = list(/obj/item/organ/eyes)
 
-/datum/export/organ/ears
+/datum/export/organ/external/ears
 	cost = 5
 	unit_name = "humanoid ears"
-	export_types = list(/obj/item/organ/ears)
+	export_types = list(/obj/item/organ/external/ears)
 
 /datum/export/organ/liver
 	cost = 5

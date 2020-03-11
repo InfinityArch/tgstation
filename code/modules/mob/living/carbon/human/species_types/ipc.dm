@@ -18,13 +18,13 @@
 	mutanttongue = /obj/item/organ/tongue/robot/silicon
 	mutanteyes = /obj/item/organ/eyes/silicon
 	mutantears = /obj/item/organ/external/ears/silicon
-	mutant_brain = /obj/item/organ/brain/silicon
+	mutantbrain = /obj/item/organ/brain/silicon
 	feature_names = list("horns" = "head accessory (top)", "frills" = "head accessory (sides)")
 	mutant_bodyparts = list("horns")//,"frills")
 	default_features = list("mcolor" = "FFF", "horns" = "None")//, "frills" = "None")
 	species_hud = "ipc"
 	speedmod = 2 // as slow as golems
-	age_min = 0
+	age_min = 1
 	age_max = 394
 	mutant_organs = list(/obj/item/organ/silicon/battery/ipc, /obj/item/organ/silicon/coolant_pump, /obj/item/organ/silicon/module/arm/apc_charger)
 	quirk_budget = 0 //ipcs don't get quirk points
@@ -205,13 +205,13 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 		cooling_capacity = CP.get_cooling_capacity(H.calculate_affecting_pressure(environment.return_pressure()))
 		if(cooling_capacity || !(CP.power_state))
 			while(heat_load > cooling_capacity && CP.power_state < POWER_STATE_OVERDRIVE)
-				if(CP.adjust_power_state(CLAMP(CP.power_state * 2, POWER_STATE_LOW, POWER_STATE_OVERDRIVE)))
+				if(CP.adjust_power_state(clamp(CP.power_state * 2, POWER_STATE_LOW, POWER_STATE_OVERDRIVE)))
 					report = " to compensate for excess heat accumulation.</span>"
 					cooling_capacity = CP.get_cooling_capacity(H.calculate_affecting_pressure(environment.return_pressure()))
 				else
 					break
 			while(heat_load * 2 <= cooling_capacity && CP.power_state > POWER_STATE_LOW)
-				if(CP.adjust_power_state(CLAMP(CP.power_state * 0.5, POWER_STATE_LOW, POWER_STATE_OVERDRIVE)))
+				if(CP.adjust_power_state(clamp(CP.power_state * 0.5, POWER_STATE_LOW, POWER_STATE_OVERDRIVE)))
 					report = " to reduce power consumption.</span>"
 					cooling_capacity = CP.get_cooling_capacity(H.calculate_affecting_pressure(environment.return_pressure()))
 				else
@@ -221,7 +221,7 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	[CP.get_power_state_string()]" + report)
 
 	// calculate the amount of excess heat we're generating, and throw an alert if necessary
-	. += CLAMP(SILICON_HEAT_LOAD_FACTOR * (heat_load - cooling_capacity), 0, 100)
+	. += clamp(SILICON_HEAT_LOAD_FACTOR * (heat_load - cooling_capacity), 0, 100)
 	if(. > BODYTEMP_NORMAL)
 		if(. > BODYTEMP_HEAT_DAMAGE_LIMIT)
 			H.throw_alert("overheating", /obj/screen/alert/overheat, 2)

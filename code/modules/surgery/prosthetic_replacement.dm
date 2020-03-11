@@ -64,6 +64,8 @@
 		to_chat(user, "<span class='warning'>[tool] must be installed onto an arm.</span>")
 		return -1
 
+//TODO INFINITYARCH fix this shit
+
 /datum/surgery_step/add_prosthetic/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, default_display_results = FALSE)
 	. = ..()
 	if(istype(tool, /obj/item/organ_storage))
@@ -129,10 +131,10 @@
 			to_chat(user, "<span class='warning'>[BP] isn't compatible with the subject.</span>")
 			return -1
 
-			if(ishuman(target))
-				if(BP.animal_origin)
-					to_chat(user, "<span class='warning'>[BP] doesn't match the subjects's morphology.</span>")
-					return -1
+		if(ishuman(target))
+			if(BP.animal_origin)
+				to_chat(user, "<span class='warning'>[BP] doesn't match the subjects's morphology.</span>")
+				return -1
 
 		if(target_zone == BP.body_zone) //so we can't replace a leg with an arm, or a human arm with a monkey arm.
 			display_results(user, target, "<span class='notice'>You begin to replace [target]'s [parse_zone(target_zone)] with [tool]...</span>",

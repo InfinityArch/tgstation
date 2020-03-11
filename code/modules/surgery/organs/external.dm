@@ -144,6 +144,12 @@
 					.["wagging" + feature] = mutant_bodyparts[feature]
 				else
 					.[feature] = mutant_bodyparts[feature]
+
+/obj/item/organ/external/tail/get_availability(datum/species/S)
+	if("tail" in S.mutant_bodyparts)
+		return TRUE
+	return FALSE
+
 /////////
 //WINGS//
 /////////
@@ -155,6 +161,12 @@
 	mutant_bodyparts = list("wings" = "None")
 	icon_state = "severed_wings"
 	actions_types = list(/datum/action/item_action/organ_action/toggle_flight)
+
+/obj/item/organ/external/wings/get_availability(datum/species/S)
+	if("wings" in S.mutant_bodyparts)
+		return TRUE
+	return FALSE
+
 
 /datum/action/item_action/organ_action/toggle_flight
 	check_flags = AB_CHECK_RESTRAINED|AB_CHECK_STUN|AB_CHECK_CONSCIOUS

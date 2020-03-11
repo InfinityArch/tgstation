@@ -298,9 +298,9 @@
 //For Diag health and cell bars!
 /proc/RoundDiagBar(value)
 	switch(value * 100)
-		if(100 to INFINITY)
+		if(95 to INFINITY)
 			return "_100"
-		if(90 to 100)
+		if(90 to 95)
 			return "_90"
 		if(80 to 90)
 			return "_80"
