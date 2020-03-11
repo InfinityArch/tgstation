@@ -2,6 +2,7 @@
 /datum/species/human/felinid
 	name = "Felinid"
 	id = "felinid"
+	say_mod = "meows"
 	limbs_id = "human"
 	features_id = "felinid"
 
@@ -70,6 +71,7 @@
 	return ..()
 
 /datum/species/human/felinid/on_species_loss(mob/living/carbon/H, datum/species/new_species, pref_load)
+	. = ..()
 	//var/obj/item/organ/external/ears/cat/ears = H.getorgan(/obj/item/organ/external/ears/cat)
 	//var/obj/item/organ/external/tail/cat/tail = H.getorgan(/obj/item/organ/external/tail/cat)
 
