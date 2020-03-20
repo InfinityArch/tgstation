@@ -122,13 +122,14 @@
 
 /datum/surgery_step/manipulate_components/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	I = null
-	if(mmi_exposed)
-		current_type = "mmi"
-		if(handle_mmi(user, target, target_zone, obj/item/tool, datum/surgery/surgery, src))
-			return -1
+	if(surgery.mmi_exposed)
+		return -1
+		///current_type = "mmi"
+		///if(handle_mmi(user, target, target_zone, obj/item/tool, datum/surgery/surgery, src))
+			///return -1
 
-	if(!tool)
-		return handle()
+	//if(!tool)
+		//do stuff
 
 	time = initial(time)
 	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
