@@ -9,7 +9,7 @@
 							TRAIT_RESISTHIGHPRESSURE,TRAIT_RESISTLOWPRESSURE,TRAIT_RADIMMUNE,
 							TRAIT_NOHUNGER, TRAIT_EASYDISMEMBER, TRAIT_NOHARDCRIT,
 							TRAIT_SLEEPIMMUNE, TRAIT_EASYLIMBDISABLE, TRAIT_RESISTHEATHANDS,
-							TRAIT_XENO_IMMUNE, TRAIT_NOPAIN, TRAIT_NOSOFTCRIT, TRAIT_RESISTLOWPRESSURE)
+							TRAIT_XENO_IMMUNE, TRAIT_NOPAIN, TRAIT_NOSOFTCRIT)
 	inherent_biotypes = MOB_ROBOTIC|MOB_HUMANOID
 	meat = null
 	//gib_type
@@ -18,8 +18,8 @@
 	mutanttongue = /obj/item/organ/tongue/robot/silicon
 	mutanteyes = /obj/item/organ/eyes/silicon
 	mutantears = /obj/item/organ/external/ears/silicon
-	mutantbrain = /obj/item/organ/brain/silicon
-	feature_names = list("horns" = "head accessory (top)", "frills" = "head accessory (sides)")
+	mutantbrain = /obj/item/organ/brain/silicon/robobrain
+	feature_names = list("horns" = "head accessory (top)")// "frills" = "head accessory (sides)")
 	mutant_bodyparts = list("horns")//,"frills")
 	default_features = list("mcolor" = "FFF", "horns" = "None")//, "frills" = "None")
 	species_hud = "ipc"

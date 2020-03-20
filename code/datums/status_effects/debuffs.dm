@@ -142,18 +142,7 @@
 	alert_type = /obj/screen/alert/status_effect/sleep_mode
 	duration = -1
 	tick_interval = 10
-
-/datum/status_effect/incapacitating/sleep_mode/on_creation(mob/living/new_owner, updating_canmove)
-	. = ..()
-	if(.)
-		if(updating_canmove)
-			owner.update_mobility()
-		owner.update_stat()
-
-/datum/status_effect/incapacitating/sleep_mode/on_remove()
-	. = ..()
-	owner.update_stat()
-
+	needs_update_stat = TRUE
 
 /datum/status_effect/incapacitating/sleep_mode/proc/end_sleepmode(mob/living/carbon/C, voluntary)
 	if(voluntary && owner)
@@ -162,11 +151,21 @@
 		to_chat(C, "<span class='robot notice'>Power restored, now exiting sleep mode.</span>")
 	duration = world.time
 
+/datum/status_effect/incapacitating/lockdown
+	id = "locked Down"
+	alert_type = /obj/screen/alert/locked
+	duration = -1
+	tick_interval = 10
+	needs_update_stat = TRUE
 
-/obj/screen/alert/status_effect/sleep_mode
-	name = "Sleep Mode"
-	desc = "All non-essential systems have shut down and you are running on emergency power, unless someone comes to help you're trapped"
-	icon_state = "locked"
+
+/datum/status_effect/incapacitating/lockdown/on_creation(mob/living/new_owner, updating_canmove)
+	needs_update_stat = TRUE
+	. = ..()
+	if(.)
+		if(updating_canmove)
+			owner.update_mobility()
+		owner.update_stat()
 
 //GOLEM GANG
 

@@ -371,6 +371,16 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 			imp.radio.talk_into(src, message, message_mode, spans, language)
 			return ITALICS | REDUCE_RANGE
 
+	var/datum/component/integrated_radio/R = GetComponent(/datum/component/integrated_radio)
+	if(R?.linked_radio.on)
+		message_admins("linked radio acquired, linked radio is on")
+		if(message_mode == MODE_HEADSET)
+			R.linked_radio.talk_into(src, message, , spans, language)
+			return ITALICS | REDUCE_RANGE
+		if(message_mode == MODE_DEPARTMENT || (message_mode in R.linked_radio.channels))
+			R.linked_radio.talk_into(src, message, message_mode, spans, language)
+			return ITALICS | REDUCE_RANGE
+
 	switch(message_mode)
 		if(MODE_WHISPER)
 			return ITALICS

@@ -528,6 +528,12 @@ Recommended course of action: Increase heat load or change environmental paramet
 office by your AI master or any qualified human may resolve this matter. Robotics may provide further assistance if necessary."
 	icon_state = "locked"
 
+
+/obj/screen/alert/status_effect/sleep_mode
+	name = "Sleep Mode"
+	desc = "All non-essential systems have shut down and you are running on emergency power, unless someone comes to help you're trapped"
+	icon_state = "locked"
+
 /obj/screen/alert/newlaw
 	name = "Law Update"
 	desc = "Laws have potentially been uploaded to or removed from this unit. Please be aware of any changes \

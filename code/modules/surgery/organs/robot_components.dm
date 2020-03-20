@@ -26,11 +26,12 @@
 			adjust_power_state(POWER_STATE_OFF)
 			if(owner)
 				to_chat(owner, "<span class='robot danger'>ALERT: Fatal error in [name] [serial_number], module is nonresponsive!")
-		return
+		return ..()
 	if(damage > low_threshold && damage_failure_probability && prob(damage_failure_probability * (damage > high_threshold ? 5 : 0)))
 		adjust_power_state(POWER_STATE_OFF)
 		if(owner)
 			to_chat(owner, "<span class='robot danger'>ALERT: [name] [serial_number] has shut down after encountering an error!")
+	. = ..()
 
 /obj/item/organ/silicon/on_death()
 	if(power_state)
@@ -141,7 +142,7 @@ obj/item/organ/silicon/battery/update_icon()
 	else
 		icon_state = icon_base
 
-/obj/item/organ/silicon/battery/proc/insert_cell(obj/item/stock_parts/cell/C, mob/living/carbon/user, silent = FALSE)
+/obj/item/organ/silicon/battery/proc/insert_cell(obj/item/stock_parts/cell/C, mob/living/user, silent = FALSE)
 	if(user)
 		user.temporarilyRemoveItemFromInventory(C, TRUE)
 	C.forceMove(src)
@@ -151,7 +152,7 @@ obj/item/organ/silicon/battery/update_icon()
 	update_icon()
 	update_battery_rating()
 
-/obj/item/organ/silicon/battery/proc/remove_cell(mob/living/carbon/user, silent = FALSE)
+/obj/item/organ/silicon/battery/proc/remove_cell(mob/living/user, silent = FALSE)
 	var/obj/item/stock_parts/cell/C = cell
 	if(user)
 		user.put_in_hands(C)
@@ -225,7 +226,7 @@ obj/item/organ/silicon/battery/update_icon()
 /obj/item/organ/silicon/battery/get_cell()
 	return cell
 
-/obj/item/organ/silicon/battery/ipc //only used to give ipcs a starting cell
+/obj/item/organ/silicon/battery/ipc //so ipcs spawn with a power cell
 	starting_cell = /obj/item/stock_parts/cell/upgraded
 
 
@@ -309,6 +310,34 @@ This radiative cooler is inefficient and consumes a lot of power but will contin
 	compact = TRUE
 	desc = "A hardened conductive mesh that can protect the vital internal components of a robot from even the most intense electromagnetic pulses"
 
+/obj/item/organ/silicon/upgrade/emp/Insert(mob/living/carbon/M, special = 0, drop_if_replaced = TRUE)
+	. = ..()
+	RegisterSignal(owner, COMSIG_CARBON_GAIN_ORGAN, .proc/add_organ_emp_protection)
+	RegisterSignal(owner, COMSIG_CARBON_LOSE_ORGAN, .proc/remove_organ_emp_protection)
+	for(var/obj/item/organ/O in owner.internal_organs)
+		add_organ_emp_protection(O)
+
+/obj/item/organ/silicon/upgrade/emp/Remove(mob/living/carbon/M, special = FALSE)
+	. = ..()
+	UnregisterSignal(owner, COMSIG_CARBON_GAIN_ORGAN)
+	UnregisterSignal(owner, COMSIG_CARBON_LOSE_ORGAN)
+	for(var/obj/item/organ/O in M.internal_organs)
+		remove_organ_emp_protection(O)
+
+
+
+/obj/item/organ/silicon/upgrade/emp/proc/add_organ_emp_protection(obj/item/organ/O)
+	if((O.status != ORGAN_ROBOTIC) || (O.zone != BODY_ZONE_CHEST))
+		return
+	O.AddComponent(/datum/component/empprotection, EMP_PROTECT_SELF|EMP_PROTECT_CONTENTS)
+
+
+/obj/item/organ/silicon/upgrade/emp/proc/remove_organ_emp_protection(obj/item/organ/O)
+	if((O.status != ORGAN_ROBOTIC) || (O.zone != BODY_ZONE_CHEST))
+		return
+	var/datum/component/empprotect = O.GetComponent(/datum/component/empprotection)
+	if(empprotect)
+		empprotect.RemoveComponent()
 
 /obj/item/organ/silicon/upgrade/vtec
 	name = "VTEC system"

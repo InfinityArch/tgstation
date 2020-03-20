@@ -93,6 +93,12 @@
 /obj/item/organ/brain/attackby(obj/item/O, mob/user, params)
 	user.changeNext_move(CLICK_CD_MELEE)
 
+	if(istype(O, /obj/item/organ/brain/silicon/mmi)) //brainception?
+		var/obj/item/organ/brain/silicon/mmi/MMI = O
+		if(MMI.can_insert_brain(src, user))
+			MMI.insert_brain(src, user)
+		return TRUE
+
 	if(istype(O, /obj/item/organ_storage))
 		return //Borg organ bags shouldn't be killing brains
 

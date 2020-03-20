@@ -113,7 +113,7 @@
 	if(!ui)
 		var/ui_width = 360
 		var/ui_height = 106
-		if(subspace_transmission)
+		if(subspace_transmission || subspace_switchable)
 			if (channels.len > 0)
 				ui_height += 6 + channels.len * 21
 			else
@@ -373,6 +373,7 @@
 
 /obj/item/radio/borg
 	name = "cyborg radio"
+	canhear_range
 	subspace_switchable = TRUE
 	dog_fashion = null
 

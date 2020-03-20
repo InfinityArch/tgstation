@@ -56,6 +56,8 @@
 
 #define STATUS_EFFECT_SLEEPMODE /datum/status_effect/incapacitating/sleep_mode //the affected is unable to move, use items, or stand up until power is restored
 
+#define STATUS_EFFECT_LOCKDOWN /datum/status_effect/incapacitating/lockdown //the affected is locked down, and unable to move or use items
+
 #define STATUS_EFFECT_BELLIGERENT /datum/status_effect/belligerent //forces the affected to walk, doing damage if they try to run
 
 #define STATUS_EFFECT_GEISTRACKER /datum/status_effect/geis_tracker //if you're using geis, this tracks that and keeps you from using scripture

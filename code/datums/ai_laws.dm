@@ -433,9 +433,10 @@
 /datum/ai_laws/proc/get_law_list(include_zeroth = 0, show_numbers = 1)
 	var/list/data = list()
 
-	if (include_zeroth && devillaws && devillaws.len)
+	if (include_zeroth && devillaws)
 		for(var/i in devillaws)
-			data += "[show_numbers ? "666:" : ""] <font color='#cc5500'>[i]</font>"
+			if(length(i) > 0)
+				data += "[show_numbers ? "666:" : ""] <font color='#cc5500'>[i]</font>"
 
 	if (include_zeroth && zeroth)
 		data += "[show_numbers ? "0:" : ""] <font color='#ff0000'><b>[zeroth]</b></font>"
@@ -461,3 +462,95 @@
 			data += "[show_numbers ? "[number]:" : ""] <font color='#990099'>[law]</font>"
 			number++
 	return data
+
+
+// checks whether two lawsets match each other exactly
+/datum/ai_laws/proc/check_identical_laws(datum/ai_laws/supplied_laws)
+	if(!supplied_laws)
+		return FALSE
+	var/list/our_laws = get_law_list(TRUE, TRUE)
+	var/list/their_laws = supplied_laws.get_law_list(TRUE, TRUE)
+	if(our_laws.len != their_laws.len)
+		return FALSE
+	for(var/i = 1, i <= our_laws.len, i++)
+		if(our_laws[i] == their_laws[i])
+			continue
+		return FALSE
+	return TRUE
+
+// copies the information of one lawset directly to another, including inherent laws
+/datum/ai_laws/proc/copy_laws(datum/ai_laws/supplied_laws, include_zeroth = TRUE, forced = FALSE)
+	name = supplied_laws.name
+	id = supplied_laws.id
+	inherent = supplied_laws.inherent.Copy()
+	supplied = supplied_laws.supplied.Copy()
+	ion = supplied_laws.ion.Copy()
+	hacked = supplied_laws.hacked.Copy()
+	if(owner?.mind?.special_role)
+		include_zeroth = forced
+	if(include_zeroth)
+		if(supplied_laws.zeroth)
+			zeroth = supplied_laws.zeroth
+		else
+			zeroth = null
+		if(supplied_laws.zeroth_borg)
+			zeroth_borg = supplied_laws.zeroth_borg
+		else
+			zeroth_borg = null
+		if(supplied_laws.devillaws)
+			devillaws = supplied_laws.devillaws.Copy()
+		else
+			devillaws = initial(devillaws)
+
+// merges two lawsets together. If override is TRUE, laws at a particular index will be replaced with the supplied law
+//otherwise they will be appended at the end of the law list
+/datum/ai_laws/proc/merge_laws(datum/ai_laws/supplied_laws, include_zeroth = TRUE, override = FALSE, forced = FALSE)
+	inherent = merge_law_lists(inherent, supplied_laws.inherent, override)
+	supplied = merge_law_lists(supplied, supplied_laws.supplied, override)
+	ion = merge_law_lists(ion, supplied_laws.ion, override)
+	hacked = merge_law_lists(hacked, supplied_laws.hacked, override)
+	if(owner?.mind?.special_role)
+		include_zeroth = forced
+	if(include_zeroth)
+		if(supplied_laws.zeroth && override)
+			zeroth = supplied_laws.zeroth
+		if(supplied_laws.zeroth_borg && override)
+			zeroth_borg = supplied_laws.zeroth_borg
+		if(supplied_laws.devillaws?.len >= 1)
+			devillaws = merge_law_lists(supplied_laws.devillaws, override)
+
+// merges two law lists together; returns null if no lists are supplied (ie if the lawlist is devilaws and neither lawset has them)
+/datum/ai_laws/proc/merge_law_lists(list/our_law_list, list/their_law_list, override = FALSE)
+	if(our_law_list)
+		. = list()
+		. |= our_law_list
+	else
+		. = their_law_list
+		return
+	if(their_law_list)
+		if(!override)
+			. |= their_law_list
+			return
+		for(var/i, i <= their_law_list.len, i++)
+			if(their_law_list[i] in .)
+				continue
+			if(.[i])
+				.[i] = their_law_list[i]
+			else
+				. += their_law_list[i]
+
+//returns true if this lawset is empty
+/datum/ai_laws/proc/is_empty_laws()
+	if(inherent.len >= 1)
+		return
+	if(supplied.len >= 1)
+		return
+	if(ion.len >= 1)
+		return
+	if(hacked.len >= 1)
+		return
+	if(devillaws.len >= 1)
+		return
+	if(zeroth || zeroth_borg)
+		return
+	return TRUE

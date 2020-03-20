@@ -53,5 +53,6 @@
 #define ORGAN_VITAL				(1<<4)	//Currently only the brain
 #define ORGAN_EDIBLE            (1<<5)  //is a snack? :D
 #define ORGAN_SILICON			(1<<6)  // Silicon "organs" (components). cannot be inserted into organics, and IPCs/borgs can only use these organs
-#define ORGAN_ABSTRACT			(1<<7)  // Abstract pseudo organs, they're immune to damage, won'tshow up on scanners, and can't be dismembered normally
-#define ORGAN_SYNTHETIC_EMP		(1<<8)	//Synthetic organ affected by an EMP. Deteriorates over time, and must be replaced or repaired with nanopaste
+#define ORGAN_SILICON_PERMITTED	(1<<7)	// These organs can be installed into human type "silicons"
+#define ORGAN_ABSTRACT			(1<<8)  // Abstract pseudo organs, they're immune to damage, won'tshow up on scanners, and can't be dismembered normally
+#define ORGAN_SYNTHETIC_EMP		(1<<9)	//Synthetic organ affected by an EMP. Deteriorates over time, and must be replaced or repaired with nanopaste

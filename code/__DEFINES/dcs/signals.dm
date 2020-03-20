@@ -22,6 +22,9 @@
 	#define COMPONENT_GLOB_BLOCK_CINEMATIC 1
 /// ingame button pressed (/obj/machinery/button/button)
 #define COMSIG_GLOB_BUTTON_PRESSED "!button_pressed"
+/// Sent whenever an AI updates its laws (mob/living/silicon/ai)
+#define COMSIG_GLOB_AI_LAWS_UPDATED "!laws_updated"
+
 
 // signals from globally accessible objects
 /// from SSsun when the sun changes position : (azimuth)
@@ -429,6 +432,10 @@
 #define COMSIG_SILICON_COMPONENT_BATTERY_UPDATE "silicon_component_battery_update"	// () sent to a carbon owner when a silicon battery assembly's cell rating changes
 #define COMSIG_SILICON_COMPONENT_POWER_UPDATE "silicon_component_power_update"		// () sent to a carbon owner whenever a silicon component (organ/silicon) successfully changes power state
 #define COMSIG_HANDLE_APC_RECHARGING "handle_apc_recharging"						// (obj/item/stock_parts/cell) sent upon attacking an installed APC, a SMES, or a power cell with a charging cable
-#define COMSIG_SILICON_TOGGLE_SLEEP_MODE "silicon_toggle_sleep_mode"				// () sent to a carbon owner to trigger the sleep mode status effect
-#define COMSIG_SILICON_BRAIN_INSERTED "silicon_brain_inserted"
-#define COMSIG_SILICON_BRAIN_REMOVED "silicon_brain_removed"
+#define COMSIG_SILICON_TOGGLE_SLEEP_MODE "silicon_toggle_sleep_mode"				// () sent to a carbon owner to trigger/remove the sleep mode status effect
+#define COMSIG_SILICON_SET_LOCKDOWN "silicon_set_lockdown"							// (removal, forced) sent to change the lock down state of a robot, removal sets the state, forced bypasses checks
+#define COMSIG_SILICON_LAWS_UPDATED "silicon_laws_updated"							// (datum/ai_laws) sent to handle
+#define COMSIG_SILICON_SHOW_LAWS	"silicon_show_laws"								// sent to show an entity's AI laws in full
+#define COMSIG_SILICON_BORG_SELF_DESTRUCT "silicon_borg_self_destruct"				// received by carbon type robots with law modules, causes their power cell to explode
+#define COMSIG_SILICON_NEW_BORG	"silicon_new_borg"									// (mob/living) sent to an AI when a mob is slaved to the AI
+#define COMSIG_SILICON_BORG_DISCONNECTED "silicon_borg_disonnected"					// (mob/living) sent to an AI when a slaved mob disconnects from the AI

@@ -110,6 +110,7 @@
 			target_zone == BODY_ZONE_R_ARM ? target.put_in_r_hand(new_arm) : target.put_in_l_hand(new_arm)
 			return 1
 
+
 /datum/surgery/prosthetic_replacement/silicon
 	name = "Limb installation"
 	steps =	list(/datum/surgery_step/prepare_electronics,
@@ -119,7 +120,11 @@
 	lying_required = FALSE
 	required_biotypes = MOB_ROBOTIC
 
-/datum/surgery_step/add_prosthetic/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+
+/datum/surgery_step/add_prosthetic/silicon
+	name = "install limb"
+
+/datum/surgery_step/add_prosthetic/silicon/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	if(istype(tool, /obj/item/organ_storage))
 		tool.icon_state = initial(tool.icon_state)
 		tool.desc = initial(tool.desc)

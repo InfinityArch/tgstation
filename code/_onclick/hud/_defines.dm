@@ -73,6 +73,8 @@
 #define ui_internal "EAST-1:28,CENTER-3:10"
 #define ui_mood "EAST-1:28,CENTER:17"
 #define ui_spacesuit "EAST-1:28,CENTER-4:10"
+#define ui_battery_battery "EAST-1:28,CENTER,CENTER:17"
+
 
 //Pop-up inventory
 #define ui_shoes "WEST+1:8,SOUTH:5"
@@ -117,6 +119,10 @@
 #define ui_borg_camera "CENTER+3:21,SOUTH:5"
 #define ui_borg_album "CENTER+4:21,SOUTH:5"
 #define ui_borg_language_menu "CENTER+4:21,SOUTH+1:5"
+
+//New silicon stuff
+#define ui_integrated_radio "EAST-1:28,SOUTH+2:7"
+
 
 //Aliens
 #define ui_alien_health "EAST,CENTER-1:15"

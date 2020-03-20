@@ -1,3 +1,10 @@
+#define MMI_MANIPULATION	"manipulate_mmi"
+#define CELL_MANIPULATION	"manipulate_cell"
+#define EXTRACT_COMPONENT	"extract_component"
+#define INSTALL_COMPONENT	"install_component"
+
+
+
 /datum/surgery/embedded_removal/silicon
 	required_biotypes = MOB_ROBOTIC
 	steps = list(
@@ -66,11 +73,12 @@
 		/datum/surgery_step/mechanic_close
 		)
 
-/datum/surgery/organ_manipulation/silicon/chest // this one will accept power cells and capacitors
+/datum/surgery/organ_manipulation/silicon/chest // this one will accept power cells and capacitors, and allows manipulation of the MMI if one is present
 	name = "Internal component manipulation"
 	possible_locs = list(BODY_ZONE_CHEST)
 	requires_bodypart_type = BODYPART_ROBOTIC
 	required_biotypes = MOB_ROBOTIC
+	var/mmi_exposed = FALSE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/open_hatch,
@@ -99,6 +107,7 @@
 	repeatable = 1
 	implements = list(/obj/item/organ = 100)
 	var/implements_extract = list(TOOL_MULTITOOL = 100, TOOL_CROWBAR = 55)
+	var/implements_mmi = list(TOOL_WIRECUTTER, TOOL_SCREWDRIVER)
 	var/current_type
 	var/obj/item/organ/I = null
 
@@ -109,10 +118,18 @@
 
 /datum/surgery_step/manipulate_components/New()
 	..()
-	implements = implements + implements_extract
+	implements = implements + implements_extract + implements_mmi
 
 /datum/surgery_step/manipulate_components/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	I = null
+	if(mmi_exposed)
+		current_type = "mmi"
+		if(handle_mmi(user, target, target_zone, obj/item/tool, datum/surgery/surgery, src))
+			return -1
+
+	if(!tool)
+		return handle()
+
 	time = initial(time)
 	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
 	if(!tool)
@@ -179,13 +196,17 @@
 		I = tool
 		var/block_insert = TRUE
 		if(I.organ_flags & ORGAN_SILICON)
-			block_insert = FALSE
+			var/obj/item/organ/silicon/S = I
+			if(ishuman(target))
+				block_insert = S.compact
+			else
+				block_insert = TRUE
 		else if(I.required_bodypart_status == BODYPART_ROBOTIC)
 			block_insert = FALSE
 		else if(istype(I, /obj/item/organ/external))
 			var/obj/item/organ/external/OE = I
 			if(OE.status == ORGAN_ROBOTIC)
-				block_insert = OE.no_update
+				block_insert = FALSE
 
 		if(block_insert)
 			to_chat(user, "<span class='warning'>[I] isn't compatible with [target]'s systems!</span>")

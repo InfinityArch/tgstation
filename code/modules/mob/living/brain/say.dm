@@ -1,5 +1,5 @@
 /mob/living/brain/say(message, bubble_type, list/spans = list(), sanitize = TRUE, datum/language/language = null, ignore_spam = FALSE, forced = null)
-	if(!(container && istype(container, /obj/item/mmi)))
+	if(!(container && (istype(container, /obj/item/mmi) || istype(container, /obj/item/organ/brain/silicon))))
 		return //No MMI, can't speak, bucko./N
 	else
 		if(prob(emp_damage*4))

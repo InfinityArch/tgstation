@@ -146,7 +146,7 @@ __Arguments__
 *species_index*: if supplied with an id string the proc will search for a list in the species indexed sprite accessory arrays under this index.
 *return_null*: whether to return null or an empty list if no valid list is found for the inputs
 __Returns__:
-- returns the global list associated with a supplie feature, or the species indexed list stored in the relevant array. If no list is found, it will return null if return_null is TRUE and an empty list otherwise.
+- returns the global list associated with a supplied feature, or the species indexed list stored in the relevant array. If no list is found, it will return null if return_null is TRUE and an empty list otherwise.
 */
 proc/get_feature_list(feature, species_index, return_null)
 	. = return_null ? null : list()
