@@ -1,7 +1,7 @@
 // integrated radio module
 /obj/item/robobrain_component/integrated_radio
 	name = "integrated radio"
-	icon_state = "integrated_radio"
+	icon_state = "radio_mini"
 	id = "radio"
 	var/obj/item/radio/linked_radio = /obj/item/radio
 
@@ -16,6 +16,16 @@
 	if(linked_radio)
 		QDEL_NULL(linked_radio)
 	. = ..()
+
+/obj/item/robobrain_component/integrated_radio/emag_act(mob/user)
+	if(linked_radio)
+		to_chat(user, "<span class='warning'>You emag [src]'s transmitter!")
+		linked_radio.syndie = TRUE
+		do_sparks(5, TRUE, src)
+
+/obj/item/robobrain_component/integrated_radio/attack_self(mob/user)
+	if(linked_radio)
+		linked_radio.ui_interact(user, "main", null, FALSE, null, GLOB.deep_inventory_state)
 
 /obj/item/robobrain_component/integrated_radio/transfer_to_owner(silent = FALSE)
 	. = ..()

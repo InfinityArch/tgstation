@@ -44,6 +44,7 @@
 	var/charging // if we've recieved any recharging this update
 
 /datum/species/ipc/on_species_gain(mob/living/carbon/C)
+	//RegisterSignal(C, COMSIG_ATOM_SCREWDRIVER_ACT, .proc/initiate_surgery)
 	RegisterSignal(C, COMSIG_SILICON_COMPONENT_ADDED, .proc/insert_component)
 	RegisterSignal(C, COMSIG_SILICON_COMPONENT_REMOVED, .proc/remove_component)
 	RegisterSignal(C, COMSIG_SILICON_COMPONENT_BATTERY_UPDATE, .proc/update_battery)
@@ -80,6 +81,7 @@
 
 
 /datum/species/ipc/on_species_loss(mob/living/carbon/C)
+	//UnregisterSignal(C, COMSIG_ATOM_SCREWDRIVER_ACT)
 	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_ADDED)
 	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_REMOVED)
 	UnregisterSignal(C, COMSIG_SILICON_COMPONENT_POWER_UPDATE)
@@ -175,11 +177,11 @@ datum/species/ipc/handle_blood(mob/living/carbon/human/H)
 	bodytemp_normal = environment ? handle_heat_load(environment, H) : initial(bodytemp_normal)
 	if(H.stat != DEAD)
 		if(isspaceturf(H.loc))
-			H.adjust_bodytemperature(natural_bodytemperature_stabilization(H))
+			H.adjust_bodytemperature(natural_bodytemperature_stabilization(H.loc.return_air(), H))
 			return handle_body_temperature(H)
 	. = ..()
 
-/datum/species/ipc/natural_bodytemperature_stabilization(mob/living/carbon/human/H, overheat = FALSE)
+/datum/species/ipc/natural_bodytemperature_stabilization(datum/gas_mixture/environment, mob/living/carbon/human/H)
 	if(bodytemp_normal > bodytemp_heat_damage_limit)
 		var/body_temperature_difference = bodytemp_normal - H.bodytemperature
 		return max((body_temperature_difference * H.metabolism_efficiency / BODYTEMP_AUTORECOVERY_DIVISOR), \

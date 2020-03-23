@@ -9,7 +9,6 @@
 	if(iscarbon(M))
 		C = M
 		affecting = C.get_bodypart(check_zone(selected_zone))
-		message_admins("affecting is [affecting]")
 
 	var/datum/surgery/current_surgery
 

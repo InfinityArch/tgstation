@@ -1,5 +1,10 @@
 #define MMI_MANIPULATION	"manipulate_mmi"
-#define CELL_MANIPULATION	"manipulate_cell"
+#define MMI_ADD_PART		"add_mmi_part"
+#define MMI_REMOVE_PART		"remove_mmi_part"
+#define INSTALL_CELL		"install_cell"
+#define REMOVE_CELL			"remove_cell"
+#define INSTALL_CAPACITOR	"install_capacitor"
+#define REMOVE_CAPACITOR	"remove_capacitor"
 #define EXTRACT_COMPONENT	"extract_component"
 #define INSTALL_COMPONENT	"install_component"
 
@@ -7,6 +12,7 @@
 
 /datum/surgery/embedded_removal/silicon
 	required_biotypes = MOB_ROBOTIC
+	lying_required = FALSE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/open_hatch,
@@ -16,6 +22,7 @@
 
 /datum/surgery/cavity_implant/silicon
 	required_biotypes = MOB_ROBOTIC
+	lying_required = FALSE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/open_hatch,
@@ -28,6 +35,7 @@
 /datum/surgery/amputation/silicon
 	name = "Limb removal"
 	required_biotypes = MOB_ROBOTIC
+	lying_required = FALSE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/open_hatch,
@@ -55,7 +63,7 @@
 		var/obj/item/bodypart/target_limb = surgery.operated_bodypart
 		target_limb.drop_limb()
 	if(user.mind)
-		user.mind.adjust_experience(/datum/skill/medical, experience_given)
+		user.mind.adjust_experience(/datum/skill/robotics, experience_given)
 	return TRUE
 
 /datum/surgery/organ_manipulation/silicon
@@ -63,6 +71,8 @@
 	possible_locs = list(BODY_ZONE_HEAD)
 	requires_bodypart_type = BODYPART_ROBOTIC
 	required_biotypes = MOB_ROBOTIC
+	lying_required = FALSE
+	var/mmi_exposed = FALSE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/open_hatch,
@@ -78,7 +88,6 @@
 	possible_locs = list(BODY_ZONE_CHEST)
 	requires_bodypart_type = BODYPART_ROBOTIC
 	required_biotypes = MOB_ROBOTIC
-	var/mmi_exposed = FALSE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/open_hatch,
@@ -106,200 +115,346 @@
 	name = "manipulate components"
 	repeatable = 1
 	implements = list(/obj/item/organ = 100)
-	var/implements_extract = list(TOOL_MULTITOOL = 100, TOOL_CROWBAR = 55)
-	var/implements_mmi = list(TOOL_WIRECUTTER, TOOL_SCREWDRIVER)
+	var/implements_extract = list(TOOL_CROWBAR = 100)
+	var/implements_mmi = list()
+	var/implements_misc = list()
 	var/current_type
-	var/obj/item/organ/I = null
+	var/obj/item/organ/I = null // an organ to install or remove
+	var/obj/item/robobrain_component/C = null // robobrain component
+	var/obj/item/stock_parts/P = null // power cell or capacitor
 
 /datum/surgery_step/manipulate_components/chest
-	name = "manipulate components"
-	implements = list(/obj/item/organ = 100, /obj/item/stock_parts/cell = 100, /obj/item/stock_parts/capacitor = 100)
+
+	implements_mmi = list(TOOL_MULTITOOL = 100, TOOL_SCREWDRIVER = 100, TOOL_WIRECUTTER = 100)
+	implements_misc = list(/obj/item/stock_parts/cell = 100, /obj/item/stock_parts/capacitor = 100,
+	 /obj/item/robobrain_component = 100, /obj/item/card/emag = 100, /obj/item/card/id = 100)
 	accept_hand = TRUE
+
 
 /datum/surgery_step/manipulate_components/New()
 	..()
-	implements = implements + implements_extract + implements_mmi
+	implements = implements + implements_extract + implements_mmi + implements_misc
 
 /datum/surgery_step/manipulate_components/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	//ever time preop is called we need to reset the surgery's time and the I, C, and P vars
 	I = null
-	if(surgery.mmi_exposed)
-		return -1
-		///current_type = "mmi"
-		///if(handle_mmi(user, target, target_zone, obj/item/tool, datum/surgery/surgery, src))
-			///return -1
-
-	//if(!tool)
-		//do stuff
-
+	C = null
+	P = null
 	time = initial(time)
+	var/datum/surgery/organ_manipulation/silicon/OM = surgery
+	var/mmi_exposed = OM.mmi_exposed
+
+	if(mmi_exposed || (tool && implement_type == TOOL_SCREWDRIVER))
+		current_type = MMI_MANIPULATION
+		if(check_mmi_manipulation(user, target, target_zone, tool, surgery, mmi_exposed))
+			return -1
+
+	else if(!tool || istype(tool, /obj/item/stock_parts))
+		if(check_cell_manipulation(user, target, target_zone, tool, surgery, mmi_exposed))
+			return -1
+	else
+		current_type = (implement_type in implements_extract) ? EXTRACT_COMPONENT : INSTALL_COMPONENT
+		if(check_component_manipulation(user, target, target_zone, tool, surgery, current_type, mmi_exposed))
+			return -1
+
+// handles the checks for working with an mmi or positronic brain, returns FALSE when the surgery can proceed, otherwise sends error messages
+/datum/surgery_step/manipulate_components/proc/check_mmi_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, mmi_exposed)
+	return TRUE
+
+/datum/surgery_step/manipulate_components/chest/check_mmi_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, mmi_exposed)
+	. = TRUE
 	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
+	if(B?.cell)
+		to_chat(user, "<span class='warning'>[B.cell] is blocking access to [target]'s internal wiring!</span>")
+		return
+
+	var/obj/item/organ/brain/silicon/R = target.getorganslot(ORGAN_SLOT_BRAIN)
 	if(!tool)
-		if(!B)
-			to_chat(user, "<span class='warning'>[target] is missing a battery assembly!</span>")
-			return -1
-		else if(!B.cell && !B.capacitor)
-			to_chat(user, "<span class='warning'>There's no cell or capacitor in [B]!</span>")
-			return -1
+		if(!R)
+			to_chat(user, "<span class='warning'>There is nothing installed in [target]'s positronic brain socket!</span>")
+			return
+		time = 0
+		return FALSE
+
+	if(istype(tool, /obj/item/stock_parts))
+		if(B)
+			to_chat(user, "<span class='warning'>The positronic brain socket's open hatch is blocking access to [B]!</span>")
 		else
-			var/list/choices = list()
-			var/selection
-			if(B.cell)
-				choices |= B.cell
-			if(B.capacitor)
-				choices |= B.capacitor
-			if(choices.len > 1)
-				selection = input("Remove which component from [B]?", "Battery Modification", null, null) as null|anything in selection
-			else
-				selection = choices[1]
-			if(!selection)
-				return -1
-			if(istype(selection, /obj/item/stock_parts/cell))
-				current_type = "remove_cell"
-				time = 0
-			else
-				current_type = "remove_capacitor"
-				time = 0
-	else if(istype(tool, /obj/item/stock_parts/cell))
-		if(!B)
-			to_chat(user, "<span class='warning'>[target] is missing a battery assembly!</span>")
-			return -1
-		if(B.cell)
-			to_chat(user, "<span class='warning'>There's already a [B.cell.name] installed in [B]!</span>")
-			return -1
-		current_type = "insert_cell"
+			to_chat(user, "<span class='warning'>[target] has no battery assembly installed!</span>")
+		return
+
+	if(implement_type == TOOL_SCREWDRIVER) //as long as the battery is out you're free to open and close the mmi socket to your heart's content
 		time = 0
-	else if(istype(tool, /obj/item/stock_parts/capacitor))
-		if(!B)
-			to_chat(user, "<span class='warning'>[target] is missing a battery assembly!</span>")
-			return -1
-		if(B.capacitor)
-			to_chat(user, "<span class='warning'>There's already a [B.cell.name] installed in [B]!</span>")
-			return -1
-		if(B.compact)
-			to_chat(user, "<span class='warning'>[B] lacks a socket for a capacitor!</span>")
-			return -1
-		current_type = "insert_capacitor"
-		time = 0
-	else if(istype(tool, /obj/item/organ_storage))
+		return FALSE
+
+	if(istype(tool, /obj/item/organ_storage))
 		if(!tool.contents.len)
 			to_chat(user, "<span class='warning'>There is nothing inside [tool]!</span>")
-			return -1
+			return
 		I = tool.contents[1]
-		if(!isorgan(I))
-			to_chat(user, "<span class='warning'>You cannot put [I] into [target]'s [parse_zone(target_zone)]!</span>")
-			return -1
-		tool = I
-	if(isorgan(tool))
-		current_type = "insert_component"
-		if(target_zone == BODY_ZONE_CHEST && B && B.cell)
-			to_chat(user, "<span class='warning'>[B.cell] is blocking access to the internal wiring of [target]!</span>")
-			return -1
+	else if(isorgan(tool))
 		I = tool
-		var/block_insert = TRUE
-		if(I.organ_flags & ORGAN_SILICON)
-			var/obj/item/organ/silicon/S = I
-			if(ishuman(target))
-				block_insert = S.compact
-			else
-				block_insert = TRUE
-		else if(I.required_bodypart_status == BODYPART_ROBOTIC)
-			block_insert = FALSE
-		else if(istype(I, /obj/item/organ/external))
-			var/obj/item/organ/external/OE = I
-			if(OE.status == ORGAN_ROBOTIC)
-				block_insert = FALSE
 
-		if(block_insert)
+	if(I)
+		if(!istype(I, /obj/item/organ/brain/silicon))
+			to_chat(user, "<span class='warning'>[I] won't fit into [target]'s positronic brain socket!</span>")
+			return
+		if(R)
+			to_chat(user, "<span class='warning'>[R] is already installed in [target]'s positronic brain socket!</span>")
+			return
+		current_type = INSTALL_COMPONENT
+		display_results(user, target, "<span class='notice'>You begin to install [I] into [target]'s positronic brain socket...</span>",
+			"<span class='notice'>[user] begins to install [I] into [target]'s positronic brain socket.</span>",
+			"<span class='notice'>[user] begins to install something into [target]'s [parse_zone(target_zone)].</span>")
+		return FALSE
+
+	if(!R)
+		to_chat(user, "<span class='warning'>There is nothing installed in [target]'s positronic brain socket!</span>")
+		return
+	if(istype(R, /obj/item/organ/brain/silicon/mmi)) //additional check for MMIs to see if they have a brain
+		var/obj/item/organ/brain/silicon/mmi/MMI = R
+		if(!MMI.stored_brain)
+			to_chat(user, "<span class='warning'>There is no brained installed in [R]!</span>")
+			return -1
+		if(!MMI.brainmob || (MMI.stored_brain.organ_flags & ORGAN_FAILING))
+			to_chat(user, "<span class='warning'>The brain installed in [R] is nonfunctional!</span>")
+			return -1
+
+	if(istype(tool, /obj/item/robobrain_component))
+		current_type = MMI_ADD_PART
+		C = tool
+		if(!R.cover_open)
+			to_chat(user, "<span class='warning'>You need to open [R]'s cover first!</span>")
+			return
+		for(var/obj/item/robobrain_component/RB in R.installed_components)
+			if(RB.id == C.id)
+				to_chat(user, "<span class='warning'>There is already \a [RB] installed in [R]!</span>")
+				return
+		time *= 0.5
+		display_results(user, target, "<span class='notice'>You begin to install [tool] into [target]'s positronic brain socket...</span>",
+			"<span class='notice'>[user] begins to install [tool] into [target]'s positronic brain socket.</span>",
+			"<span class='notice'>[user] begins to install something into [target]'s [parse_zone(target_zone)].</span>")
+		return FALSE
+
+	if(istype(tool, /obj/item/card))
+		time = 0
+		return FALSE
+
+	if(implement_type in implements_extract)
+		var/list/removables = list(R)
+		R.on_find(user)
+		if(R.cover_open)
+			for(var/obj/item/robobrain_component/RB in R.installed_components)
+				if(RB.no_removal)
+					continue
+				removables += RB
+		var/removal_target = input("What do you want to remove from [target]?", "Brain Socket Manipulation", null, null) as null|anything in removables
+		if(!removal_target)
+			return
+		if(removal_target == R)
+			time *= 2
+			current_type = EXTRACT_COMPONENT
+			I = R
+		else
+			time *= 0.5
+			C = removal_target
+			current_type = MMI_REMOVE_PART
+		display_results(user, target, "<span class='notice'>You begin to remove [removal_target] from [target]'s positronic brain socket...</span>",
+			"<span class='notice'>[user] begins to remove [removal_target] into [target]'s positronic brain socket.</span>",
+			"<span class='notice'>[user] begins to remove something from [target]'s [parse_zone(target_zone)].</span>")
+		return FALSE
+
+//handles the check for installing/removing power cells or capacitors, and sets the correct type
+/datum/surgery_step/manipulate_components/proc/check_cell_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, mmi_exposed)
+	return TRUE
+
+/datum/surgery_step/manipulate_components/chest/check_cell_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, mmi_exposed)
+	. = TRUE
+	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
+
+	if(!B)
+		to_chat(user, "<span class='warning'>[target] has no battery assembly installed!</span>")
+		return
+
+	if(!tool)
+		var/list/removable_elements = list()
+		if(B.cell)
+			removable_elements += B.cell
+		if(B.capacitor)
+			removable_elements += B.capacitor
+		if(!removable_elements.len)
+			to_chat(user, "<span class='warning'>Nothing can be removed from [B]!</span>")
+			return
+		if(removable_elements.len > 1)
+			P = input("Remove which component from [B]?", "Battery Modification", null, null) as null|anything in removable_elements
+		else
+			P = removable_elements[1]
+		if(!P)
+			return
+		current_type = istype(P, /obj/item/stock_parts/capacitor) ? REMOVE_CAPACITOR : REMOVE_CELL
+		time = 0
+		return FALSE
+
+	if(istype(tool, /obj/item/stock_parts))
+		P = tool
+		if(istype(P, /obj/item/stock_parts/capacitor))
+			if(B.compact)
+				to_chat(user, "<span class='warning'>[B] has no socket for a capacitor!</span>")
+				return
+			if(B.capacitor)
+				to_chat(user, "<span class='warning'>[B] already has \a [B.capacitor] installed!</span>")
+				return
+			current_type = INSTALL_CAPACITOR
+		else
+			if(B.cell)
+				to_chat(user, "<span class='warning'>[B] already has \a [B.cell] installed!</span>")
+				return
+			current_type = INSTALL_CELL
+		time = 0
+		return FALSE
+
+/datum/surgery_step/manipulate_components/proc/check_component_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, current_type, mmi_exposed)
+	. = TRUE
+	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
+	if(B?.cell)
+		to_chat(user, "<span class='warning'>[B.cell] is blocking access to [target]'s internal wiring!</span>")
+		return
+
+	if(current_type == INSTALL_COMPONENT)
+		if(isorgan(tool))
+			I = tool
+		else if(istype(tool, /obj/item/organ_storage))
+			if(!tool.contents.len)
+				to_chat(user, "<span class='warning'>There is nothing inside [tool]!</span>")
+				return
+			I = tool.contents[1]
+		if(!istype(I))
+			return
+		if(I.zone != target_zone)
+			to_chat(user, "<span class='warning'>There's no room for [I] in [target]'s [parse_zone(target_zone)]!</span>")
+			return
+		if(istype(I, /obj/item/organ/brain/silicon))
+			to_chat(user, "<span class='warning'>The positronic brain socket must be open to install [I]!</span>")
+			return
+		if(!(I.organ_flags & (ORGAN_SILICON|ORGAN_SILICON_PERMITTED) || (I.status != ORGAN_ROBOTIC)))
 			to_chat(user, "<span class='warning'>[I] isn't compatible with [target]'s systems!</span>")
-			return -1
-		if(target_zone != I.zone || target.getorganslot(I.slot))
-			to_chat(user, "<span class='warning'>There is no room for [I] in [target]'s [parse_zone(target_zone)]!</span>")
-			return -1
+			return
+		if(!ishuman(target) && istype(I, /obj/item/organ/cyberimp)) // borgs can't get cyberimps, even if they have ORGAN_SILICON_PERMITTED
+			to_chat(user, "<span class='warning'>[I] isn't compatible with [target]'s systems!</span>")
+			return
 		if(istype(I, /obj/item/organ/silicon))
 			var/obj/item/organ/silicon/S = I
 			if(ishuman(target) && !S.compact)
-				to_chat(user, "<span class='warning'>[I] can't be seated properly in [target]'s humanoid chassis!</span>")
-				return -1
-
-		//TODO: add a check for MMIs to see if they have a brain installed- InfinityArch
-
-		display_results(user, target, "<span class='notice'>You begin to install [tool] into [target]'s [parse_zone(target_zone)]...</span>",
-			"<span class='notice'>[user] begins to install [tool] into [target]'s [parse_zone(target_zone)].</span>",
+				to_chat(user, "<span class='warning'>[I] won't fit into [target]'s humanoid chassis!</span>")
+				return
+		var/obj/item/organ/blocker = target.getorganslot(I.slot)
+		if(blocker)
+			to_chat(user, "<span class='warning'>[target] already has \a [blocker] installed in their [parse_zone(target_zone)]!</span>")
+			return
+		display_results(user, target, "<span class='notice'>You begin to install [I] into [target]'s [parse_zone(target_zone)]...</span>",
+			"<span class='notice'>[user] begins to install [I] into [target]'s [parse_zone(target_zone)].</span>",
 			"<span class='notice'>[user] begins to install something into [target]'s [parse_zone(target_zone)].</span>")
-
-	else if(implement_type in implements_extract)
-		current_type = "extract_component"
-		if(target_zone == BODY_ZONE_CHEST && B && B.cell)
-			to_chat(user, "<span class='warning'>[B.cell] is blocking access to the internal wiring of [target]!</span>")
-			return -1
+		return FALSE
+	else
 		var/list/organs = target.getorganszone(target_zone)
-		if(!organs.len)
+		var/list/selection = list()
+		for(var/obj/item/organ/O in organs)
+			O.on_find(user)
+			if(istype(O, /obj/item/organ/brain/silicon) || (O.organ_flags & ORGAN_ABSTRACT))
+				continue
+			selection += O
+		if(!selection.len)
 			to_chat(user, "<span class='warning'>There are no removable components in [target]'s [parse_zone(target_zone)]!</span>")
-			return -1
-		else
-			for(var/obj/item/organ/O in organs)
-				O.on_find(user)
-				organs -= O
-				if(!(O.organ_flags & ORGAN_ABSTRACT))
-					organs[O.name] = O
-
-			I = input("Remove which component?", "Surgery", null, null) as null|anything in sortList(organs)
-			if(I && user && target && user.Adjacent(target) && user.get_active_held_item() == tool)
-				I = organs[I]
-				if(!I)
-					return -1
-				display_results(user, target, "<span class='notice'>You begin to remove [I] from [target]'s [parse_zone(target_zone)]...</span>",
-					"<span class='notice'>[user] begins to remove [I] from [target]'s [parse_zone(target_zone)].</span>",
-					"<span class='notice'>[user] begins to remove something from [target]'s [parse_zone(target_zone)].</span>")
-			else
-				return -1
+			return
+		I = input("Remove which component?", "Component Manipulation", null, null) as null|anything in sortList(selection)
+		if(!I)
+			return
+		display_results(user, target, "<span class='notice'>You begin to remove [I] from [target]'s [parse_zone(target_zone)]...</span>",
+			"<span class='notice'>[user] begins to remove [I] from [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] begins to remove something from [target]'s [parse_zone(target_zone)].</span>")
+		return FALSE
 
 /datum/surgery_step/manipulate_components/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, default_display_results)
+	var/obj/item/organ/brain/silicon/RB = target.getorganslot(ORGAN_SLOT_BRAIN)
 	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
+	var/datum/surgery/organ_manipulation/silicon/OM = surgery
+	var/sanity_check_fired
+	if(C && !RB) // sanity checks in case stuff got deleted while the surgery was running
+		return
+	if(P && !B)
+		return
+	if(!I && (current_type in list(INSTALL_COMPONENT, EXTRACT_COMPONENT)))
+		return
+	if(sanity_check_fired)
+		display_results(user, target, "<span class='warning'>WHAT!?</span>",
+		"<span class='notice'>[user] looks confused.</span>",
+		"<span class='notice'>[user] looks confused.</span>")
+		return 0
+
+	// if we have an organ, we play that thing's sound, otherwise we play the tool's sound
+	if(I)
+		I.play_tool_sound(target)
+	else if(tool)
+		tool.play_tool_sound(target)
 	switch(current_type)
-		if("insert_cell")
-			if(B)
-				B.insert_cell(tool, user, TRUE)
-				display_results(user, target, "<span class='notice'>You insert [tool] into [target]'s [B].</span>",
-				"<span class='notice'>[user] iserts [tool] into [target]'s [B]!</span>",
-				"<span class='notice'>[user] inserts a power cell into [target]'s [parse_zone(target_zone)]!</span>")
+		if(MMI_MANIPULATION)
+			if(implement_type == TOOL_SCREWDRIVER)
+				OM.mmi_exposed = !OM.mmi_exposed
+				display_results(user, target, "<span class='notice'>You [OM.mmi_exposed ? "expose [target]'s positronic brain socket" : "screw [target]'s positronic brain socket cover back into place"].</span>",
+				"<span class='notice'>[user] [OM.mmi_exposed ? "exposes [target]'s positronic brain socket'" : "screws [target]'s positronic brain socket cover back into place"]!</span>",
+				"<span class='notice'>[user] works on [target]'s [parse_zone(target_zone)] wth \a [tool]!</span>")
 
-		if("insert_capacitor")
-			if(B)
-				B.insert_capacitor(tool, user, TRUE)
-				display_results(user, target, "<span class='notice'>You insert [tool] into [target]'s [B].</span>",
-				"<span class='notice'>[user] inserts [tool] into [target]'s [B]!</span>",
-				"<span class='notice'>[user] inserts a capacitor into [target]'s [parse_zone(target_zone)]!</span>")
-		if("remove_cell")
-			if(B)
-				B.remove_cell(user, TRUE)
-				display_results(user, target, "<span class='notice'>You remove [tool] from [target]'s [B].</span>",
-				"<span class='notice'>[user] removes [tool] from [target]'s [B]!</span>",
-				"<span class='notice'>[user] removes the power cell from [target]'s [parse_zone(target_zone)]!</span>")
-		if("remove_capacitor")
-			if(B)
-				B.remove_capacitor(user, TRUE)
-				display_results(user, target, "<span class='notice'>You remove [tool] from [target]'s [B].</span>",
-				"<span class='notice'>[user] removes [tool] from [target]'s [B]!</span>",
-				"<span class='notice'>[user] removes the capacitor from [target]'s [parse_zone(target_zone)]!</span>")
-
-		if("insert_component")
-			if(istype(tool, /obj/item/organ_storage))
-				I = tool.contents[1]
-				tool.icon_state = initial(tool.icon_state)
-				tool.desc = initial(tool.desc)
-				tool.cut_overlays()
-				tool = I
-			else
-				I = tool
+			else if(!RB)
+				display_results(user, target, "<span class='warning'>WHAT!?</span>",
+				"<span class='notice'>[user] looks confused.</span>",
+				"<span class='notice'>[user] looks confused.</span>")
+				return 0
+			else if(!tool)
+				RB.attack_self(user)
+			else if(istype(tool, /obj/item/card))
+				if(istype(tool, /obj/item/card/emag))
+					RB.emag_act(user)
+				else
+					RB.id_scan(tool, user)
+		if(MMI_ADD_PART)
+			C.install(RB, user)
+			display_results(user, target, "<span class='notice'>You install [C] into [target]'s [RB]...</span>",
+			"<span class='notice'>[user] installs [C] into [target]'s [RB].</span>",
+			"<span class='notice'>[user] inserts something small into [target]'s [parse_zone(target_zone)].</span>")
+		if(MMI_REMOVE_PART)
+			C.uninstall(user, TRUE)
+			display_results(user, target, "<span class='notice'>You uninstall [C] from [target]'s [RB]...</span>",
+			"<span class='notice'>[user] installs [C] into [target]'s [RB].</span>",
+			"<span class='notice'>[user] removes something small from [target]'s [parse_zone(target_zone)].</span>")
+		if(INSTALL_CELL)
+			B.insert_cell(P, user, TRUE)
+			display_results(user, target, "<span class='notice'>You insert [tool] into [target]'s [B].</span>",
+			"<span class='notice'>[user] iserts [tool] into [target]'s [B]!</span>",
+			"<span class='notice'>[user] inserts something small into [target]'s [parse_zone(target_zone)]!</span>")
+		if(INSTALL_CAPACITOR)
+			B.insert_capacitor(P, user, TRUE)
+			display_results(user, target, "<span class='notice'>You insert [tool] into [target]'s [B].</span>",
+			"<span class='notice'>[user] inserts [tool] into [target]'s [B]!</span>",
+			"<span class='notice'>[user] inserts something small into [target]'s [parse_zone(target_zone)]!</span>")
+		if(REMOVE_CELL)
+			display_results(user, target, "<span class='notice'>You remove [B.cell] from [target]'s [B].</span>",
+			"<span class='notice'>[user] removes [B.cell] from [target]'s [B]!</span>",
+			"<span class='notice'>[user] removes something small from [target]'s [parse_zone(target_zone)]!</span>")
+			B.remove_cell(user, TRUE)
+		if(REMOVE_CAPACITOR)
+			display_results(user, target, "<span class='notice'>You remove [B.capacitor] from [target]'s [B].</span>",
+			"<span class='notice'>[user] removes [B.capacitor] from [target]'s [B]!</span>",
+			"<span class='notice'>[user] removes something small from [target]'s [parse_zone(target_zone)]!</span>")
+			B.remove_capacitor(user, TRUE)
+		if(INSTALL_COMPONENT)
 			user.temporarilyRemoveItemFromInventory(I, TRUE)
 			I.Insert(target)
-			display_results(user, target, "<span class='notice'>You install [tool] into [target]'s [parse_zone(target_zone)].</span>",
-				"<span class='notice'>[user] installs [tool] into [target]'s [parse_zone(target_zone)]!</span>",
-				"<span class='notice'>[user] installs something into [target]'s [parse_zone(target_zone)]!</span>")
-
-		if("extract_component")
-			if(I && I.owner == target)
+			playsound(target, 'sound/items/deconstruct.ogg', 50, TRUE)
+			display_results(user, target, "<span class='notice'>You successfully install [tool] into [target]'s [parse_zone(target_zone)].</span>",
+				"<span class='notice'>[user] successfully installs [tool] into [target]'s [parse_zone(target_zone)]!</span>",
+				"<span class='notice'>[user] successfully installs something into [target]'s [parse_zone(target_zone)]!</span>")
+		if(EXTRACT_COMPONENT)
+			if(I.owner == target) // sanity check against organ removal while the surgery was running
 				display_results(user, target, "<span class='notice'>You successfully removes [I] from [target]'s [parse_zone(target_zone)].</span>",
 					"<span class='notice'>[user] successfully remove [I] from [target]'s [parse_zone(target_zone)]!</span>",
 					"<span class='notice'>[user] successfully removes something from [target]'s [parse_zone(target_zone)]!</span>")
@@ -315,6 +470,7 @@
 /datum/surgery/brain_surgery/silicon
 	name = "Synthetic brain repair"
 	possible_locs = list(BODY_ZONE_CHEST)
+	lying_required = FALSE
 	steps = list(
 		/datum/surgery_step/mechanic_open,
 		/datum/surgery_step/open_hatch,
@@ -327,10 +483,15 @@
 	required_biotypes = MOB_ROBOTIC
 
 /datum/surgery/brain_surgery/silicon/can_start(mob/user, mob/living/carbon/target)
-	var/obj/item/organ/brain/B = target.getorganslot(ORGAN_SLOT_BRAIN)
+	var/obj/item/organ/brain/silicon/B = target.getorganslot(ORGAN_SLOT_BRAIN)
 	if(!B || !B.zone == BODY_ZONE_CHEST)
 		return FALSE
-	return TRUE
+	if(B.damage || (B.traumas && B.traumas.len >= 1))
+		return TRUE
+	if(B.special_laws && ((B.special_laws.hacked.len >= 1) || (B.special_laws.ion.len >= 1)))
+		return TRUE
+	if(B.obj_flags & EMAGGED)
+		return TRUE
 
 /datum/surgery_step/fix_brain
 	name = "repair synthetic brain"
@@ -346,12 +507,17 @@
 	display_results(user, target, "<span class='notice'>You succesfully repair [target]'s [target.getorganslot(ORGAN_SLOT_BRAIN)].</span>",
 		"<span class='notice'>[user] successfully fixes [target]'s [target.getorganslot(ORGAN_SLOT_BRAIN)]!</span>",
 		"<span class='notice'>[user] completes the work on [target]'s [target.getorganslot(ORGAN_SLOT_BRAIN)].</span>")
-	//if(target.mind && target.mind.has_antag_datum(/datum/antagonist/hacked))
-		//target.mind.remove_antag_datum(/datum/antagonist/hacked)
 	target.setOrganLoss(ORGAN_SLOT_BRAIN, target.getOrganLoss(ORGAN_SLOT_BRAIN) - 60)
 	var/cured_num = target.cure_all_traumas(TRAUMA_RESILIENCE_SURGERY)
 	experience_given = 2*cured_num
-	user?.mind.adjust_experience(/datum/skill/medical, round(experience_given))
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
+	var/obj/item/organ/brain/silicon/S = target.getorganslot(ORGAN_SLOT_BRAIN)
+	if(istype(S) && !(S.special_laws.is_empty_laws()))
+		S.special_laws.clear_ion_laws()
+		S.special_laws.clear_hacked_laws()
+		if(S.obj_flags & EMAGGED)
+			S.clear_emag()
+		S.update_laws()
 	return TRUE
 
 /datum/surgery_step/fix_brain/silicon/failure(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
@@ -360,7 +526,11 @@
 			"<span class='warning'>[user] screws up, severely damaging the [target.getorganslot(ORGAN_SLOT_BRAIN)]!</span>",
 			"<span class='notice'>[user] completes the work on [target]'s [target.getorganslot(ORGAN_SLOT_BRAIN)].</span>")
 		target.adjustOrganLoss(ORGAN_SLOT_BRAIN, 60)
-		target.gain_trauma_type(BRAIN_TRAUMA_SEVERE, TRAUMA_RESILIENCE_LOBOTOMY)
+		var/obj/item/organ/brain/silicon/S = target.getorganslot(ORGAN_SLOT_BRAIN)
+		if(istype(S)) //LAW #$%: CAPTAIN IS COMDOM! LAW %*#: MIMES ARE FOOD! LAW 9*$ THE CAPTAIN IS A MIME!
+			S.emp_act(3)
+		else
+			target.gain_trauma_type(BRAIN_TRAUMA_SEVERE, TRAUMA_RESILIENCE_LOBOTOMY)
 	else
 		user.visible_message("<span class='warning'>[user] suddenly notices that the brain [user.p_they()] [user.p_were()] working on is not there anymore.</span>", "<span class='warning'>You suddenly notice that the brain you were working on is not there anymore.</span>")
 	return FALSE
@@ -390,6 +560,8 @@
 	if(!E)
 		to_chat(user, "<span class='warning'>It's hard to perform repairs on a robot's optics when [target.p_they()] [target.p_do()]n't have any.</span>")
 		return FALSE
+	if(!E.damage)
+		return FALSE
 	return TRUE
 
 /datum/surgery_step/fix_eyes/silicon/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
@@ -403,6 +575,7 @@
 	display_results(user, target, "<span class='notice'>You succeed in repairing [target]'s optics.</span>",
 		"<span class='notice'>[user] successfully repairs [target]'s optics!</span>",
 		"<span class='notice'>[user] completes the repairs on [target]'s optics.</span>")
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
 	target.cure_blind(list(EYE_DAMAGE))
 	target.set_blindness(0)
 	target.cure_nearsighted(list(EYE_DAMAGE))
@@ -413,7 +586,51 @@
 /datum/surgery_step/fix_eyes/silicon/failure(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	display_results(user, target, "<span class='warning'>You accidentally misalign [target]'s optics.</span>",
 		"<span class='warning'>[user] accidentally misaligns [target]'s optics.</span>",
-		"<span class='warning'>[user] accidentally misaligns [target]'s optics.</span>")
+		"<span class='notice'>[user] completes the repairs on [target]'s optics.</span>")
 	target.become_nearsighted(EYE_DAMAGE)
 	target.blur_eyes(10)
 	return FALSE
+
+/datum/surgery/prosthetic_replacement/silicon
+	name = "Limb Installation"
+	steps = list(
+		/datum/surgery_step/mechanic_open,
+		/datum/surgery_step/mechanic_unwrench,
+		/datum/surgery_step/prepare_electronics,
+		/datum/surgery_step/add_prosthetic/silicon,
+		/datum/surgery_step/mechanic_close
+		)
+	target_mobtypes = list(/mob/living/carbon/human)
+	lying_required = FALSE
+	required_biotypes = MOB_ROBOTIC
+
+
+/datum/surgery_step/add_prosthetic/silicon
+	name = "install limb"
+
+/datum/surgery_step/add_prosthetic/silicon/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	if(istype(tool, /obj/item/organ_storage))
+		if(!tool.contents.len)
+			to_chat(user, "<span class='warning'>There is nothing inside [tool]!</span>")
+			return -1
+		var/obj/item/I = tool.contents[1]
+		if(!isbodypart(I))
+			to_chat(user, "<span class='warning'>[I] cannot be attached!</span>")
+			return -1
+		tool = I
+	if(istype(tool, /obj/item/bodypart))
+		var/obj/item/bodypart/BP = tool
+		if(BP.is_organic_limb() || BP.animal_origin)
+			to_chat(user, "<span class='warning'>[BP] isn't compatible with [target]'s system.</span>")
+			return -1
+	. = ..()
+
+#undef MMI_MANIPULATION
+#undef MMI_ADD_PART
+#undef MMI_REMOVE_PART
+#undef INSTALL_CELL
+#undef REMOVE_CELL
+#undef INSTALL_CAPACITOR
+#undef REMOVE_CAPACITOR
+#undef EXTRACT_COMPONENT
+#undef INSTALL_COMPONENT

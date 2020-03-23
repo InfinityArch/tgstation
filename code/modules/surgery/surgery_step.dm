@@ -78,7 +78,13 @@
 		implement_speed_mod = implements[implement_type] / 100.0
 	if(time)
 		speed_mod /= (get_location_modifier(target) * (1 + surgery.speed_modifier) * implement_speed_mod)
-	var/modded_time = time * speed_mod * user.mind.get_skill_modifier(/datum/skill/medical, SKILL_SPEED_MODIFIER)
+	var/skill_type
+	if(target.get_bodypart(target_zone))
+		var/obj/item/bodypart/target_BP = target.get_bodypart(target_zone)
+		skill_type = (target_BP.status == BODYPART_ROBOTIC) ? /datum/skill/robotics : /datum/skill/medical
+	else
+		skill_type = (target.mob_biotypes & MOB_ROBOTIC) ? /datum/skill/robotics : /datum/skill/medical
+	var/modded_time = time * speed_mod * user.mind.get_skill_modifier(skill_type, SKILL_SPEED_MODIFIER)
 
 
 	fail_prob = min(max(0, modded_time - (time * SURGERY_SLOWDOWN_CAP_MULTIPLIER)),99)//if modded_time > time * modifier, then fail_prob = modded_time - time*modifier. starts at 0, caps at 99
@@ -122,7 +128,13 @@
 		display_results(user, target, "<span class='notice'>You succeed.</span>",
 				"<span class='notice'>[user] succeeds!</span>",
 				"<span class='notice'>[user] finishes.</span>")
-	user?.mind.adjust_experience(/datum/skill/medical, round(experience_given))
+	var/skill_type
+	if(target.get_bodypart(target_zone))
+		var/obj/item/bodypart/target_BP = target.get_bodypart(target_zone)
+		skill_type = (target_BP.status == BODYPART_ROBOTIC) ? /datum/skill/robotics : /datum/skill/medical
+	else
+		skill_type = (target.mob_biotypes & MOB_ROBOTIC) ? /datum/skill/robotics : /datum/skill/medical
+	user?.mind.adjust_experience(skill_type, round(experience_given))
 	return TRUE
 
 /datum/surgery_step/proc/failure(mob/user, mob/living/target, target_zone, obj/item/tool, datum/surgery/surgery, var/fail_prob = 0)

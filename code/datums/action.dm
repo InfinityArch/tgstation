@@ -787,8 +787,8 @@
 
 /datum/action/innate/toggle_sleep_mode
 	name = "Toggle Sleep Mode"
-	icon_icon = 'icons/obj/meteor.dmi'
-	button_icon_state = "flaming"
+	icon_icon = 'icons/mob/screen_alert_silicon.dmi'
+	button_icon_state = "sleep_mode_toggle"
 	background_icon_state = ACTION_BUTTON_DEFAULT_BACKGROUND
 
 /datum/action/innate/toggle_sleep_mode/Trigger()

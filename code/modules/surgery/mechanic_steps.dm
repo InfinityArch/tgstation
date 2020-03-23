@@ -13,7 +13,15 @@
 			"<span class='notice'>[user] begins to unscrew the shell of [target]'s [parse_zone(target_zone)].</span>",
 			"<span class='notice'>[user] begins to unscrew the shell of [target]'s [parse_zone(target_zone)].</span>")
 
-/datum/surgery_step/mechanic_incise/tool_check(mob/user, obj/item/tool)
+/datum/surgery_step/mechanic_open/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	display_results(user, target, "<span class='notice'>You unscrew the shell of [target]'s [parse_zone(target_zone)]...</span>",
+			"<span class='notice'>[user] unscrews the shell of [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] unscrews the shell of [target]'s [parse_zone(target_zone)].</span>")
+	tool.play_tool_sound(target)
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
+	return TRUE
+
+/datum/surgery_step/mechanic_open/tool_check(mob/user, obj/item/tool)
 	if(implement_type == /obj/item && !tool.get_sharpness())
 		return FALSE
 
@@ -51,7 +59,15 @@
 /datum/surgery_step/prepare_electronics/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	display_results(user, target, "<span class='notice'>You begin to prepare electronics in [target]'s [parse_zone(target_zone)]...</span>",
 			"<span class='notice'>[user] begins to prepare electronics in [target]'s [parse_zone(target_zone)].</span>",
-			"<span class='notice'>[user] begins to prepare electronics in [target]'s [parse_zone(target_zone)].</span>")
+			"<span class='notice'>[user] begins to work on electronics in [target]'s [parse_zone(target_zone)].</span>")
+
+/datum/surgery_step/prepare_electronics/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	display_results(user, target, "<span class='notice'>You finish preparing electronics in [target]'s [parse_zone(target_zone)]...</span>",
+			"<span class='notice'>[user] finishes preparing electronics in [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] finishing working on electronics in [target]'s [parse_zone(target_zone)].</span>")
+	tool.play_tool_sound(target)
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
+	return TRUE
 
 //unwrench
 /datum/surgery_step/mechanic_unwrench
@@ -66,6 +82,16 @@
 			"<span class='notice'>[user] begins to unwrench some bolts in [target]'s [parse_zone(target_zone)].</span>",
 			"<span class='notice'>[user] begins to unwrench some bolts in [target]'s [parse_zone(target_zone)].</span>")
 
+/datum/surgery_step/mechanic_unwrench/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, default_display_results)
+	display_results(user, target, "<span class='notice'>You unwrench the bolts [target]'s [parse_zone(target_zone)]...</span>",
+		"<span class='notice'>[user] unwrenches the bolts in [target]'s [parse_zone(target_zone)].</span>",
+		"<span class='notice'>[user] unwrenches the bolts [target]'s [parse_zone(target_zone)].</span>")
+	tool.play_tool_sound(target)
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
+	return TRUE
+
+
+
 //wrench
 /datum/surgery_step/mechanic_wrench
 	name = "wrench bolts"
@@ -75,13 +101,22 @@
 	time = 24
 
 /datum/surgery_step/mechanic_wrench/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
-	display_results(user, target, "<span class='notice'>You begin to wrench some bolts in [target]'s [parse_zone(target_zone)]...</span>",
-			"<span class='notice'>[user] begins to wrench some bolts in [target]'s [parse_zone(target_zone)].</span>",
-			"<span class='notice'>[user] begins to wrench some bolts in [target]'s [parse_zone(target_zone)].</span>")
+	display_results(user, target, "<span class='notice'>You begin to wrench the bolts in [target]'s [parse_zone(target_zone)]...</span>",
+			"<span class='notice'>[user] begins to wrench the bolts in [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] begins to wrench the bolts in [target]'s [parse_zone(target_zone)].</span>")
+
+/datum/surgery_step/mechanic_wrench/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, default_display_results)
+	display_results(user, target, "<span class='notice'>You wrench the bolts [target]'s [parse_zone(target_zone)]...</span>",
+		"<span class='notice'>[user] wrenches the bolts in [target]'s [parse_zone(target_zone)].</span>",
+		"<span class='notice'>[user] wrenches the bolts [target]'s [parse_zone(target_zone)].</span>")
+	tool.play_tool_sound(target)
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
+	return TRUE
+
 
 //open hatch
 /datum/surgery_step/open_hatch
-	name = "open the hatch"
+	name = "open maintenance hatch"
 	accept_hand = 1
 	time = 10
 
@@ -96,7 +131,7 @@
 	display_results(user, target, "<span class='notice'>You open the maintenance hatch in [target]'s [parse_zone(target_zone)]...</span>",
 		"<span class='notice'>[user] opens the maintenance hatch in [target]'s [parse_zone(target_zone)].</span>",
 		"<span class='notice'>[user] opens the maintenance hatch in [target]'s [parse_zone(target_zone)].</span>")
-	user?.mind.adjust_experience(/datum/skill/medical, round(experience_given))
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
 	return TRUE
 
 //disconnect electronics
@@ -108,4 +143,13 @@
 /datum/surgery_step/disconnect_electronics/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	display_results(user, target, "<span class='notice'>You begin to disconnect wires in [target]'s [parse_zone(target_zone)]...</span>",
 			"<span class='notice'>[user] begins to disconnect wires in [target]'s [parse_zone(target_zone)].</span>",
-			"<span class='notice'>[user] begins to disconnect wires in [target]'s [parse_zone(target_zone)].</span>")
+			"<span class='notice'>[user] begins to work on electronics in [target]'s [parse_zone(target_zone)].</span>")
+
+
+/datum/surgery_step/disconnect_electronics/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	display_results(user, target, "<span class='notice'>You finish disconnecting wires in [target]'s [parse_zone(target_zone)]...</span>",
+			"<span class='notice'>[user] finishes disconnecting wires in [target]'s [parse_zone(target_zone)].</span>",
+			"<span class='notice'>[user] finishes working on electronics in [target]'s [parse_zone(target_zone)].</span>")
+	tool.play_tool_sound(target)
+	user?.mind.adjust_experience(/datum/skill/robotics, round(experience_given))
+	return TRUE

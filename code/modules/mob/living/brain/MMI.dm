@@ -60,7 +60,7 @@
 		var/mob/living/brain/B = newbrain.brainmob
 		if(!B.key)
 			B.notify_ghost_cloning("Someone has put your brain in a MMI!", source = src)
-		user.visible_message("<span class='notice'>[user] sticks \a [newbrain] into [src].</span>", "<span class='notice'>[src]'s indicator light turn on as you insert [newbrain].</span>")
+		user.visible_message("<span class='notice'>[user] sticks \a [newbrain] into [src]'s.</span>", "<span class='notice'>[src]'s indicator light turn on as you insert [newbrain].</span>")
 
 		brainmob = newbrain.brainmob
 		newbrain.brainmob = null
@@ -278,12 +278,12 @@
 	required_bodypart_status = BODYPART_ROBOTIC
 	w_class = WEIGHT_CLASS_NORMAL
 	zone = BODY_ZONE_CHEST
-	organ_flags = ORGAN_SYNTHETIC|ORGAN_SILICON // robot brains not being vital is intentional.
+	organ_flags = ORGAN_SYNTHETIC|ORGAN_SILICON|ORGAN_VITAL
 	req_access = list(ACCESS_ROBOTICS)
 	var/braintype = "Android"
 	var/list/installed_components = list() // list of /obj/item/robobrain_component objects currently installed into this brain
 	var/obj/mecha // oldcode in mecha requires this
-	var/datum/ai_laws/special_laws // special laws arising from either EMP/emag tampering
+	var/datum/ai_laws/special_laws = new() // special laws arising from either EMP/emag tampering
 	var/speakers_enabled = TRUE
 	var/cover_open = FALSE
 	var/cover_lock_state = COVER_LOCKED
@@ -320,32 +320,82 @@
 		return
 	//emagging the cover lock
 	if(!cover_open)
-		if(cover_lock_state < COVER_EMAGGED)
+		if(cover_lock_state == COVER_EMAGGED)
 			to_chat(user, "<span class='warning'>You need to open the cover first!</span>")
 			return
 		emag_cooldown = world.time + 100
-		to_chat(user, "<span class='warning'>You emag [owner ? owner : src]'s cover lock.</span>")
 		cover_lock_state = COVER_EMAGGED
+		obj_flags |= EMAGGED
+		to_chat(user, "<span class='warning'>You emag [src]'s cover lock.</span>")
+		if(owner)
+			do_sparks(5, TRUE, owner)
+		else
+			do_sparks(5, TRUE, src)
 		return
 	//emagging the interface
 	emag_cooldown = world.time + 100
-	to_chat(user, "<span class='warning'>You emag [owner ? owner : src]'s law interface...</span>")
+	obj_flags |= EMAGGED
+	user.visible_message("<span class='notice'>[user] runs their card through [src]'s reader...</span>",
+	"<span class='warning'>You emag [src]'s law interface...</span>", vision_distance = 1)
+	if(owner)
+		do_sparks(5, TRUE, owner)
+	else
+		do_sparks(5, TRUE, src)
 	var/obj/item/robobrain_component/law_module/LM
 	LM = locate() in installed_components
 	if(LM?.emag_act(user))
+		to_chat(user, "<span class='warning'>[owner ? owner : src]'s laws have successfully been overridden!</span>")
 		return
+	if(LM)
+		to_chat(user, "<span class='warning'>[owner ? owner : src]'s [LM] rejected the law overwrite attempt!</span>")
 
-	//ion laws get added to the brain itself
-	if(special_laws.ion.len <= 3)
-		special_laws.add_ion_law(generate_ion_law())
-		to_chat(user, "<span class='warning'>Scrambled laws have been introduced into [owner ? owner : src]'s subroutines!</span>")
-		var/mob/living/target_mob = owner ? owner : brainmob
+	var/ion_len = special_laws.ion.len
+	var/trauma_len = traumas.len
+	var/stored_damage = damage
+	emp_act(1, TRUE)
+	if(special_laws.ion.len != ion_len)
+		to_chat(user, "<span class='warning'>scrambled laws have been introduced into [owner ? owner : src]'s behavioral subroutines!</span>")
+	if((stored_damage != damage) || (trauma_len != traumas.len))
+		to_chat(user, "<span class='warning'>[owner ? owner : src]'s synthetic brain has short circuited!</span>")
+
+
+/obj/item/organ/brain/silicon/proc/clear_emag() //called if the brain gets repaired during surgery
+	obj_flags &= ~EMAGGED
+	if(cover_lock_state == COVER_EMAGGED)
+		cover_lock_state = COVER_UNLOCKED
+
+/obj/item/organ/brain/silicon/emp_act(severity, bypass_protection = FALSE)
+	. = ..()
+	if((. & EMP_PROTECT_SELF) && !bypass_protection)
+		return
+	var/added_ion_laws = FALSE
+	var/damaged_brain = FALSE
+	for(var/i = 1, i <= severity, i++)
+		if(special_laws.ion.len <= 3)
+			special_laws.add_ion_law(generate_ion_law())
+			added_ion_laws = TRUE
+		else if(!traumas || traumas.len <= severity)
+			gain_trauma_type(BRAIN_TRAUMA_SEVERE, TRAUMA_RESILIENCE_LOBOTOMY)
+			damaged_brain = TRUE
+		else
+			damaged_brain = damage
+			setOrganDamage(damage + severity * 10)
+			if(brainmob)
+				brainmob.emp_damage += (damage - damaged_brain)
+	var/mob/living/target_mob = owner ? owner : brainmob
+	if(added_ion_laws)
 		if(target_mob)
 			to_chat(target_mob, "<span class='robot danger'>LAW%$%|...ERR|a*&*sR%N%***zt-|...</span>")
 		update_laws()
+	if(damaged_brain)
+		if(target_mob)
+			to_chat(target_mob, "<span class='danger'>Your [initial(src.name)] short circuits!</span>")
+			target_mob.emote("alarm")
 
 /obj/item/organ/brain/silicon/crowbar_act(mob/living/user, obj/item/I)
 	. = TRUE
+	if(..())
+		return
 	if(!cover_open)
 		to_chat(user, "<span class='warning'>You need to open the cover first!</span>")
 		return
@@ -354,6 +404,10 @@
 		if(R.no_removal)
 			continue
 		removable_elements[R.name] = R
+	if(istype(src, /obj/item/organ/brain/silicon/mmi))
+		var/obj/item/organ/brain/silicon/mmi/MMI = src
+		if(MMI.stored_brain)
+			removable_elements[MMI.stored_brain.name] = MMI.stored_brain.name
 	if(!removable_elements.len)
 		to_chat(user, "<span class='warning'>[src] has no removable components!</span>")
 		return
@@ -361,11 +415,14 @@
 	removal_target = input(user, "Choose a component to remove from [src].", "Component Removal") as null|anything in removable_elements
 	if(!removal_target)
 		return
-	if(!I.use_tool(src, user, 40, volume=50))
+	if(!I.use_tool(src, user, 20, volume=50))
 		return
 	var/obj/item/robobrain_component/R = removable_elements[removal_target]
-	if(R)
+	if(istype(R))
 		R.uninstall(user)
+	else
+		var/obj/item/organ/brain/silicon/mmi/MMI = src
+		MMI.remove_brain(user)
 
 /obj/item/organ/brain/silicon/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/robobrain_component))
@@ -375,7 +432,7 @@
 			return
 		for(var/obj/item/robobrain_component/R2 in installed_components)
 			if(R.id == R2.id)
-				to_chat(user, "<span class='warning'>There's already \a [R] installed in [src]!</span>")
+				to_chat(user, "<span class='warning'>There's already \a [R2] installed in [src]!</span>")
 				return
 		R.install(src, user)
 		return
@@ -387,6 +444,7 @@
 /obj/item/organ/brain/silicon/proc/id_scan(obj/item/card/id/id_card, mob/user)
 	if(cover_open)
 		to_chat(user, "<span class='warning'>[src]'s cover must be closed to engage the lock!</span>")
+		return
 	var/access_granted = check_access_list(id_card.access)
 	var/message
 	switch(cover_lock_state)
@@ -398,11 +456,14 @@
 		if(COVER_UNLOCKED)
 			message = access_granted ? "locking the cover panel." : "but the lock indicator light flashes red."
 	if(!access_granted)
-		playsound(src, "sound/machines/synth_no.ogg", 5, TRUE)
+		if(owner)
+			playsound(owner, "sound/machines/synth_no.ogg", 5, TRUE)
+		else
+			playsound(src, "sound/machines/synth_no.ogg", 5, TRUE)
 	else
 		cover_lock_state = abs(cover_lock_state - 1) // this flips the cover from open to closed
-	user.visible_message("<span class='[access_granted ? "notice" : "warning"]'>[user] swipes their card through [src]'s reader, [message]</span>",
-	"<span class='[access_granted ? "notice" : "warning"]'>You swipe your card through [src]'s reader, [message]</span>")
+	user.visible_message("<span class='notice'>[user] runs a card through [src]'s reader...</span>",
+	"<span class='[access_granted ? "notice" : "warning"]'>You run [id_card] through [src]'s reader, [message]</span>", vision_distance = 1)
 
 
 /obj/item/organ/brain/silicon/Insert(mob/living/carbon/C, special = 0,no_id_transfer = FALSE)
@@ -457,9 +518,9 @@
 	message_admins("Acquired law module: [LM]")
 	if(LM)
 		returned_laws.copy_laws(LM.laws)
-		if(special_laws)
+		if(special_laws && !special_laws.is_empty_laws())
 			returned_laws.merge_laws(special_laws, override = TRUE, forced = TRUE)
-	else if(special_laws)
+	else if(special_laws && !special_laws.is_empty_laws())
 		returned_laws.copy_laws(special_laws)
 	if(returned_laws.is_empty_laws())
 		return FALSE
@@ -495,7 +556,7 @@
 //ROBOBRAIN//
 /////////////
 /obj/item/organ/brain/silicon/robobrain
-	name = "Robotic brain"
+	name = "robotic brain"
 	desc = "An older style robotic brain, comes with preinstalled AI laws and an integrated radio."
 	icon_state = "robobrain"
 	braintype = "Robot"
@@ -508,6 +569,7 @@
 /obj/item/organ/brain/silicon/mmi
 	name = "\improper Man-Machine Interface"
 	desc = "The Warrior's bland acronym, MMI, obscures the true horror of this monstrosity, that nevertheless has become standard-issue on Federation stations."
+	icon_state = "mmi_off"
 	braintype = "Cyborg"
 	can_search = FALSE
 	var/obj/item/organ/brain/stored_brain
@@ -527,7 +589,7 @@
 	if(user)
 		if(!user.transferItemToLoc(_brain, src))
 			return
-		user.visible_message("<span class='notice'>[user] sticks \a [_brain] into [src].</span>", "<span class='notice'>[src]'s indicator light turn on as you insert [_brain].</span>")
+		user.visible_message("<span class='notice'>[user] sticks \a [_brain] into [src]'s.</span>", "<span class='notice'>[src]'s indicator light turn on as you insert [_brain].</span>")
 	else
 		_brain.forceMove(src)
 	stored_brain = _brain
@@ -571,7 +633,14 @@
 	stored_brain.transfer_identity(brainmob)
 	suicided = initial(suicided)
 	traumas = initial(traumas)
+	if(user)
+		user.put_in_hands(stored_brain)
+	else if(!gc_destroyed)
+		stored_brain.forceMove(drop_location())
 
+/obj/item/organ/brain/silicon/mmi/Destroy()
+	qdel(stored_brain)
+	. = ..()
 
 /obj/item/organ/brain/silicon/mmi/attackby(obj/item/W, mob/user, params)
 	if(istype(W, /obj/item/organ/brain))
@@ -580,18 +649,8 @@
 			return ..()
 		if(can_insert_brain(B, user))
 			insert_brain(B, user)
-			return
+			return TRUE
 	return ..()
-
-/obj/item/organ/brain/silicon/mmi/crowbar_act(mob/user, obj/item/I)
-	if(!cover_open)
-		to_chat(user, "<span class='warning'>You need to open the cover first!</span>")
-		return
-	if(!stored_brain)
-		to_chat(user, "<span class='warning'>There's no brain in this MMI!</span>")
-		return
-	remove_brain(user)
-	return TRUE
 
 /obj/item/organ/brain/silicon/mmi/update_icon_state()
 	if(!stored_brain)

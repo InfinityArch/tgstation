@@ -532,7 +532,8 @@ office by your AI master or any qualified human may resolve this matter. Robotic
 /obj/screen/alert/status_effect/sleep_mode
 	name = "Sleep Mode"
 	desc = "All non-essential systems have shut down and you are running on emergency power, unless someone comes to help you're trapped"
-	icon_state = "locked"
+	icon_state = "sleep_mode"
+	icon = 'icons/mob/screen_alert_silicon.dmi'
 
 /obj/screen/alert/newlaw
 	name = "Law Update"

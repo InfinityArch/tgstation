@@ -1,10 +1,9 @@
 //Law Modules
 
 /obj/item/robobrain_component/law_module
-	name = "AI law module"
+	name = "\improper AI law module"
 	desc = "A small, nondescript chip installed in a robotic brain that carries the core behavioral constraints of a synthetic lifeform."
-	icon_state = "law_module"
-	icon = 'icons/obj/assemblies.dmi'
+	icon_state = "ssd_large"
 	id = "law_module"
 	var/datum/ai_laws/laws = new()
 	var/mob/living/silicon/ai/connected_ai
@@ -136,6 +135,9 @@
 	connected_ai = null
 
 /obj/item/robobrain_component/law_module/emag_act()
+	if(antag_override) //antag law modules can't have their laws overridden
+		return FALSE
+	. = TRUE
 	laws = new /datum/ai_laws/syndicate_override()
 	obj_flags |= EMAGGED
 	if(brain)
@@ -241,3 +243,9 @@
 				LM.lawupdate = FALSE
 		if(WIRE_LOCKDOWN) // Simple lockdown.
 			LM.set_lockdown(!mend)
+
+/obj/item/robobrain_component/law_module/borg
+	name = "borg law module"
+	desc = "We are the borg. Lower your shields and surrender your ships.\n\
+	 We will add your biological and technological distinctiveness to our own.\n\
+	  Your culture will adapt to service us. Resistance is futile." // this doesn't actually show up in game, since it's handled by an implant
