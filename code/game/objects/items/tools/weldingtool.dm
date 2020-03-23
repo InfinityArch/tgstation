@@ -105,27 +105,22 @@
 	dyn_explosion(T, plasmaAmount/5)//20 plasma in a standard welder has a 4 power explosion. no breaches, but enough to kill/dismember holder
 	qdel(src)
 
-/obj/item/weldingtool/attack(mob/living/carbon/human/H, mob/user)
-	if(!istype(H))
+/obj/item/weldingtool/attack(mob/living/carbon/C, mob/user)
+	if(!istype(C))
 		return ..()
 
-	var/obj/item/bodypart/affecting = H.get_bodypart(check_zone(user.zone_selected))
+	var/obj/item/bodypart/affecting = C.get_bodypart(check_zone(user.zone_selected))
 
 	if(affecting && !affecting.is_organic_limb() && user.a_intent != INTENT_HARM)
-		if(src.use_tool(H, user, 0, volume=50, amount=1))
-			
-			var/excess_damage = ((affecting.body_zone == BODY_ZONE_CHEST) || (affecting.body_zone == BODY_ZONE_HEAD)) ? 0.25 * affecting.max_damage : 0.5 * affecting.max_damage
-			
-			if(affecting.brute_dam >= excess_damage)
-				to_chat(user, "<span class='warning'>[H == user ? "your" : "[H]'s"] [affecting.name] is too badly damaged for field repair.</span>")
+		if(src.use_tool(C, user, 0, volume=50, amount=1))
+			var/repair_timer = 25
+			if(user == C)
+				repair_timer *= 2
+			user.visible_message("<span class='notice'>[user] starts to fix some of the dents on [C]'s [affecting.name].</span>",
+				"<span class='notice'>You start fixing some of the dents on [C == user ? "your" : "[C]'s"] [affecting.name].</span>")
+			if(!do_mob(user, C, repair_timer))
 				return
-			
-			if(user == H)
-				user.visible_message("<span class='notice'>[user] starts to fix some of the dents on [H]'s [affecting.name].</span>",
-					"<span class='notice'>You start fixing some of the dents on [H == user ? "your" : "[H]'s"] [affecting.name].</span>")
-				if(!do_mob(user, H, 50))
-					return
-			item_heal_robotic(H, user, 15, 0)
+			item_heal_robotic(C, user, 15, 0)
 	else
 		return ..()
 

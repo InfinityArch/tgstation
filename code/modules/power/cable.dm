@@ -460,24 +460,22 @@ GLOBAL_LIST_INIT(cable_coil_recipes, list(new/datum/stack_recipe("cable restrain
 // General procedures
 ///////////////////////////////////
 //you can use wires to heal robotics
-/obj/item/stack/cable_coil/attack(mob/living/carbon/human/H, mob/user)
-	if(!istype(H))
+/obj/item/stack/cable_coil/attack(mob/living/carbon/C, mob/user)
+	if(!istype(C))
 		return ..()
 
-	var/obj/item/bodypart/affecting = H.get_bodypart(check_zone(user.zone_selected))
+	var/obj/item/bodypart/affecting = C.get_bodypart(check_zone(user.zone_selected))
 	if(affecting && !affecting.is_organic_limb())
-			
-		var/excess_damage = ((affecting.body_zone == BODY_ZONE_CHEST) || (affecting.body_zone == BODY_ZONE_HEAD)) ? 0.25 * affecting.max_damage : 0.5 * affecting.max_damage
-
-		if(affecting.burn_dam >= excess_damage)
-			to_chat(user, "<span class='warning'>[H == user ? "your" : "[H]'s"] [affecting.name] is too badly damaged for field repairs!</span>")
+		if(!affecting.get_damage())
+			to_chat(user, "<span class='notice'>[user = C ? "your" : "[C]'s"] [affecting.name] is already in good condition.</span>")
 			return
-			
-		if(user == H)
-			user.visible_message("<span class='notice'>[user] starts to fix some of the wires in [H]'s [affecting.name].</span>", "<span class='notice'>You start fixing some of the wires in [H == user ? "your" : "[H]'s"] [affecting.name].</span>")
-			if(!do_mob(user, H, 50))
-				return
-		if(item_heal_robotic(H, user, 0, 15))
+		var/repair_timer = 25
+		if(user == C)
+			repair_timer *= 2
+		user.visible_message("<span class='notice'>[user] starts to repair damaged wires in [C]'s [affecting.name].</span>", "<span class='notice'>You start repairing damaged wires in [C == user ? "your" : "[C]'s"] [affecting.name].</span>")
+		if(!do_mob(user, C, repair_timer))
+			return
+		if(item_heal_robotic(C, user, 0, 15))
 			use(1)
 		return
 	else

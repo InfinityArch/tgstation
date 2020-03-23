@@ -221,3 +221,28 @@
   */
 /obj/item/organ/proc/get_availability(datum/species/S)
 	return TRUE
+
+/obj/item/organ/attackby(obj/item/W, mob/user, params)
+	if((status == ORGAN_ROBOTIC) && (istype(W, /obj/item/stack/cable_coil) || istype(W, /obj/item/stack/nanopaste)))
+		. = TRUE
+		var/nanopaste = istype(W, /obj/item/stack/cable_coil) ? FALSE : TRUE
+		if(!nanopaste && (organ_flags & ORGAN_FAILING))
+			to_chat(user, "<span class='warning'>[src]'s damage is too severe for simple repairs!")
+			return
+		var/obj/item/stack/C = W
+		var/damage_to_fix = nanopaste ? 30 : 15
+		if(!damage_to_fix)
+			to_chat(user, "<span class='notice'>[src] is already in good condition")
+			return
+		if(!nanopaste)
+			to_chat(user, "<span class='notice'>you began repairing [src]'s damaged electronics...")
+			if(!do_after(user, 50, target = src))
+				return
+			to_chat(user, "<span class='notice'>you repair some of [src]'s damaged electronics.")
+		else
+			to_chat(user, "<span class='notice'>you apply [W] to [src]'s damaged electronics.")
+			organ_flags &= ~ORGAN_SYNTHETIC_EMP // nanopaste clears emp decay
+		applyOrganDamage(-damage_to_fix)
+		C.use(1)
+		return
+	..()

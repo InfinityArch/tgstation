@@ -406,7 +406,7 @@
 	var/obj/item/bodypart/affecting = H.get_bodypart(check_zone(user.zone_selected))
 	if(affecting && !affecting.is_organic_limb())
 		var/dam //changes repair text based on how much brute/burn was supplied
-		if(brute_heal > burn_heal)
+		if(brute_heal >= burn_heal)
 			dam = 1
 		else
 			dam = 0
