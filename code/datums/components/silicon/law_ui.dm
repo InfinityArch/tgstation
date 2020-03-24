@@ -29,7 +29,7 @@ datum/component/ai_laws_ui
 	if(!incoming_laws)
 		return
 	current_laws.copy_laws(incoming_laws, TRUE, TRUE)
-	modify_hud()
+	handle_ui()
 	show_laws(owner)
 
 
@@ -56,10 +56,13 @@ datum/component/ai_laws_ui
 
 
 /datum/component/ai_laws_ui/proc/handle_ui(datum/source)
-	if(current_laws.is_empty_laws())
-		unmodify_hud()
-	else
-		modify_hud()
+	if(owner?.hud_used)
+		if(current_laws.is_empty_laws())
+			unmodify_hud()
+		else
+			modify_hud()
+		var/datum/hud/hud = owner.hud_used
+		hud.show_hud(hud.hud_version)
 
 
 /datum/component/ai_laws_ui/proc/show_laws(datum/who, updating_laws = FALSE, use_zeroth = TRUE)

@@ -122,7 +122,7 @@
 
 //New silicon stuff
 #define ui_integrated_radio "EAST-1:28,SOUTH+2:7"
-#define ui_ai_laws_interface "WEST-1:28,CENTER-2:13"
+#define ui_ai_laws_interface "WEST-2:28,CENTER-2:13"
 
 //Aliens
 #define ui_alien_health "EAST,CENTER-1:15"

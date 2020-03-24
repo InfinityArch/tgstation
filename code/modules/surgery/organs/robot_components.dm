@@ -363,13 +363,13 @@ This radiative cooler is inefficient and consumes a lot of power but will contin
 			owner.remove_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC)
 			owner.clear_alert("vtec")
 		if(POWER_STATE_LOW)
-			owner.add_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC, override = TRUE, multiplicative_slowdown = -1)
+			owner.add_movespeed_modifier(/datum/movespeed_modifier/vtec)
 			owner.throw_alert("vtec", /obj/screen/alert/vtec, 1)
 		if(POWER_STATE_NORMAL)
-			owner.add_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC, override = TRUE, multiplicative_slowdown = -2)
+			owner.add_movespeed_modifier(/datum/movespeed_modifier/vtec/full)
 			owner.throw_alert("vtec", /obj/screen/alert/vtec, 2)
 		else
-			owner.add_movespeed_modifier(MOVESPEED_ID_SILICON_VTEC, override = TRUE, multiplicative_slowdown = -2.5)
+			owner.add_movespeed_modifier(/datum/movespeed_modifier/vtec/overdrive)
 			owner.throw_alert("vtec", /obj/screen/alert/vtec, 3)
 
 /obj/item/organ/silicon/upgrade/vtec/ui_action_click()

@@ -390,7 +390,10 @@
 	if(damaged_brain)
 		if(target_mob)
 			to_chat(target_mob, "<span class='danger'>Your [initial(src.name)] short circuits!</span>")
-			target_mob.emote("alarm")
+			if(isbrain(target_mob))
+				target_mob.emote("alarm")
+			else
+				target_mob.emote("buzz2")
 
 /obj/item/organ/brain/silicon/crowbar_act(mob/living/user, obj/item/I)
 	. = TRUE

@@ -154,14 +154,6 @@
 	if(S && !S.gc_destroyed)
 		qdel(S)
 
-datum/species/ipc/handle_blood(mob/living/carbon/human/H)
-	. = ..()
-	if(H.stat != DEAD)
-		if(H.blood_volume < BLOOD_VOLUME_SAFE)
-			H.add_movespeed_modifier(MOVESPEED_ID_SILICON_LEAKING, override = TRUE, multiplicative_slowdown = 1 / max(0.2, H.blood_volume/BLOOD_VOLUME_NORMAL), blacklisted_movetypes = FLOATING)
-		else
-			H.remove_movespeed_modifier(MOVESPEED_ID_SILICON_LEAKING)
-
 /datum/species/ipc/spec_updatehealth(mob/living/carbon/human/H)
 	if(!(H.status_flags & GODMODE) && H.stat != DEAD)
 		if(H.health <= H.crit_threshold)

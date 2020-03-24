@@ -373,7 +373,6 @@ GLOBAL_LIST_INIT(department_radio_keys, list(
 
 	var/datum/component/integrated_radio/R = GetComponent(/datum/component/integrated_radio)
 	if(R?.linked_radio.on)
-		message_admins("linked radio acquired, linked radio is on")
 		if(message_mode == MODE_HEADSET)
 			R.linked_radio.talk_into(src, message, , spans, language)
 			return ITALICS | REDUCE_RANGE
