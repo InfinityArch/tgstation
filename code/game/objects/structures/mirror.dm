@@ -68,8 +68,11 @@
 					if(length(GLOB.hairstyles_list_species[H.dna.species.hair_id]))
 						new_hairstyle = input(user, "Select a hairstyle", "Grooming")  as null|anything in GLOB.hairstyles_list_species[DEFAULT_SPECIES_INDEX] | (GLOB.hairstyles_list_species[H.dna.species.hair_id])
 			if(new_hairstyle)
-				H.hairstyle = new_hairstyle
-				H.regenerate_icons()
+				if(HAS_TRAIT(H, TRAIT_BALD))
+					to_chat(H, "<span class='notice'>If only growing back hair were that easy for you...</span>")
+				else
+					H.hairstyle = new_hairstyle
+					H.regenerate_icons()
 
 
 /obj/structure/mirror/examine_status(mob/user)

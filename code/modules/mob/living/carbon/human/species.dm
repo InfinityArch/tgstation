@@ -1,7 +1,14 @@
-// This code handles different species in the game.
-
 GLOBAL_LIST_EMPTY(roundstart_races)
 
+/**
+  * # species datum
+  *
+  * Datum that handles different species in the game.
+  *
+  * This datum handles species in the game, such as lizardpeople, mothmen, zombies, skeletons, etc.
+  * It is used in [carbon humans][mob/living/carbon/human] to determine various things about them, like their food preferences, if they have biological genders, their damage resistances, and more.
+  *
+  */
 /datum/species
 	var/id	// if the game needs to manually check your race to do something not included in a proc here, it will use this
 	var/limbs_id		// used by species that use a different species' normal bodyparts
@@ -29,8 +36,11 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/blood_color = "red" // what color to display this species' blood as, must be the name of a web color included in the color2hex() proc found in type2type. This will be ignored if your mob has oil for blood, as oil splatters have their own icons
 	var/meat = /obj/item/reagent_containers/food/snacks/meat/slab/human //What the species drops on gibbing
 	var/skinned_type
+	///Bitfield for food types that the species likes, giving them a mood boost. Lizards like meat, for example.
 	var/liked_food = NONE
+	///Bitfield for food types that the species dislikes, giving them disgust. Humans hate raw food, for example.
 	var/disliked_food = GROSS
+	///Bitfield for food types that the species absolutely hates, giving them even more disgust than disliked food. Meat is "toxic" to moths, for example.
 	var/toxic_food = TOXIC
 	var/list/no_equip = list()	// slots the race can't equip stuff to
 	var/list/alternate_worn_icons = list() // accepts the argument of a sprite state or a dmi file path associated with an alternate sprite state or .dmi file path and replaces them in the update_icons() proc
@@ -74,10 +84,11 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	/// The body temperature limit the body can take before it starts taking damage from cold.
 	var/bodytemp_cold_damage_limit = BODYTEMP_COLD_DAMAGE_LIMIT
 
-	// species-only traits. Can be found in DNA.dm
+	///Species-only traits. Can be found in [code/_DEFINES/DNA.dm]
 	var/list/species_traits = list()
-	// generic traits tied to having the species
+	///Generic traits tied to having the species.
 	var/list/inherent_traits = list()
+	/// List of biotypes the mob belongs to. Used by diseases.
 	var/inherent_biotypes = MOB_ORGANIC|MOB_HUMANOID
 	///List of factions the mob gain upon gaining this species.
 	var/list/inherent_factions
@@ -89,31 +100,40 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	var/sound/attack_sound = 'sound/weapons/punch1.ogg'
 	var/sound/miss_sound = 'sound/weapons/punchmiss.ogg'
 
-	//Breathing! Most changes are in mutantlungs, though
+	///What gas does this species breathe? Used by suffocation screen alerts, most of actual gas breathing is handled by mutantlungs. See [life.dm][code/modules/mob/living/carbon/human/life.dm]
 	var/breathid = "o2"
 
 
 	//Do NOT remove by setting to null. use OR make a RESPECTIVE TRAIT (removing stomach? add the NOSTOMACH trait to your species)
 	//why does it work this way? because traits also disable the downsides of not having an organ, removing organs but not having the trait will make your species die
+
+	///Replaces default brain with a different organ
 	var/obj/item/organ/brain/mutantbrain = /obj/item/organ/brain
+	///Replaces default heart with a different organ
 	var/obj/item/organ/heart/mutantheart = /obj/item/organ/heart
+	///Replaces default lungs with a different organ
 	var/obj/item/organ/lungs/mutantlungs = /obj/item/organ/lungs
+	///Replaces default eyes with a different organ
 	var/obj/item/organ/eyes/mutanteyes = /obj/item/organ/eyes
+	///Replaces default ears with a different organ
 	var/obj/item/organ/external/ears/mutantears = /obj/item/organ/external/ears
+	///Replaces default tongue with a different organ
 	var/obj/item/organ/tongue/mutanttongue = /obj/item/organ/tongue
+	///Replaces default liver with a different organ
 	var/obj/item/organ/liver/mutantliver = /obj/item/organ/liver
+	///Replaces default stomach with a different organ
 	var/obj/item/organ/stomach/mutantstomach = /obj/item/organ/stomach
+	///Replaces default appendix with a different organ.
 	var/obj/item/organ/appendix/mutantappendix = /obj/item/organ/appendix
 	//species won't have these by default, so they can stay null
 	var/obj/item/organ/external/tail/mutanttail = /obj/item/organ/external/tail
 	var/obj/item/organ/external/wings/mutantwings = /obj/item/organ/external/wings
-	//only an honorary mutantthing because not an organ and not loaded in the same way, you've been warned to do your research
+	///Forces an item into this species' hands. Only an honorary mutantthing because this is not an organ and not loaded in the same way, you've been warned to do your research.
 	var/obj/item/mutanthands
+	///Allows the species to not give a single F about gravity. Used by wings.
 	var/override_float = FALSE
 
-	//Bitflag that controls what in game ways can select this species as a spawnable source
-	//Think magic mirror and pride mirror, slime extract, ERT etc, see defines
-	//in __DEFINES/mobs.dm, defaults to NONE, so people actually have to think about it
+	///Bitflag that controls what in game ways something can select this species as a spawnable source, such as magic mirrors. See [mob defines][code/_DEFINES/mobs.dm] for possible sources.
 	var/changesource_flags = NONE
 
 ///////////
@@ -133,7 +153,12 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		names_id = limbs_id //if there's no valid namelist for the species, they'll use human names by default, but please set it to human anyway to avoid unecessary checks in the namegen proc
 	..()
 
-
+/**
+  * Generates species available to choose in character setup at roundstart
+  *
+  * This proc generates which species are available to pick from in character setup.
+  * If there are no available roundstart species, defaults to human.
+  */
 /proc/generate_selectable_species()
 	for(var/I in subtypesof(/datum/species))
 		var/datum/species/S = new I
@@ -143,16 +168,150 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	if(!GLOB.roundstart_races.len)
 		GLOB.roundstart_races += "human"
 
+/**
+  * Checks if a species is eligible to be picked at roundstart.
+  *
+  * Checks the config to see if this species is allowed to be picked in the character setup menu.
+  * Used by [proc/generate_selectable_species].
+  */
 /datum/species/proc/check_roundstart_eligible()
 	if(id in (CONFIG_GET(keyed_list/roundstart_races)))
 		return TRUE
 	return FALSE
 
-//Called when cloning, copies some vars that should be kept
+/*
+# Ranom name
+
+__description__
+- this proc generates random unique names for a human type mob of a given species
+- before running it checks the length of GLOB.first_names_male to assess whether
+-  the names lists have been initialized, and fires the initialization proc if needed
+
+__Arguments__
+*gender*: the gender of the mob that needs a name generated, should be one of the gender defines
+*attempts_to_find_unique_names*: The limit on the number of times the proc should generate an unused name before automatically returning, must be a finite integer
+
+__Returns__:
+- Improper initialization of the names lists can occur if the require files are missing or formatted wrong, leading to runtimes or name generation errors. See /proc/init_species_names_lists in \_HELPERS\mobs.dm
+- Returns "NAME_GENERATION_ERROR" if it fails to find a valid name for the supplied arguments without encountering an exception
+- Returns a valid name string after it finds an unused one or reaches the limit of *attempts_to_find_unique_name*
+*/
+
+/datum/species/proc/random_name(gender = PLURAL, attempts_to_find_unique_name = NAMEGEN_LIMIT, naming_convention_override)
+	. = "NAME_GENERATION_ERROR"
+	if(!length(GLOB.first_names_male))
+		init_species_names_lists(GLOB.first_names_male, GLOB.first_names_female, GLOB.last_names)
+	if(!naming_convention_override)
+		naming_convention_override = naming_convention ? naming_convention : HUMAN_WESTERN
+
+	for(var/i in 1 to attempts_to_find_unique_name)
+		if(gender == FEMALE)
+			switch(naming_convention_override)
+				if(HUMAN_WESTERN)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
+				if(HUMAN_EASTERN)
+					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_female[names_id]))
+				if(APO_NAME)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + "'" + pick(GLOB.last_names[names_id])
+				if(APO_NAME_REV)
+					. = capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_female[names_id])
+				if(APO_NAME_EXT)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + "'"
+					if(prob(65))
+						. += (pick(GLOB.first_names_female[names_id]) + "'")
+					. += pick(GLOB.last_names[names_id])
+				if(HYPHEN_NAME)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
+				if(GIVEN_ONLY)
+					. = capitalize(pick(GLOB.first_names_female[names_id]))
+				if(SURNAME_ONLY)
+					. = capitalize(pick(GLOB.last_names[names_id]))
+				if(NAME_NUMERAL)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
+				if(NAME_NUM)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " [rand(1,99)]"
+				if(NAME_LETTER)
+					. = capitalize(pick(GLOB.first_names_female[names_id])) + " [random_capital_letter()]"
+					if(prob(65))
+						. += random_capital_letter()
+		else if(gender == MALE)
+			switch(naming_convention_override)
+				if(HUMAN_WESTERN)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
+				if(HUMAN_EASTERN)
+					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_male[names_id]))
+				if(APO_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'" + pick(GLOB.last_names[names_id])
+				if(APO_NAME_REV)
+					. = capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_male[names_id])
+				if(APO_NAME_EXT)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'"
+					if(prob(65))
+						. += (pick(GLOB.first_names_male[names_id]) + "'")
+					. += pick(GLOB.last_names[names_id])
+				if(HYPHEN_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + "-" + pick(GLOB.last_names[names_id])
+				if(GIVEN_ONLY)
+					. = capitalize(pick(GLOB.first_names_male[names_id]))
+				if(SURNAME_ONLY)
+					. = capitalize(pick(GLOB.last_names[names_id]))
+				if(NAME_NUMERAL)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " \Roman[rand(1,99)]"
+				if(NAME_NUM)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " [rand(1,99)]"
+				if(NAME_LETTER)
+					. = capitalize(pick(GLOB.first_names_male[names_id])) + " [random_capital_letter()]"
+					if(prob(65))
+						. += random_capital_letter()
+		else
+			switch(naming_convention_override)
+				if(HUMAN_WESTERN)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
+				if(HUMAN_EASTERN)
+					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]))
+				if(APO_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "'" + pick(GLOB.last_names[names_id])
+				if(APO_NAME_REV)
+					. =  capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])
+				if(APO_NAME_EXT)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "'"
+					if(prob(65))
+						. += (pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]) + "'")
+					. += pick(GLOB.last_names[names_id])
+				if(HYPHEN_NAME)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
+				if(GIVEN_ONLY)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]))
+				if(SURNAME_ONLY)
+					. = capitalize(pick(GLOB.last_names[names_id]))
+				if(NAME_NUMERAL)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
+				if(NAME_NUM)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "[rand(1,99)]"
+				if(NAME_LETTER)
+					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " [random_capital_letter()]"
+					if(prob(65))
+						. += random_capital_letter()
+		if(!findname(.))
+			break
+/**
+  * Copies some vars and properties over that should be kept when creating a copy of this species.
+  *
+  * Used by slimepeople to copy themselves, and by the DNA datum to hardset DNA to a species
+  * Arguments:
+  * * old_species - The species that the carbon used to be before copying
+  */
 /datum/species/proc/copy_properties_from(datum/species/old_species)
 	return
 
-//Please override this locally if you want to define when what species qualifies for what rank if human authority is enforced.
+/**
+  * Checks if this carbon is allowed to be a certain job or rank.
+  *
+  * Override this locally if you want to define when this species qualifies for what rank if human authority is enforced.
+  * Arguments:
+  * * rank - Rank to be tested.
+  * * features - Features of a species that factors into rank qualifications, like a human with cat ears being unable to join command positions.
+  */
 /datum/species/proc/qualifies_for_rank(rank, list/features)
 	if(rank in GLOB.command_positions)
 		return 0
@@ -165,10 +324,10 @@ GLOBAL_LIST_EMPTY(roundstart_races)
   * takes all organ slots, removes organs a species should not have, adds organs a species should have.
   * can use replace_current to refresh all organs, creating an entirely new set.
   * Arguments:
-  * C - carbon, the owner of the species datum AKA whoever we're regenerating organs in
-  * old_species - datum, used when regenerate organs is called in a switching species to remove old mutant organs.
-  * replace_current - boolean, forces all old organs to get deleted whether or not they pass the species' ability to keep that organ
-  * excluded_zones - list, add zone defines to block organs inside of the zones from getting handled. see headless mutation for an example
+  * * C - carbon, the owner of the species datum AKA whoever we're regenerating organs in
+  * * old_species - datum, used when regenerate organs is called in a switching species to remove old mutant organs.
+  * * replace_current - boolean, forces all old organs to get deleted whether or not they pass the species' ability to keep that organ
+  * * excluded_zones - list, add zone defines to block organs inside of the zones from getting handled. see headless mutation for an example
   */
 /datum/species/proc/regenerate_organs(mob/living/carbon/C,datum/species/old_species,replace_current=TRUE,list/excluded_zones)
 	//what should be put in if there is no mutantorgan (brains handled seperately)
@@ -218,6 +377,16 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			var/obj/item/organ/missed = new thing()
 			missed.Insert(C, TRUE, FALSE)
 
+/**
+  * Proc called when a carbon becomes this species.
+  *
+  * This sets up and adds/changes/removes things, qualities, abilities, and traits so that the transformation is as smooth and bugfree as possible.
+  * Produces a [COMSIG_SPECIES_GAIN] signal.
+  * Arguments:
+  * * C - Carbon, this is whoever became the new species.
+  * * old_species - The species that the carbon used to be before becoming this race, used for regenerating organs.
+  * * pref_load - Preferences to be loaded from character setup, loads in preferred mutant things like bodyparts, digilegs, skin color, etc.
+  */
 /datum/species/proc/on_species_gain(mob/living/carbon/C, datum/species/old_species, pref_load)
 	// Drop the items the new species can't wear
 	if((AGENDER in species_traits))
@@ -293,11 +462,20 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		for(var/i in inherent_factions)
 			C.faction += i //Using +=/-= for this in case you also gain the faction from a different source.
 
-	C.add_movespeed_modifier(MOVESPEED_ID_SPECIES, TRUE, 100, override=TRUE, multiplicative_slowdown=speedmod, movetypes=(~FLYING))
+	C.add_or_update_variable_movespeed_modifier(/datum/movespeed_modifier/species, multiplicative_slowdown=speedmod)
 
 	SEND_SIGNAL(C, COMSIG_SPECIES_GAIN, src, old_species)
 
-
+/**
+  * Proc called when a carbon is no longer this species.
+  *
+  * This sets up and adds/changes/removes things, qualities, abilities, and traits so that the transformation is as smooth and bugfree as possible.
+  * Produces a [COMSIG_SPECIES_LOSS] signal.
+  * Arguments:
+  * * C - Carbon, this is whoever lost this species.
+  * * new_species - The new species that the carbon became, used for genetics mutations.
+  * * pref_load - Preferences to be loaded from character setup, loads in preferred mutant things like bodyparts, digilegs, skin color, etc.
+  */
 /datum/species/proc/on_species_loss(mob/living/carbon/human/C, datum/species/new_species, pref_load)
 
 	if(C.dna.species.exotic_bloodtype)
@@ -322,10 +500,18 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		for(var/i in inherent_factions)
 			C.faction -= i
 
-	C.remove_movespeed_modifier(MOVESPEED_ID_SPECIES)
+	C.remove_movespeed_modifier(/datum/movespeed_modifier/species)
 
 	SEND_SIGNAL(C, COMSIG_SPECIES_LOSS, src)
 
+/**
+  * Handles hair icons and dynamic hair.
+  *
+  * Handles hiding hair with clothing, hair layers, losing hair due to husking or augmented heads, facial hair, head hair, and hair styles.
+  * Arguments:
+  * * H - Human, whoever we're handling the hair for
+  * * forced_colour - The colour of hair we're forcing on this human. Leave null to not change. Mind the british spelling!
+  */
 /datum/species/proc/handle_hair(mob/living/carbon/human/H, forced_colour)
 	H.remove_overlay(HAIR_LAYER)
 	var/obj/item/bodypart/head/HD = H.get_bodypart(BODY_ZONE_HEAD)
@@ -392,6 +578,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 						facial_overlay.color = "#" + H.dna.features["mcolor"]
 					else if(hair_color == "skin_tone")
 						facial_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
+					else if(hair_color == "fixedmutcolor")
+						facial_overlay.color = "#[fixed_mut_color]"
 					else
 						facial_overlay.color = "#" + hair_color
 				else
@@ -455,6 +643,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 							hair_overlay.color = "#" + H.dna.features["mcolor"]
 						else if(hair_color == "skin_tone")
 							hair_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
+						else if(hair_color == "fixedmutcolor")
+							hair_overlay.color = "#[fixed_mut_color]"
 						else
 							hair_overlay.color = "#" + hair_color
 					else
@@ -473,6 +663,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 	H.apply_overlay(HAIR_LAYER)
 
+/**
+  * Handles the body of a human
+  *
+  * Handles lipstick, having no eyes, eye color, undergarnments like underwear, undershirts, and socks, and body layers.
+  * Calls [handle_mutant_bodyparts][/datum/species/proc/handle_mutant_bodyparts]
+  * Arguments:
+  * * H - Human, whoever we're handling the body for
+  */
 /datum/species/proc/handle_body(mob/living/carbon/human/H)
 	H.remove_overlay(BODY_LAYER)
 	H.remove_overlay(COSMETICS_LAYER)
@@ -543,6 +741,15 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	update_bodyparts_from_features(H)
 	handle_mutant_bodyparts(H)
 
+/**
+  * Handles the mutant bodyparts of a human
+  *
+  * Handles the adding and displaying of, layers, colors, and overlays of mutant bodyparts and accessories.
+  * Handles digitigrade leg displaying and squishing.
+  * Arguments:
+  * * H - Human, whoever we're handling the body for
+  * * forced_colour - The forced color of an accessory. Leave null to use mutant color.
+  */
 /datum/species/proc/update_bodyparts_from_features(mob/living/carbon/human/H)
 	for(var/obj/item/organ/external/OE in H.internal_organs)
 		OE.update_from_features(H)
@@ -624,6 +831,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 								accessory_overlay.color = "#[H.dna.features["mcolor"]]"
 							else if(hair_color == "skin_tone")
 								accessory_overlay.color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
+							else if(hair_color == "fixedmutcolor")
+								accessory_overlay.color = "#[fixed_mut_color]"
 							else
 								accessory_overlay.color = "#[H.hair_color]"
 						if(FACEHAIR)
@@ -963,7 +1172,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 ////////
 //LIFE//
 ////////
-
 /datum/species/proc/handle_digestion(mob/living/carbon/human/H)
 	if(HAS_TRAIT(src, TRAIT_NOHUNGER))
 		return //hunger is for BABIES
@@ -973,14 +1181,14 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(H.overeatduration < 100)
 			to_chat(H, "<span class='notice'>You feel fit again!</span>")
 			REMOVE_TRAIT(H, TRAIT_FAT, OBESITY)
-			H.remove_movespeed_modifier(MOVESPEED_ID_FAT)
+			H.remove_movespeed_modifier(/datum/movespeed_modifier/obesity)
 			H.update_inv_w_uniform()
 			H.update_inv_wear_suit()
 	else
 		if(H.overeatduration >= 100)
 			to_chat(H, "<span class='danger'>You suddenly feel blubbery!</span>")
 			ADD_TRAIT(H, TRAIT_FAT, OBESITY)
-			H.add_movespeed_modifier(MOVESPEED_ID_FAT, multiplicative_slowdown = 1.5)
+			H.add_movespeed_modifier(/datum/movespeed_modifier/obesity)
 			H.update_inv_w_uniform()
 			H.update_inv_wear_suit()
 
@@ -1035,13 +1243,13 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		if(!HAS_TRAIT(H, TRAIT_NOHUNGER))
 			var/hungry = (500 - H.nutrition) / 5 //So overeat would be 100 and default level would be 80
 			if(hungry >= 70)
-				H.add_movespeed_modifier(MOVESPEED_ID_HUNGRY, override = TRUE, multiplicative_slowdown = (hungry / 50))
+				H.add_or_update_variable_movespeed_modifier(/datum/movespeed_modifier/hunger, multiplicative_slowdown = (hungry / 50))
 			else if(isethereal(H))
 				var/datum/species/ethereal/E = H.dna.species
 				if(E.get_charge(H) <= ETHEREAL_CHARGE_NORMAL)
-					H.add_movespeed_modifier(MOVESPEED_ID_HUNGRY, override = TRUE, multiplicative_slowdown = (1.5 * (1 - E.get_charge(H) / 100)))
+					H.add_or_update_variable_movespeed_modifier(/datum/movespeed_modifier/hunger, multiplicative_slowdown = (1.5 * (1 - E.get_charge(H) / 100)))
 			else
-				H.remove_movespeed_modifier(MOVESPEED_ID_HUNGRY)
+				H.remove_movespeed_modifier(/datum/movespeed_modifier/hunger)
 
 	switch(H.nutrition)
 		if(NUTRITION_LEVEL_FULL to INFINITY)
@@ -1328,8 +1536,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			var/knocked_item = FALSE
 			if(!is_type_in_typecache(target_held_item, GLOB.shove_disarming_types))
 				target_held_item = null
-			if(!target.has_movespeed_modifier(MOVESPEED_ID_SHOVE))
-				target.add_movespeed_modifier(MOVESPEED_ID_SHOVE, multiplicative_slowdown = SHOVE_SLOWDOWN_STRENGTH)
+			if(!target.has_movespeed_modifier(/datum/movespeed_modifier/shove))
+				target.add_movespeed_modifier(/datum/movespeed_modifier/shove)
 				if(target_held_item)
 					target.visible_message("<span class='danger'>[target.name]'s grip on \the [target_held_item] loosens!</span>",
 						"<span class='warning'>Your grip on \the [target_held_item] loosens!</span>", null, COMBAT_MESSAGE_RANGE)
@@ -1583,8 +1791,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "cold")
 		SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "hot", /datum/mood_event/hot)
 
-		// Remove any slow down from the cold
-		H.remove_movespeed_modifier(MOVESPEED_ID_COLD)
+		//Remove any slowdown from the cold.
+		H.remove_movespeed_modifier(/datum/movespeed_modifier/cold)
 
 		var/burn_damage = 0
 		var/firemodifier = H.fire_stacks / 50
@@ -1592,7 +1800,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 			firemodifier = min(firemodifier, 0)
 
 		// this can go below 5 at log 2.5
-		burn_damage = max(log(2 - firemodifier, (H.bodytemperature - H.get_body_temp_normal())) - 5,0)
+		burn_damage = max(log(2 - firemodifier, (H.bodytemperature - H.get_body_temp_normal(apply_change=FALSE))) - 5,0)
 
 		// Display alerts based on the amount of fire damage being taken
 		if (burn_damage)
@@ -1619,12 +1827,8 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 		// clear any hot moods and apply cold mood
 		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "hot")
 		SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "cold", /datum/mood_event/cold)
-
 		// Apply cold slow down
-		H.add_movespeed_modifier(MOVESPEED_ID_COLD, override = TRUE, \
-			multiplicative_slowdown = ((bodytemp_cold_damage_limit - H.bodytemperature) / COLD_SLOWDOWN_FACTOR), \
-			blacklisted_movetypes = FLOATING)
-
+		H.add_or_update_variable_movespeed_modifier(/datum/movespeed_modifier/cold, multiplicative_slowdown = ((bodytemp_cold_damage_limit - H.bodytemperature) / COLD_SLOWDOWN_FACTOR))
 		// Display alerts based on the amount of cold damage being taken
 		// Apply more damage based on how cold you are
 		switch(H.bodytemperature)
@@ -1641,7 +1845,7 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 	// We are not to hot or cold, remove status and moods
 	else
 		H.clear_alert("temp")
-		H.remove_movespeed_modifier(MOVESPEED_ID_COLD)
+		H.remove_movespeed_modifier(/datum/movespeed_modifier/cold)
 		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "cold")
 		SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "hot")
 
@@ -1937,121 +2141,6 @@ GLOBAL_LIST_EMPTY(roundstart_races)
 
 /datum/species/proc/stop_wagging_tail(mob/living/carbon/human/H)
 
-/*
-# Ranom name
-
-__description__
-- this proc generates random unique names for a human type mob of a given species
-- before running it checks the length of GLOB.first_names_male to assess whether
--  the names lists have been initialized, and fires the initialization proc if needed
-
-__Arguments__
-*gender*: the gender of the mob that needs a name generated, should be one of the gender defines
-*attempts_to_find_unique_names*: The limit on the number of times the proc should generate an unused name before automatically returning, must be a finite integer
-
-__Returns__:
-- Improper initialization of the names lists can occur if the require files are missing or formatted wrong, leading to runtimes or name generation errors. See /proc/init_species_names_lists in \_HELPERS\mobs.dm
-- Returns "NAME_GENERATION_ERROR" if it fails to find a valid name for the supplied arguments without encountering an exception
-- Returns a valid name string after it finds an unused one or reaches the limit of *attempts_to_find_unique_name*
-*/
-
-/datum/species/proc/random_name(gender = PLURAL, attempts_to_find_unique_name = NAMEGEN_LIMIT, naming_convention_override)
-	. = "NAME_GENERATION_ERROR"
-	if(!length(GLOB.first_names_male))
-		init_species_names_lists(GLOB.first_names_male, GLOB.first_names_female, GLOB.last_names)
-	if(!naming_convention_override)
-		naming_convention_override = naming_convention ? naming_convention : HUMAN_WESTERN
-
-	for(var/i in 1 to attempts_to_find_unique_name)
-		if(gender == FEMALE)
-			switch(naming_convention_override)
-				if(HUMAN_WESTERN)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
-				if(HUMAN_EASTERN)
-					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_female[names_id]))
-				if(APO_NAME)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) + "'" + pick(GLOB.last_names[names_id])
-				if(APO_NAME_REV)
-					. = capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_female[names_id])
-				if(APO_NAME_EXT)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) + "'"
-					if(prob(65))
-						. += (pick(GLOB.first_names_female[names_id]) + "'")
-					. += pick(GLOB.last_names[names_id])
-				if(HYPHEN_NAME)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
-				if(GIVEN_ONLY)
-					. = capitalize(pick(GLOB.first_names_female[names_id]))
-				if(SURNAME_ONLY)
-					. = capitalize(pick(GLOB.last_names[names_id]))
-				if(NAME_NUMERAL)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
-				if(NAME_NUM)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) + " [rand(1,99)]"
-				if(NAME_LETTER)
-					. = capitalize(pick(GLOB.first_names_female[names_id])) + " [random_capital_letter()]"
-					if(prob(65))
-						. += random_capital_letter()
-		else if(gender == MALE)
-			switch(naming_convention_override)
-				if(HUMAN_WESTERN)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
-				if(HUMAN_EASTERN)
-					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_male[names_id]))
-				if(APO_NAME)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'" + pick(GLOB.last_names[names_id])
-				if(APO_NAME_REV)
-					. = capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_male[names_id])
-				if(APO_NAME_EXT)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + "'"
-					if(prob(65))
-						. += (pick(GLOB.first_names_male[names_id]) + "'")
-					. += pick(GLOB.last_names[names_id])
-				if(HYPHEN_NAME)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + "-" + pick(GLOB.last_names[names_id])
-				if(GIVEN_ONLY)
-					. = capitalize(pick(GLOB.first_names_male[names_id]))
-				if(SURNAME_ONLY)
-					. = capitalize(pick(GLOB.last_names[names_id]))
-				if(NAME_NUMERAL)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + " \Roman[rand(1,99)]"
-				if(NAME_NUM)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + " [rand(1,99)]"
-				if(NAME_LETTER)
-					. = capitalize(pick(GLOB.first_names_male[names_id])) + " [random_capital_letter()]"
-					if(prob(65))
-						. += random_capital_letter()
-		else
-			switch(naming_convention_override)
-				if(HUMAN_WESTERN)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " " + capitalize(pick(GLOB.last_names[names_id]))
-				if(HUMAN_EASTERN)
-					. = capitalize(pick(GLOB.last_names[names_id])) + " " + capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]))
-				if(APO_NAME)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "'" + pick(GLOB.last_names[names_id])
-				if(APO_NAME_REV)
-					. =  capitalize(pick(GLOB.last_names[names_id])) + "'" + pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])
-				if(APO_NAME_EXT)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "'"
-					if(prob(65))
-						. += (pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]) + "'")
-					. += pick(GLOB.last_names[names_id])
-				if(HYPHEN_NAME)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "-" + pick(GLOB.last_names[names_id])
-				if(GIVEN_ONLY)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id]))
-				if(SURNAME_ONLY)
-					. = capitalize(pick(GLOB.last_names[names_id]))
-				if(NAME_NUMERAL)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " \Roman[rand(1,99)]"
-				if(NAME_NUM)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + "[rand(1,99)]"
-				if(NAME_LETTER)
-					. = capitalize(pick(GLOB.first_names_male[names_id] | GLOB.first_names_female[names_id])) + " [random_capital_letter()]"
-					if(prob(65))
-						. += random_capital_letter()
-		if(!findname(.))
-			break
 
 ///////////////
 //FLIGHT SHIT//

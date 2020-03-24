@@ -150,6 +150,8 @@
 					facial_hair_color = H.dna.features["mcolor"]
 				else if(S.hair_color == "skin_tone")
 					facial_hair_color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
+				else if(hair_color == "fixedmutcolor")
+					facial_hair_color = "#[S.fixed_mut_color]"
 				else
 					facial_hair_color = S.hair_color
 			else
@@ -167,6 +169,8 @@
 					hair_color = H.dna.features["mcolor"]
 				else if(S.hair_color == "skin_tone")
 					hair_color = "#" + sprite_color2hex(H.skin_tone, GLOB.skin_tones_list)
+				else if(hair_color == "fixedmutcolor")
+					hair_color = "#[S.fixed_mut_color]"
 				else
 					hair_color = S.hair_color
 			else
