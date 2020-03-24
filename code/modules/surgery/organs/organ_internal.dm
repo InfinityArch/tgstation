@@ -231,7 +231,7 @@
 			return
 		var/obj/item/stack/C = W
 		var/damage_to_fix = nanopaste ? 30 : 15
-		if(!damage_to_fix)
+		if(!damage && !(organ_flags & ORGAN_SYNTHETIC_EMP))
 			to_chat(user, "<span class='notice'>[src] is already in good condition")
 			return
 		if(!nanopaste)

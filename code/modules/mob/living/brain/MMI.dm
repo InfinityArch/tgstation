@@ -425,6 +425,7 @@
 		MMI.remove_brain(user)
 
 /obj/item/organ/brain/silicon/attackby(obj/item/W, mob/user, params)
+	// the brain item overwrites organ/attackby, so we need to include this for robotic brains to be repairable via
 	if(istype(W, /obj/item/stack/cable_coil) || istype(W, /obj/item/stack/nanopaste))
 		. = TRUE
 		var/nanopaste = istype(W, /obj/item/stack/cable_coil) ? FALSE : TRUE
@@ -433,7 +434,7 @@
 			return
 		var/obj/item/stack/C = W
 		var/damage_to_fix = nanopaste ? 30 : 15
-		if(!damage_to_fix)
+		if(!damage && !(organ_flags & ORGAN_SYNTHETIC_EMP))
 			to_chat(user, "<span class='notice'>[src] is already in good condition")
 			return
 		if(!nanopaste)
@@ -496,7 +497,7 @@
 
 /obj/item/organ/brain/silicon/Remove(mob/living/carbon/C, special = 0, no_id_transfer = FALSE)
 	for(var/obj/item/robobrain_component/R in installed_components)
-		R.transfer_to_brain(TRUE)
+		R.transfer_to_brain()
 	var/datum/component/ai_laws_ui/lawui = C.GetComponent(/datum/component/ai_laws_ui)
 	if(lawui)
 		qdel(lawui)
@@ -537,7 +538,6 @@
 	. = returned_laws
 	var/obj/item/robobrain_component/law_module/LM
 	LM = locate() in installed_components
-	message_admins("Acquired law module: [LM]")
 	if(LM)
 		returned_laws.copy_laws(LM.laws)
 		if(special_laws && !special_laws.is_empty_laws())
@@ -548,11 +548,11 @@
 		return FALSE
 
 // sends a signal indicating a change to their laws
-/obj/item/organ/brain/silicon/proc/update_laws(silent = FALSE)
+/obj/item/organ/brain/silicon/proc/update_laws()
 	if(owner)
-		SEND_SIGNAL(owner, COMSIG_SILICON_LAWS_UPDATED, get_laws(), silent)
+		SEND_SIGNAL(owner, COMSIG_SILICON_LAWS_UPDATED)
 	else if(brainmob)
-		SEND_SIGNAL(brainmob, COMSIG_SILICON_LAWS_UPDATED, get_laws(), silent)
+		SEND_SIGNAL(brainmob, COMSIG_SILICON_LAWS_UPDATED)
 	//todo get it working for AI shells
 
 /obj/item/organ/brain/silicon/relaymove(mob/user)
@@ -648,6 +648,8 @@
 		playsound(src, "sound/weapons/smg_empty_alarm.ogg", 5, TRUE)
 
 /obj/item/organ/brain/silicon/mmi/proc/remove_brain(mob/living/user)
+	if(!stored_brain)
+		return
 	if(!brainmob)
 		brainmob = new(src)
 	for(var/obj/item/robobrain_component/module in installed_components)

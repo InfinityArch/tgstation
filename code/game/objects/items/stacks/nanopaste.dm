@@ -8,8 +8,8 @@
 	icon = 'icons/obj/stack_objects.dmi'
 	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
-	amount = 20
-	max_amount = 20
+	amount = 6
+	max_amount = 6
 	w_class = WEIGHT_CLASS_TINY
 	full_w_class = WEIGHT_CLASS_TINY
 	throw_speed = 3
@@ -18,7 +18,6 @@
 	custom_materials = list(/datum/material/iron = 500, /datum/material/glass = 2500)
 	novariants = FALSE
 	item_flags = NOBLUDGEON
-	tool_behaviour = TOOL_NANOPASTE
 
 /obj/item/stack/nanopaste/attack(mob/living/carbon/human/C, mob/user)
 	if(!istype(C))

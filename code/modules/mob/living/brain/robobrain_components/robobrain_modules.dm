@@ -7,7 +7,7 @@
 	icon_state = "mainboard"
 	icon = 'icons/obj/module.dmi'
 	w_class = WEIGHT_CLASS_SMALL
-	var/obj/item/organ/brain/silicon/brain
+	var/obj/item/organ/brain/silicon/brain // the brain this is currently installed into
 	var/id = ""
 	var/no_removal = FALSE //whether this module can be removed from a robobrain
 	var/stealth_module = FALSE //whether this module will be hidden to normal scans
@@ -21,9 +21,8 @@
 		return brain.brainmob
 
 /obj/item/robobrain_component/proc/install(obj/item/organ/brain/silicon/S, mob/living/user)
-	if(!S) //sanity check is needed for surgery installation
+	if(!S) //sanity check is needed for surgery installation scenario
 		return
-	message_admins("HEEEEY")
 	if(user)
 		if(!(user.transferItemToLoc(src, S)))
 			return
@@ -58,7 +57,8 @@
 		forceMove(brain)
 		return brain
 
-/obj/item/robobrain_component/proc/transfer_to_brain()
+//moves the component to the associated brain
+/obj/item/robobrain_component/proc/transfer_to_brain(silent = FALSE)
 	forceMove(brain)
 
 /obj/item/robobrain_component/proc/on_install(mob/living/user)

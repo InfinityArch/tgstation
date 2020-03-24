@@ -29,7 +29,7 @@
 
 /obj/item/robobrain_component/integrated_radio/transfer_to_owner(silent = FALSE)
 	. = ..()
-	var/mob/living/brain_owner = get_brain_owner()
+	var/mob/living/brain_owner = .
 	if(brain_owner && linked_radio)
 		brain_owner.AddComponent(/datum/component/integrated_radio, linked_radio)
 

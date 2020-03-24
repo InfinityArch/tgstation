@@ -1052,8 +1052,6 @@
 			. |= welder_act(user, I)
 		if(TOOL_ANALYZER)
 			. |= analyzer_act(user, I)
-		if(TOOL_NANOPASTE)
-			. |=  nanopaste_act(user, I)
 	if(. & COMPONENT_BLOCK_TOOL_ATTACK)
 		return TRUE
 
@@ -1095,11 +1093,6 @@
 ///Analyzer act
 /atom/proc/analyzer_act(mob/living/user, obj/item/I)
 	return SEND_SIGNAL(src, COMSIG_ATOM_ANALYSER_ACT, user, I)
-
-///Nanopaste act
-/atom/proc/nanopaste_act(mob/living/user, obj/item/I)
-	return SEND_SIGNAL(src, COMSIG_ATOM_NANOPASTE_ACT, user, I)
-
 
 
 ///Generate a tag for this atom

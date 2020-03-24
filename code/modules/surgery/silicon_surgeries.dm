@@ -7,6 +7,7 @@
 #define REMOVE_CAPACITOR	"remove_capacitor"
 #define EXTRACT_COMPONENT	"extract_component"
 #define INSTALL_COMPONENT	"install_component"
+#define FIX_COMPONENT		"fix_component"
 
 
 
@@ -124,9 +125,8 @@
 	var/obj/item/stock_parts/P = null // power cell or capacitor
 
 /datum/surgery_step/manipulate_components/chest
-
 	implements_mmi = list(TOOL_MULTITOOL = 100, TOOL_SCREWDRIVER = 100, TOOL_WIRECUTTER = 100)
-	implements_misc = list(/obj/item/stock_parts/cell = 100, /obj/item/stock_parts/capacitor = 100,
+	implements_misc = list(/obj/item/stock_parts/cell = 100, /obj/item/stock_parts/capacitor = 100, /obj/item/stack/nanopaste =100, /obj/item/stack/cable_coil = 100,
 	 /obj/item/robobrain_component = 100, /obj/item/card/emag = 100, /obj/item/card/id = 100)
 	accept_hand = TRUE
 
@@ -150,11 +150,14 @@
 			return -1
 
 	else if(!tool || istype(tool, /obj/item/stock_parts))
-		if(check_cell_manipulation(user, target, target_zone, tool, surgery, mmi_exposed))
+		if(check_cell_manipulation(user, target, target_zone, tool, surgery))
+			return -1
+	else if(istype(tool, /obj/item/stack))
+		if(check_organ_fix(user, target, target_zone, tool, surgery))
 			return -1
 	else
 		current_type = (implement_type in implements_extract) ? EXTRACT_COMPONENT : INSTALL_COMPONENT
-		if(check_component_manipulation(user, target, target_zone, tool, surgery, current_type, mmi_exposed))
+		if(check_component_manipulation(user, target, target_zone, tool, surgery, current_type))
 			return -1
 
 // handles the checks for working with an mmi or positronic brain, returns FALSE when the surgery can proceed, otherwise sends error messages
@@ -215,10 +218,31 @@
 		var/obj/item/organ/brain/silicon/mmi/MMI = R
 		if(!MMI.stored_brain)
 			to_chat(user, "<span class='warning'>There is no brained installed in [R]!</span>")
-			return -1
+			return
 		if(!MMI.brainmob || (MMI.stored_brain.organ_flags & ORGAN_FAILING))
 			to_chat(user, "<span class='warning'>The brain installed in [R] is nonfunctional!</span>")
-			return -1
+			return
+
+	if(istype(tool, /obj/item/stack))
+		current_type = FIX_COMPONENT
+		var/nanopaste = istype(tool, /obj/item/stack/cable_coil) ? FALSE : TRUE
+		if(!R.damage && !(R.organ_flags & (ORGAN_FAILING|ORGAN_SYNTHETIC_EMP)))
+			to_chat(user, "<span class='notice'>[R] is already in good condition.</span>")
+			return
+		if((R.organ_flags & ORGAN_FAILING) && !nanopaste)
+			to_chat(user, "<span class='notice'>[R] is too damaged to repair with standard equipment!</span>")
+			return
+		if(nanopaste)
+			display_results(user, target, "<span class='notice'>You begin applying nanopaste to the damaged electronics of [R]...</span>",
+			"<span class='notice'>[user] begins applying nanopaste the damaged electronics of [R].</span>",
+			"<span class='notice'>[user] begins to repair internal damage in [target]'s [parse_zone(target_zone)].</span>")
+			time *= 0.25
+		else
+			display_results(user, target, "<span class='notice'>You begin repairing the damaged electronics of [R]...</span>",
+			"<span class='notice'>[user] begins repairing the damaged electronics of [R].</span>",
+			"<span class='notice'>[user] begins to repair internal damage in [target]'s [parse_zone(target_zone)].</span>")
+		I = R
+		return FALSE
 
 	if(istype(tool, /obj/item/robobrain_component))
 		current_type = MMI_ADD_PART
@@ -265,10 +289,10 @@
 		return FALSE
 
 //handles the check for installing/removing power cells or capacitors, and sets the correct type
-/datum/surgery_step/manipulate_components/proc/check_cell_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, mmi_exposed)
+/datum/surgery_step/manipulate_components/proc/check_cell_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	return TRUE
 
-/datum/surgery_step/manipulate_components/chest/check_cell_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, mmi_exposed)
+/datum/surgery_step/manipulate_components/chest/check_cell_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	. = TRUE
 	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
 
@@ -313,7 +337,7 @@
 		time = 0
 		return FALSE
 
-/datum/surgery_step/manipulate_components/proc/check_component_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, current_type, mmi_exposed)
+/datum/surgery_step/manipulate_components/proc/check_component_manipulation(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, current_type)
 	. = TRUE
 	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
 	if(B?.cell)
@@ -374,17 +398,50 @@
 			"<span class='notice'>[user] begins to remove something from [target]'s [parse_zone(target_zone)].</span>")
 		return FALSE
 
+/datum/surgery_step/manipulate_components/proc/check_organ_fix(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	. = TRUE
+	current_type = FIX_COMPONENT
+	var/list/organs = target.getorganszone(target_zone)
+	var/list/selection = list()
+	var/nanopaste = istype(tool, /obj/item/stack/cable_coil) ? FALSE : TRUE
+	for(var/obj/item/organ/O in organs)
+		O.on_find(user)
+		if(istype(O, /obj/item/organ/brain/silicon) || (O.organ_flags & ORGAN_ABSTRACT))
+			continue
+		if(!O.damage && !(O.organ_flags & (ORGAN_FAILING|ORGAN_SYNTHETIC_EMP)))
+			continue
+		selection += O
+	if(!selection.len)
+		to_chat(user, "<span class='warning'>No components in [target]'s [parse_zone(target_zone)] are in need of repair.</span>")
+		return
+	I = I = input("Repair which component?", "Component Repair", null, null) as null|anything in sortList(selection)
+	if(!I)
+		return
+	if((I.organ_flags & ORGAN_FAILING) && !nanopaste)
+		to_chat(user, "<span class='warning'>[I] is too severely damaged to repair with standard equipment!</span>")
+		return
+	if(nanopaste)
+		display_results(user, target, "<span class='notice'>You begin applying nanopaste to the damaged electronics of [I]...</span>",
+		"<span class='notice'>[user] begins applying nanopaste the damaged electronics of [I].</span>",
+		"<span class='notice'>[user] begins to repair internal damage in [target]'s [parse_zone(target_zone)].</span>")
+		time *= 0.25
+	else
+		display_results(user, target, "<span class='notice'>You begin repairing the damaged electronics of [I]...</span>",
+		"<span class='notice'>[user] begins repairing the damaged electronics of [I].</span>",
+		"<span class='notice'>[user] begins to repair internal damage in [target]'s [parse_zone(target_zone)].</span>")
+	return FALSE
+
 /datum/surgery_step/manipulate_components/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery, default_display_results)
 	var/obj/item/organ/brain/silicon/RB = target.getorganslot(ORGAN_SLOT_BRAIN)
 	var/obj/item/organ/silicon/battery/B = target.getorganslot(ORGAN_SLOT_BATTERY)
 	var/datum/surgery/organ_manipulation/silicon/OM = surgery
 	var/sanity_check_fired
 	if(C && !RB) // sanity checks in case stuff got deleted while the surgery was running
-		return
+		sanity_check_fired = TRUE
 	if(P && !B)
-		return
-	if(!I && (current_type in list(INSTALL_COMPONENT, EXTRACT_COMPONENT)))
-		return
+		sanity_check_fired = TRUE
+	if(!I && (current_type in list(INSTALL_COMPONENT, EXTRACT_COMPONENT, FIX_COMPONENT)))
+		sanity_check_fired = TRUE
 	if(sanity_check_fired)
 		display_results(user, target, "<span class='warning'>WHAT!?</span>",
 		"<span class='notice'>[user] looks confused.</span>",
@@ -465,6 +522,22 @@
 				display_results(user, target, "<span class='warning'>You can't remove anything from [target]'s [parse_zone(target_zone)]!</span>",
 					"<span class='notice'>[user] can't seem to remove anything from [target]'s [parse_zone(target_zone)]!</span>",
 					"<span class='notice'>[user] can't seem to remove anything from [target]'s [parse_zone(target_zone)]!</span>")
+		if(FIX_COMPONENT)
+			var/obj/item/stack/repair_item = tool
+			var/nanopaste = istype(repair_item, /obj/item/stack/cable_coil) ? FALSE : TRUE
+			var/damage_to_fix = nanopaste ? 30 : 15
+			I.applyOrganDamage(-damage_to_fix)
+			repair_item.use(1)
+			if(nanopaste)
+				I.organ_flags &= ~ORGAN_SYNTHETIC_EMP
+				display_results(user, target, "<span class='warning'>You finish applying some nanopaste to [I].</span>",
+				"<span class='notice'>[user] finishes applying nanopaste to [target]'s [I].</span>",
+				"<span class='notice'>[user] finishes repairing internal damage in [target]'s [parse_zone(target_zone)].</span>")
+			else
+				display_results(user, target, "<span class='warning'>You finish repairing [I]'s damaged electronics.</span>",
+				"<span class='notice'>[user] finishes repairing [I]'s damaged electronics.</span>",
+				"<span class='notice'>[user] finishes repairing internal damage in [target]'s [parse_zone(target_zone)].</span>")
+
 	return 0
 
 /datum/surgery/brain_surgery/silicon
@@ -634,3 +707,4 @@
 #undef REMOVE_CAPACITOR
 #undef EXTRACT_COMPONENT
 #undef INSTALL_COMPONENT
+#undef FIX_COMPONENT

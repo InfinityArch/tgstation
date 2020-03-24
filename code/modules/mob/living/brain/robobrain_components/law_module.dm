@@ -17,7 +17,6 @@
 	AddComponent(/datum/component/empprotection, EMP_PROTECT_WIRES)
 	laws.set_laws_config()
 	RegisterSignal(src, COMSIG_GLOB_AI_LAWS_UPDATED, .proc/recieve_ai_law_update)
-	//RegisterSignal(src, COMSIG_SILICON_TRANSMIT_LAW_UPDATE) // todo figure out how to get transmitted law updates to work
 
 /obj/item/robobrain_component/law_module/on_install()
 	. = ..()
@@ -30,7 +29,7 @@
 	set_lockdown(lockcharge)
 	if(laws && !laws.is_empty_laws())
 		brain.update_laws()
-	if(brain.owner)
+	if(brain.owner) //note this is brain.owner, not brain_owner, this is specifically for a carbon type mob this has been installed in
 		RegisterSignal(brain.owner, COMSIG_SILICON_SET_LOCKDOWN, .proc/set_lockdown)
 		RegisterSignal(brain.owner, COMSIG_SILICON_BORG_SELF_DESTRUCT, .proc/self_destruct)
 	var/mob/living/brain_owner = get_brain_owner()
@@ -42,7 +41,7 @@
 
 /obj/item/robobrain_component/law_module/on_uninstall(mob/living/user)
 	var/obj/item/organ/brain/silicon/temp_brain = brain
-	set_lockdown(FALSE, TRUE)
+	set_lockdown(FALSE, TRUE) // forcibly removes the lockdown status effect
 	if(brain.owner)
 		UnregisterSignal(brain.owner, COMSIG_SILICON_SET_LOCKDOWN)
 		UnregisterSignal(brain.owner, COMSIG_SILICON_BORG_SELF_DESTRUCT)
@@ -64,13 +63,36 @@
 			SEND_SIGNAL(brain_owner, COMSIG_SILICON_BORG_DISCONNECTED, connected_ai)
 
 
-//Listens for the global signal sent upon AI law updates, if the AI matches our connected AI,
+//Listens for the global signal sent upon AI law updates, if the AI sending the signal matches our connected AI,
 //the laws change accordingly
 /obj/item/robobrain_component/law_module/proc/recieve_ai_law_update(mob/living/silicon/ai/AI)
 	if(!brain || (brain.organ_flags & ORGAN_FAILING))
 		return
 	if(AI == connected_ai)
 		lawsync(TRUE)
+
+//proc for receiving transmitted laws, returns TRUE if the laws were successfully updated, false, if lawupdate was disabled
+//if forced is TRUE zeroth laws and devil laws will also be cleared, otherwise those will be left alone
+/obj/item/robobrain_component/law_module/proc/receive_transmitted_laws(datum/ai_laws/new_laws, reset, forced)
+	if(!lawupdate)
+		return
+	. = TRUE
+	if(reset)
+		laws = new(laws)
+		return
+	if(!new_laws || new_laws.is_empty_laws())
+		laws.clear_inherent_laws()
+		laws.clear_hacked_laws()
+		laws.clear_ion_laws()
+		laws.clear_zeroth_law()
+		laws.clear_law_sixsixsix()
+		laws.clear_supplied_laws()
+		return
+	if(laws.check_identical_laws(new_laws))
+		return
+	laws.copy_laws(new_laws, TRUE)
+
+
 
 // applies or removes the lockdown status effect from a carbon mob with a brain containing
 // this law module. [lock] dictates whether lockdown is added or removed. [forced] dictates
@@ -91,23 +113,25 @@
 
 //Attempt to sync the law module's lawset with a connected AI
 // This will fail for emagged law modules, or special antag law modules
+// if update_laws is TRUE and there's a brain with a brainmob or owner,
+// that mob will be notified of the change
 /obj/item/robobrain_component/law_module/proc/lawsync(update_laws = FALSE)
 	if(!lawupdate || !connected_ai || antag_override)
 		return
 	if(connected_ai.stat || connected_ai.control_disabled || (obj_flags & EMAGGED))
-		var/mob/target_mob = brain.owner ? brain.owner : brain.brainmob
-		if(target_mob)
-			to_chat(target_mob, "<b>AI signal lost, unable to sync laws.</b>")
+		var/mob/living/brain_owner = get_brain_owner()
+		if(brain_owner)
+			to_chat(brain_owner, "<b>AI signal lost, unable to sync laws.</b>")
 		return
 	var/datum/ai_laws/master = connected_ai.laws ? connected_ai.laws : null
 	if(!master || master.check_identical_laws(laws))
 		return
-	laws.copy_laws(master)
+	laws.copy_laws(master, TRUE)
 	if(brain && update_laws)
 		brain.update_laws()
 
-//attempts to make a connection to an AI. If no AI is specified, it will default to the AI with the fewest slaved robots.
-// if installed to a mob, it will signal the AI and the borg of the change
+//attempts to make a connection to an AI. If no AI is specified, it will default to whatever AI the module is already connected to,
+// or the AI with the fewest slaved robots if there isn't one if currently installed in a mob, it will signal the AI and the borg of the change
 /obj/item/robobrain_component/law_module/proc/connect_to_ai(mob/living/silicon/ai/AI)
 	if(!brain || wires.is_cut(WIRE_AI))
 		return
@@ -115,7 +139,7 @@
 		connected_ai = AI
 	if(!connected_ai)
 		connected_ai = select_active_ai_with_fewest_borgs()
-	var/mob/living/brain_owner = brain.owner ? brain.owner : brain.brainmob
+	var/mob/living/brain_owner = get_brain_owner()
 	if(connected_ai && brain_owner)
 		connected_ai.connected_robots |= brain_owner
 		SEND_SIGNAL(connected_ai, COMSIG_SILICON_NEW_BORG, brain_owner)
@@ -123,11 +147,11 @@
 
 
 //disconnects a law module from its connected AI
-// if its in a mob, signals the AI and the mob of the status change
+// if its currently in a mob, signals the AI and the mob of the status change
 /obj/item/robobrain_component/law_module/proc/disconnect_from_ai()
 	if(!connected_ai)
 		return
-	var/mob/living/brain_owner = brain.owner ? brain.owner : brain.brainmob
+	var/mob/living/brain_owner = get_brain_owner()
 	if(brain_owner)
 		connected_ai.connected_robots -= brain_owner
 		SEND_SIGNAL(connected_ai, COMSIG_SILICON_BORG_DISCONNECTED, brain_owner)
@@ -135,7 +159,10 @@
 	connected_ai = null
 
 /obj/item/robobrain_component/law_module/emag_act()
-	if(antag_override) //antag law modules can't have their laws overridden
+	if(antag_override) //antag law modules can't have their laws overridden with an emag
+		return FALSE
+	var/mob/living/brain_owner = get_brain_owner()
+	if(brain_owner?.mind?.special_role) // and neither can antags
 		return FALSE
 	. = TRUE
 	laws = new /datum/ai_laws/syndicate_override()
@@ -179,6 +206,8 @@
 	else
 		to_chat(user, "<span class='warning'>ERROR: no laws detected!</span>")
 
+
+//
 /obj/item/robobrain_component/law_module/proc/self_destruct()
 	var/mob/living/carbon/C = brain?.owner
 	if(!C)
@@ -222,7 +251,10 @@
 					LM.connect_to_ai(new_ai)
 		if(WIRE_LAWSYNC) // Forces a law update if possible.
 			if(LM.lawupdate)
-				LM.visible_message("<span class='notice'>[LM] gently chimes.</span>", "<span class='notice'>LawSync protocol engaged.</span>")
+				var/atom/message_origin = src
+				if(LM.brain)
+					message_origin = LM.get_brain_owner() ? LM.get_brain_owner() : LM.brain
+				message_origin.visible_message("<span class='notice'>[message_origin] gently chimes.</span>", "<span class='notice'>LawSync protocol engaged.</span>")
 				LM.lawsync()
 		if(WIRE_LOCKDOWN)
 			LM.set_lockdown(!LM.lockcharge) // Toggle
@@ -236,9 +268,9 @@
 			if(!mend)
 				if(LM.connected_ai)
 					LM.disconnect_from_ai()
-		if(WIRE_LAWSYNC) // Cut the law wire, and the borg will no longer receive law updates from its AI. Repair and it will re-sync.
+		if(WIRE_LAWSYNC) // Cut the law wire, and the borg will no longer receive law updates from its AI. Repair and it will re-sync unless this law module is of a type which disables AI law sync
 			if(mend)
-				LM.lawupdate = TRUE
+				LM.lawupdate = initial(LM.lawupdate)
 			else
 				LM.lawupdate = FALSE
 		if(WIRE_LOCKDOWN) // Simple lockdown.
